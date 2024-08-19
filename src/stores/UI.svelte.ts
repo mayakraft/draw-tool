@@ -1,4 +1,3 @@
-import { get, writable, derived } from "svelte/store";
 import { ViewBox } from "./ViewBox.svelte.ts";
 import { createSignal } from "./signal.svelte.ts";
 import { type Tool } from "../types.ts";
@@ -39,13 +38,13 @@ const snapPointFunction = (a: [number, number] | undefined): [number, number] | 
 
 export const Pointer = (() => {
 	let position: [number, number] | undefined = $state(undefined);
-	let snap: [number, number] | undefined = $derived(snapPointFunction(position));
+	const snap: [number, number] | undefined = $derived(snapPointFunction(position));
 	return {
 		get position() { return position; },
 		get snap() { return snap; },
 		set position(newPos) { position = newPos; },
 	};
-})()
+})();
 
 /**
  * @description This app has some built-in ways of visualizing

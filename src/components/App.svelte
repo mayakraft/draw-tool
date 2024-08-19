@@ -28,10 +28,8 @@
 		<div class="toolbar" role="toolbar" bind:this={divToolbar}>
 			<Toolbar />
 		</div>
-		<div class="renderings vertical">
-			<div class="canvases">
-				<Canvases />
-			</div>
+		<div class="canvases">
+			<Canvases />
 		</div>
 	</div>
 </main>
@@ -69,15 +67,11 @@
 		overflow-x: hidden;
 		overflow-y: auto;
 	}
-	.renderings {
+
+	.canvases {
 		width: 100%;
 		height: 100%;
 		min-width: 0;
-		flex: 1 1 auto;
-	}
-
-	/* .renderings children */
-	.canvases {
 		flex: 1 1 auto;
 	}
 

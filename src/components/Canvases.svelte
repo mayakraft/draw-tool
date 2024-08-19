@@ -1,8 +1,19 @@
+<script lang="ts">
+	// import SvgCanvas from "./SVGCanvas.svelte";
+	import SvgTouchCanvas from "./SVGTouchCanvas.svelte";
+	import { modelElements } from "../stores/Model.svelte";
+	let svg: SVGSVGElement;
 
-<div></div>
+	$effect(() => {
+		while(svg.children.length) { svg.removeChild(svg.children[0]); }
+		modelElements.elements.forEach(el => svg.appendChild(el));
+	});
+</script>
 
-<style>
-	div {
-		background-color: #123;
-	}
-</style>
+<!-- <SvgCanvas -->
+<SvgTouchCanvas
+	bind:svg={svg}
+	onmousemove={(e) => console.log(e.point)}
+	fill="none"
+	stroke="white"
+/>
