@@ -1,19 +1,27 @@
 <script lang="ts">
-	// import SvgCanvas from "./SVGCanvas.svelte";
-	import SvgTouchCanvas from "./SVGTouchCanvas.svelte";
-	import { modelElements } from "../stores/Model.svelte";
-	let svg: SVGSVGElement;
+	import SVGTouchCanvas from "./SVGTouchCanvas.svelte";
+	import GridLayer from "./GridLayer.svelte";
+	import { modelElements } from "../stores/model.svelte.ts";
+	import { viewBox } from "../stores/viewBox.svelte.ts";
+
+	let shapeLayer: SVGGElement;
 
 	$effect(() => {
-		while(svg.children.length) { svg.removeChild(svg.children[0]); }
-		modelElements.elements.forEach(el => svg.appendChild(el));
+		while(shapeLayer.children.length) {
+			shapeLayer.removeChild(shapeLayer.children[0]);
+		}
+		modelElements.elements.forEach(el => shapeLayer.appendChild(el));
 	});
 </script>
 
 <!-- <SvgCanvas -->
-<SvgTouchCanvas
-	bind:svg={svg}
+<SVGTouchCanvas
 	onmousemove={(e) => console.log(e.point)}
+	viewBox={viewBox.string}
 	fill="none"
 	stroke="white"
-/>
+	stroke-width="0.01">
+	<!-- <GridLayer viewBoxArray={viewBox.array} /> -->
+	<GridLayer viewBoxArray={viewBox.array} />
+	<g bind:this={shapeLayer}></g>
+</SVGTouchCanvas>

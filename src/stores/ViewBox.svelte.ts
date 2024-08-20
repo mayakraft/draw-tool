@@ -7,6 +7,17 @@ import {
 	makeMatrix2UniformScale,
 } from "rabbit-ear/math/matrix2.js";
 
+export const verticalUp = (() => {
+	let value = $state(
+		localStorage.getItem("VerticalUp") !== null
+			? localStorage.getItem("VerticalUp") === "true"
+			: true);
+	return {
+		get value() { return value; },
+		set value(newValue) { value = newValue; },
+	};
+})();
+
 // const VerticalUpOnBoot = localStorage.getItem("VerticalUp") !== null
 // 	? localStorage.getItem("VerticalUp") === "true"
 // 	: true;
@@ -20,7 +31,7 @@ import {
  * @description The camera matrix is what the user modifies when they
  * pan around and scroll to zoom on the SVG canvas.
  */
-const CameraMatrix = (() => {
+const cameraMatrix = (() => {
 	let value = $state([...identity2x3]);
 	return {
 		get value() { return value; },
@@ -46,7 +57,7 @@ const CameraMatrix = (() => {
  * around the graph model. This model matrix will always maintain
  * a 1:1 aspect ratio. Used to create the SVG's ViewBox.
  */
-const ModelMatrix = (() => {
+const modelMatrix = (() => {
 	let value = $state([...identity2x3]);
 	return {
 		get value() { return value; },
@@ -82,9 +93,8 @@ const ModelMatrix = (() => {
 			const x = (matrix[4] - old[4]) / old[0];
 			const y = (matrix[5] - old[5]) / old[0];
 			const difference = [scale, 0, 0, scale, x, y];
-			const cameraMatrix = CameraMatrix.value;
-			const newCameraMatrix = multiplyMatrices2(cameraMatrix, difference);
-			CameraMatrix.value = newCameraMatrix;
+			const newCameraMatrix = multiplyMatrices2(cameraMatrix.value, difference);
+			cameraMatrix.value = newCameraMatrix;
 			value = matrix;
 		},
 		reset: () => { value = [...identity2x3]; },
@@ -95,8 +105,8 @@ const ModelMatrix = (() => {
  * @description The inverse of the camera matrix,
  * used to build the SVG's ViewBox.
  */
-const ViewMatrix = $derived.by(() => {
-	const inverted = invertMatrix2(CameraMatrix.value);
+const viewMatrix = $derived.by(() => {
+	const inverted = invertMatrix2(cameraMatrix.value);
 	return inverted ? inverted : [...identity2x3];
 });
 
@@ -104,15 +114,15 @@ const ViewMatrix = $derived.by(() => {
  * @description In a typical fashion, the model and view matrices are
  * multiplied together to make this model-view matrix.
  */
-const ModelViewMatrix = $derived(multiplyMatrices2(ModelMatrix.value, ViewMatrix));
+const modelViewMatrix = $derived(multiplyMatrices2(modelMatrix.value, viewMatrix));
 
 /**
  * @description The SVG will set its "viewBox" property with this value,
  * a value which is based on the camera, as well as the model size.
  */
-export const ViewBox = (() => {
+export const viewBox = (() => {
 	const array = $derived.by(() => {
-		const m = [...ModelViewMatrix];
+		const m = [...modelViewMatrix];
 		// get the translation component
 		const [, , , , x, y] = m;
 		// remove the translation component

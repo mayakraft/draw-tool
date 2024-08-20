@@ -3,7 +3,6 @@
 
 	interface PropsType {
 		svg?: SVGSVGElement,
-		strokeWidth?: number,
 		viewBox?: string,
 		invertVertical?: boolean,
 		onmousedown?: (e: MouseEvent) => void,
@@ -16,7 +15,6 @@
 
 	let {
 		svg = $bindable(),
-		strokeWidth = 0.001,
 		viewBox = "0 0 1 1",
 		invertVertical = false,
 		onmousedown,
@@ -36,7 +34,6 @@
 	xmlns="http://www.w3.org/2000/svg"
 	role="presentation"
 	bind:this={svg}
-	stroke-width={strokeWidth}
 	onfocus={() => {}}
 	onblur={() => {}}
 	{viewBox}

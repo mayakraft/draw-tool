@@ -1,4 +1,4 @@
-import { ViewBox } from "./ViewBox.svelte.ts";
+import { viewBox } from "./viewBox.svelte.ts";
 import { createSignal } from "./signal.svelte.ts";
 import { type Tool } from "../types.ts";
 
@@ -16,7 +16,7 @@ const UIEpsilonFactor = 0.01;
  * is zoom-level dependent. Use this variable to get an appropriate error-
  * correcting value.
  */
-const UIEpsilon = $derived(Math.max(ViewBox.array[2], ViewBox.array[3]) * UIEpsilonFactor);
+const UIEpsilon = $derived(Math.max(viewBox.array[2], viewBox.array[3]) * UIEpsilonFactor);
 
 /**
  * @description a hash lookup of every keyboard key currently being pressed

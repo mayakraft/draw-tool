@@ -36,7 +36,6 @@ export const modelElements = (() => {
 	}
 })();
 
-
 model.elements.push({ name: "line", params: { x1: 0, y1: 0, x2: 100, y2: 10 } });
 model.elements.push({ name: "circle", params: { cx: 0, cy: 0, r: 1 } });
 model.elements.push({ name: "circle", params: { cx: 0, cy: 0, r: 50 } });

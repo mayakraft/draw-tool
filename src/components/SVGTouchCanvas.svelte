@@ -17,7 +17,6 @@
 
 	interface PropsType {
 		svg?: SVGSVGElement,
-		strokeWidth?: number,
 		viewBox?: string,
 		invertVertical?: boolean,
 		onmousedown?: (e: ScaledMouseEvent) => void,
@@ -30,8 +29,7 @@
 
 	let {
 		svg = $bindable(),
-		viewBox,
-		strokeWidth = 0.001,
+		viewBox = "0 0 1 1",
 		invertVertical = false,
 		onmousedown: down,
 		onmousemove: move,
@@ -76,7 +74,6 @@
 <SVGCanvas
 	bind:svg={svg}
 	{viewBox}
-	{strokeWidth}
 	{invertVertical}
 	{onmousedown}
 	{onmousemove}
