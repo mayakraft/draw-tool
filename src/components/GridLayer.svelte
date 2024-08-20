@@ -27,9 +27,6 @@
 	const lines = $derived(gridType.value === "triangle"
 		? makeTriangleGrid(actualViewport)
 		: makeSquareGrid(actualViewport));
-
-	$effect(() => console.log("Grid layer up", lines));
-
 </script>
 
 <g class="grid" stroke-width={strokeWidth}>

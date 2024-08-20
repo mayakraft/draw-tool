@@ -24,6 +24,9 @@ export const model = (() => {
 		push(...newElements: Shape[]) { elements.push(...newElements); },
 		pop() { elements.pop(); },
 		clear() { elements = []; },
+		addLine(x1:number, y1:number, x2:number, y2:number) {
+			elements.push({ name: "line", params: { x1, y1, x2, y2 } });
+		},
 	}
 })();
 

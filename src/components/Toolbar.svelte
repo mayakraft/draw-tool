@@ -1,6 +1,6 @@
 <script>
 	import Tools from "../tools/index.ts";
-	import { tool } from "../stores/UI.svelte.ts";
+	import { tool } from "../stores/tool.svelte.ts";
 	// import { executeCommand } from "../kernel/execute.js";
 </script>
 

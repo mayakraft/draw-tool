@@ -1,19 +1,11 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
 	import SVGCanvas from "./SVGCanvas.svelte";
+	import { type ScaledMouseEvent, type ScaledWheelEvent } from "../types.ts";
 	import {
 		convertToViewBox,
 		findInParents,
 	} from "../js/dom.ts";
-
-	type ScaledMouseEvent = MouseEvent & {
-		point: [number, number],
-	};
-
-	type ScaledWheelEvent = WheelEvent & {
-		wheelDelta: number,
-		point: [number, number],
-	};
 
 	interface PropsType {
 		svg?: SVGSVGElement,
@@ -23,7 +15,7 @@
 		onmousemove?: (e: ScaledMouseEvent) => void,
 		onmouseup?: (e: ScaledMouseEvent) => void,
 		onmouseleave?: (e: ScaledMouseEvent) => void,
-		onwheel?: (e: WheelEvent) => void,
+		onwheel?: (e: ScaledWheelEvent) => void,
 		children?: Snippet,
 	};
 
@@ -60,7 +52,7 @@
 	const formatWheelEvent = (e: WheelEvent): ScaledWheelEvent => Object.assign(e, {
 		// wheelDelta: e.wheelDelta,
 		// wheelDelta: e.deltaMode,
-		wheelDelta: e.deltaY,
+		// wheelDelta: e.deltaY,
 		point: convertToViewBox(getSVG(e), [e.x, e.y]),
 	});
 

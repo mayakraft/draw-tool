@@ -12,3 +12,12 @@ export type Tool = {
 	subscribe?: Function;
 	unsubscribe?: Function;
 };
+
+export type ScaledMouseEvent = MouseEvent & {
+	point: [number, number],
+};
+
+export type ScaledWheelEvent = WheelEvent & {
+	// wheelDelta: number,
+	point: [number, number],
+};

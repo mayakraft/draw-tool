@@ -31,7 +31,7 @@ export const verticalUp = (() => {
  * @description The camera matrix is what the user modifies when they
  * pan around and scroll to zoom on the SVG canvas.
  */
-const cameraMatrix = (() => {
+export const cameraMatrix = (() => {
 	let value = $state([...identity2x3]);
 	return {
 		get value() { return value; },
@@ -57,7 +57,7 @@ const cameraMatrix = (() => {
  * around the graph model. This model matrix will always maintain
  * a 1:1 aspect ratio. Used to create the SVG's ViewBox.
  */
-const modelMatrix = (() => {
+export const modelMatrix = (() => {
 	let value = $state([...identity2x3]);
 	return {
 		get value() { return value; },
@@ -121,7 +121,7 @@ const modelViewMatrix = $derived(multiplyMatrices2(modelMatrix.value, viewMatrix
  * a value which is based on the camera, as well as the model size.
  */
 export const viewBox = (() => {
-	const array = $derived.by(() => {
+	const array: [number, number, number, number] = $derived.by(() => {
 		const m = [...modelViewMatrix];
 		// get the translation component
 		const [, , , , x, y] = m;
