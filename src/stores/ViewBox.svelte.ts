@@ -11,12 +11,14 @@ export const verticalUp = (() => {
 	let value = $state(
 		localStorage.getItem("VerticalUp") !== null
 			? localStorage.getItem("VerticalUp") === "true"
-			: true);
+			: false);
 	return {
 		get value() { return value; },
 		set value(newValue) { value = newValue; },
 	};
 })();
+
+console.log("verticalUp", verticalUp.value);
 
 // const VerticalUpOnBoot = localStorage.getItem("VerticalUp") !== null
 // 	? localStorage.getItem("VerticalUp") === "true"

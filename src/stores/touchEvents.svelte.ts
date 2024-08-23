@@ -26,10 +26,42 @@ export const PointerEvent = (eventType: string, event: ScaledMouseEvent) => {
 /**
  * @description SVG canvas scrolling event gets bound to this.
  */
-export const ScrollEvent = ({ point, deltaY, wheelDelta }: ScaledWheelEvent) => {
-	// const scaleOffset = wheelDelta / 666;
-	const scaleOffset = -deltaY / 333;
-	const scale = 1 + scaleOffset;
+// export const ScrollEvent = ({ point, deltaY, wheelDelta }: ScaledWheelEvent) => {
+// 	// const scaleOffset = wheelDelta / 666;
+// 	const scaleOffset = -deltaY / 333;
+// 	const scale = 1 + scaleOffset;
+// 	// the input point is in ModelViewMatrix space,
+// 	// which includes ModelMatrix. But, in the upcoming line we are only
+// 	// applying a change to the CameraMatrix. So, before we modify the
+// 	// CameraMatrix with this point, we need to "remove" the ModelMatrix
+// 	// out of this point (multiply by the inverse of ModelMatrix).
+// 	const matrix = makeMatrix2UniformScale(
+// 		scale,
+// 		getScreenPoint(point, modelMatrix.value),
+// 	);
+// 	cameraMatrix.value = (() => {
+// 		// safety check.
+// 		// if the determininat is too small, return unchanged matrix
+// 		// the reason is because the viewMatrix is built from the
+// 		// inverse of this matrix, a bad det makes an invalid inverse.
+// 		const newMatrix = multiplyMatrices2(cameraMatrix.value, matrix);
+// 		const det = determinant2(newMatrix);
+// 		const tooSmall = Math.abs(det) < 1e-11;
+// 		const tooLarge = Math.abs(det) > 1e11;
+// 		if (tooSmall) {
+// 			return [1e-5, 0, 0, 1e-5, cameraMatrix.value[4], cameraMatrix.value[5]];
+// 		}
+// 		if (tooLarge) {
+// 			return [1e5, 0, 0, 1e5, 0, 0];
+// 		}
+// 		return newMatrix;
+// 	})();
+// };
+
+export const ScrollEvent = ({ point, deltaY }: ScaledWheelEvent) => {
+	const scaleOffset = deltaY / 333;
+	const scale = 1 - scaleOffset;
+
 	// the input point is in ModelViewMatrix space,
 	// which includes ModelMatrix. But, in the upcoming line we are only
 	// applying a change to the CameraMatrix. So, before we modify the
@@ -39,21 +71,22 @@ export const ScrollEvent = ({ point, deltaY, wheelDelta }: ScaledWheelEvent) => 
 		scale,
 		getScreenPoint(point, modelMatrix.value),
 	);
-	cameraMatrix.value = (() => {
-		// safety check.
-		// if the determininat is too small, return unchanged matrix
-		// the reason is because the viewMatrix is built from the
-		// inverse of this matrix, a bad det makes an invalid inverse.
-		const newMatrix = multiplyMatrices2(cameraMatrix.value, matrix);
-		const det = determinant2(newMatrix);
-		const tooSmall = Math.abs(det) < 1e-11;
-		const tooLarge = Math.abs(det) > 1e11;
-		if (tooSmall) {
-			return [1e-5, 0, 0, 1e-5, cameraMatrix.value[4], cameraMatrix.value[5]];
-		}
-		if (tooLarge) {
-			return [1e5, 0, 0, 1e5, 0, 0];
-		}
-		return newMatrix;
-	})();
+
+	// safety check.
+	// if the determininat is too small, return unchanged matrix
+	// the reason is because the viewMatrix is built from the
+	// inverse of this matrix, a bad det makes an invalid inverse.
+	const newMatrix = multiplyMatrices2(cameraMatrix.value, matrix);
+	const det = determinant2(newMatrix);
+	const tooSmall = Math.abs(det) < 1e-11;
+	const tooLarge = Math.abs(det) > 1e11;
+	if (tooSmall) {
+		cameraMatrix.value = [1e-5, 0, 0, 1e-5, cameraMatrix.value[4], cameraMatrix.value[5]];
+	}
+	else if (tooLarge) {
+		cameraMatrix.value = [1e5, 0, 0, 1e5, 0, 0];
+	}
+	else {
+		cameraMatrix.value = newMatrix;
+	}
 };
