@@ -1,6 +1,7 @@
 <script>
 	import Tools from "../tools/index.ts";
 	import { tool } from "../stores/tool.svelte.ts";
+	import { verticalUp } from "../stores/viewBox.svelte.ts";
 	// import { executeCommand } from "../kernel/execute.js";
 </script>
 
@@ -17,6 +18,11 @@
 			</button>
 		{/each}
 	</div>
+
+	<hr />
+
+	<input type="checkbox" id="verticalUp" checked={verticalUp.value}/>
+	<label for="verticalUp">Y up/down</label>
 
 <style>
 	/*label {

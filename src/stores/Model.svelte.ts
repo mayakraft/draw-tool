@@ -27,6 +27,9 @@ export const model = (() => {
 		addLine(x1:number, y1:number, x2:number, y2:number) {
 			elements.push({ name: "line", params: { x1, y1, x2, y2 } });
 		},
+		addCircle(cx:number, cy:number, r:number) {
+			elements.push({ name: "circle", params: { cx, cy, r } });
+		},
 	}
 })();
 

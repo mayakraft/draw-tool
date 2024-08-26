@@ -30,6 +30,10 @@
 </script>
 
 <g class="grid" stroke-width={strokeWidth}>
+	{#each lines as line}
+		<line {...line} />
+	{/each}
+
 	<!-- <rect
 		x={actualViewport[0]}
 		y={actualViewport[1]}
@@ -38,10 +42,6 @@
 		fill="none"
 		stroke="red"
 	/> -->
-
-	{#each lines as line}
-		<line {...line} />
-	{/each}
 </g>
 
 <style>

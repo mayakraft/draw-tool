@@ -10,48 +10,25 @@ const rewrap = (point: [number, number], invert: boolean): [number, number] => (
 	[point[0], point[1] * (invert ? -1 : 1)]
 );
 
-export const press = (() => {
-	let value: [number, number] | undefined = $state();
-	return {
-		get value() { return value; },
-		set value(v) { value = v; },
-	};
-})();
+class TouchManager {
+	press: [number, number] | undefined = $state();
+	release: [number, number] | undefined = $state();
+	move: [number, number] | undefined = $state();
+	drag: [number, number] | undefined = $state();
+};
 
-export const release = (() => {
-	let value: [number, number] | undefined = $state();
-	return {
-		get value() { return value; },
-		set value(v) { value = v; },
-	};
-})();
-
-export const move = (() => {
-	let value: [number, number] | undefined = $state();
-	return {
-		get value() { return value; },
-		set value(v) { value = v; },
-	};
-})();
-
-export const drag = (() => {
-	let value: [number, number] | undefined = $state();
-	return {
-		get value() { return value; },
-		set value(v) { value = v; },
-	};
-})();
+export const touches = new TouchManager();
 
 const dragVector: [number, number] | undefined = $derived(
-	!drag.value || !press.value
+	!touches.drag || !touches.press
 		? [0, 0]
-		: subtract2(drag.value, press.value));
+		: subtract2(touches.drag, touches.press));
 
 export const reset = () => {
-	move.value = undefined;
-	drag.value = undefined;
-	press.value = undefined;
-	release.value = undefined;
+	touches.move = undefined;
+	touches.drag = undefined;
+	touches.press = undefined;
+	touches.release = undefined;
 };
 
 let unsub: Function[] = [];

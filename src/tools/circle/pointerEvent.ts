@@ -1,12 +1,7 @@
 import {
 	touches,
-	// move,
-	// drag,
-	// press,
-	// release,
 	reset,
 } from "./state.svelte.ts";
-
 import { type ScaledMouseEvent, type ScaledWheelEvent} from "../../types.ts";
 
 export const pointerEvent = (eventType: string, { point, buttons }: ScaledMouseEvent) => {
@@ -14,10 +9,10 @@ export const pointerEvent = (eventType: string, { point, buttons }: ScaledMouseE
 	touches.drag = (buttons ? point : undefined);
 	switch (eventType) {
 		case "press":
-			touches.press = point;
+			touches.presses.push(point);
 			break;
 		case "release":
-			touches.release = point;
+			touches.releases.push(point);
 			break;
 		case "exit":
 			reset();

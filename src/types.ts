@@ -1,10 +1,9 @@
-import type { SvelteComponent } from "svelte";
+import { type Component } from "svelte";
 
 export type Tool = {
 	key: string;
 	name: string;
-	icon: any;
-	// icon: SvelteComponent<Record<string, any>, any, any>;
+	icon: Component;
 	panel: any;
 	pointerEvent?: Function;
 	SVGLayer: any;
