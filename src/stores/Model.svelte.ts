@@ -9,7 +9,7 @@ type Shape = {
 
 const shapeToElement = ({ name, params }: Shape) => {
 	switch (name) {
-		case "rect": return ear.svg.rect(params.x, params.y, params.w, params.h);
+		case "rect": return ear.svg.rect(params.x, params.y, params.width, params.height);
 		case "line": return ear.svg.line(params.x1, params.y1, params.x2, params.y2);
 		case "circle": return ear.svg.circle(params.cx, params.cy, params.r);
 		case "path": return ear.svg.path(params.d);
@@ -29,6 +29,12 @@ export const model = (() => {
 		},
 		addCircle(cx:number, cy:number, r:number) {
 			elements.push({ name: "circle", params: { cx, cy, r } });
+		},
+		addRect(x:number, y:number, width:number, height:number) {
+			elements.push({ name: "rect", params: { x, y, width, height } });
+		},
+		addPath({ d }: { d: string }) {
+			elements.push({ name: "path", params: { d } });
 		},
 	}
 })();

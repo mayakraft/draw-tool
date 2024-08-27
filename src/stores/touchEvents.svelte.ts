@@ -12,21 +12,9 @@ import { tool } from "./tool.svelte.ts";
 import { type ScaledMouseEvent, type ScaledWheelEvent } from "../types.ts";
 
 /**
- * @description SVG canvas pointer event (mousedown, mousemove, mouseup)
- * gets bound to this, which runs any app-wide pointer methods, and checks
- * if there is a UI tool with a pointer event, call the tool's pointer event.
- */
-export const PointerEvent = (eventType: string, event: ScaledMouseEvent) => {
-	// Pointer.position = event.point;
-	if (tool && tool.value && tool.value.pointerEvent) {
-		tool.value.pointerEvent(eventType, event);
-	}
-};
-
-/**
  * @description SVG canvas scrolling event gets bound to this.
  */
-export const ScrollEvent = ({ point, deltaY }: ScaledWheelEvent) => {
+export const wheelWindowZoom = ({ point, deltaY }: ScaledWheelEvent) => {
 	const scaleOffset = deltaY / 333;
 	const scale = 1 - scaleOffset;
 
@@ -56,5 +44,26 @@ export const ScrollEvent = ({ point, deltaY }: ScaledWheelEvent) => {
 	}
 	else {
 		cameraMatrix.value = newMatrix;
+	}
+};
+
+export const onmousemove = (event: ScaledMouseEvent) => (
+	tool.value?.onmousemove?.(event));
+
+export const onmousedown = (event: ScaledMouseEvent) => (
+	tool.value?.onmousedown?.(event));
+
+export const onmouseup = (event: ScaledMouseEvent) => (
+	tool.value?.onmouseup?.(event));
+
+export const onmouseleave = (event: ScaledMouseEvent) => (
+	tool.value?.onmouseleave?.(event));
+
+export const onwheel = (event: ScaledWheelEvent) => {
+	if (tool.value && tool.value.onwheel) {
+		tool.value.onwheel(event);
+	}
+	else {
+		wheelWindowZoom(event);
 	}
 };

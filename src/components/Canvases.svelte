@@ -4,7 +4,13 @@
 	import { modelElements } from "../stores/model.svelte.ts";
 	import { viewBox } from "../stores/viewBox.svelte.ts";
 	import { strokeWidth, strokeDashLength } from "../stores/style.svelte.ts";
-	import { PointerEvent, ScrollEvent } from "../stores/touchEvents.svelte.ts";
+	import {
+		onmousemove,
+		onmousedown,
+		onmouseup,
+		onmouseleave,
+		onwheel,
+	} from "../stores/touchEvents.svelte.ts";
 	import { tool } from "../stores/tool.svelte.ts";
 
 	let shapeLayer: SVGGElement;
@@ -19,11 +25,11 @@
 
 <!-- <SvgCanvas -->
 <SVGTouchCanvas
-	onmousemove={(e) => PointerEvent("move", e)}
-	onmousedown={(e) => PointerEvent("press", e)}
-	onmouseup={(e) => PointerEvent("release", e)}
-	onmouseleave={(e) => PointerEvent("exit", e)}
-	onwheel={(e) => ScrollEvent(e)}
+	{onmousemove}
+	{onmousedown}
+	{onmouseup}
+	{onmouseleave}
+	{onwheel}
 	viewBox={viewBox.string}
 	fill="none"
 	stroke="white"
