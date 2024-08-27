@@ -28,7 +28,7 @@ class TouchManager {
 	snapDrag = $derived(snapPoint(this.drag));
 
 	clear() {
-		console.log("clear()");
+		// console.log("clear()");
 		this.move = undefined;
 		this.drag = undefined;
 		// this.presses = [];
@@ -47,6 +47,7 @@ class TouchManager {
 
 // export const touches: TouchManager; // = new TouchManager();
 export const touches = new TouchManager();
+console.log("circle, new TouchManager()");
 
 const makeCircle = (p0: [number, number], p1: [number, number]): { cx: number, cy: number, r: number } => {
 	const [cx, cy] = p0;
@@ -77,23 +78,24 @@ export const SVGShapes = ((touches: TouchManager) => {
 export let svgShapes: { circle: { cx: number, cy: number, r: number } | undefined } | undefined;
 
 export const reset = () => {
-	console.log("circle reset");
+	// console.log("circle reset");
 	touches.clear();
 };
 
 let unsub: Function[] = [];
 
 export const subscribe = () => {
-	console.log("subscribe to circle");
+	// console.log("subscribe to circle");
 	unsub = [
 		$effect.root(() => {
-			console.log("circle effect.root initialize");
+			// console.log("circle effect.root initialize");
 			svgShapes = SVGShapes(touches);
+			console.log("circle, SVGShapes()");
 			// touches = new TouchManager();
 
 			$effect(() => {
 				$inspect(svgShapes?.circle);
-				console.log("circle (press, release)", touches.presses.length, touches.releases.length);
+				// console.log("circle (press, release)", touches.presses.length, touches.releases.length);
 				if (touches.presses.length && touches.releases.length) {
 					// const circle = makeCircle(touches.presses[0], touches.releases[0]);
 					const circle = makeCircle(
@@ -106,14 +108,15 @@ export const subscribe = () => {
 			});
 			return () => {
 				svgShapes = undefined;
-				console.log("circle effect.root cleanup");
+				console.log("circle, SVGShapes = undefined");
+				// console.log("circle effect.root cleanup");
 			};
 		}),
 	];
 };
 
 export const unsubscribe = () => {
-	console.log("unsubscribe from circle");
+	// console.log("unsubscribe from circle");
 	unsub.forEach((u) => u());
 	unsub = [];
 	reset();

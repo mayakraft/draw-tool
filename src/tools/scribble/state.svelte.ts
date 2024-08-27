@@ -45,7 +45,7 @@ class ToolState {
 	})
 
 	clear() {
-		console.log("clear()");
+		// console.log("clear()");
 		this.move = undefined;
 		// this.presses = [];
 		// this.releases = [];
@@ -65,6 +65,7 @@ class ToolState {
 };
 
 export const state = new ToolState();
+console.log("scribble, new ToolState()");
 
 // class SVGShapes {
 // 	box: Box | undefined = $derived((
@@ -77,14 +78,14 @@ export const state = new ToolState();
 // export let svgShapes; // : SVGShapes | undefined;
 
 export const reset = () => {
-	console.log("circle reset");
+	// console.log("scribble reset");
 	state.clear();
 };
 
 let unsub: Function[] = [];
 
 export const subscribe = () => {
-	console.log("subscribe to circle");
+	// console.log("subscribe to scribble");
 	unsub = [
 		// $effect.root(() => {
 		// 	console.log("circle effect.root initialize");
@@ -101,7 +102,7 @@ export const subscribe = () => {
 };
 
 export const unsubscribe = () => {
-	console.log("unsubscribe from circle");
+	// console.log("unsubscribe from circle");
 	unsub.forEach((u) => u());
 	unsub = [];
 	reset();

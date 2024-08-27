@@ -34,7 +34,7 @@ export const reset = () => {
 let unsub: Function[] = [];
 
 export const subscribe = () => {
-	console.log("subscribe to zoom");
+	// console.log("subscribe to zoom");
 	unsub = [
 		$effect.root(() => {
 			$effect(() => {
@@ -51,7 +51,7 @@ export const subscribe = () => {
 };
 
 export const unsubscribe = () => {
-	console.log("unsubscribe to zoom");
+	// console.log("unsubscribe to zoom");
 	unsub.forEach((u) => u());
 	unsub = [];
 	reset();

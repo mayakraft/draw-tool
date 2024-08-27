@@ -53,7 +53,7 @@ const doSelection = $derived.by(() => {
 			$state.snapshot(presses.value[0]),
 			$state.snapshot(releases.value[0]),
 		];
-		console.log("make selection", ...points);
+		// console.log("make selection", ...points);
 		reset();
 	}
 });

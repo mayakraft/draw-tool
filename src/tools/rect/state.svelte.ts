@@ -1,12 +1,11 @@
 import { boundingBox } from "rabbit-ear/math/polygon.js";
-import { type Box } from "rabbit-ear/types.js";
-import { snapToPoint } from "../../js/snap.js";
 import { model } from "../../stores/model.svelte.ts";
-import {
-	SnapPoints,
-	SnapRadius,
-	GridSnapFunction,
-} from "../../stores/snap.svelte.js";
+// import { snapToPoint } from "../../js/snap.js";
+// import {
+// 	SnapPoints,
+// 	SnapRadius,
+// 	GridSnapFunction,
+// } from "../../stores/snap.svelte.js";
 
 type Rect = {
 	x: number,
@@ -26,9 +25,9 @@ const makeRect = (p0: [number, number], p1: [number, number]): Rect | undefined 
 // - core level, like snapToPoint.
 // - app level, like this wrapper snapPoint, where it hard codes app parameters
 // like SnapRadius, GridSnapfunction etc..
-const snapPoint = (p: [number, number] | undefined) => (
-	snapToPoint(p, SnapPoints, SnapRadius, GridSnapFunction.value)
-);
+// const snapPoint = (p: [number, number] | undefined) => (
+// 	snapToPoint(p, SnapPoints, SnapRadius, GridSnapFunction.value)
+// );
 
 class TouchManager {
 	presses: [number, number][] = $state([]);
@@ -36,44 +35,17 @@ class TouchManager {
 	move: [number, number] | undefined = $state();
 	drag: [number, number] | undefined = $state();
 
-	// the above, but snapped to grid
-	snapPresses = $derived(this.presses.map(snapPoint).map(el => el.coords));
-	snapReleases = $derived(this.releases.map(snapPoint).map(el => el.coords));
-	snapMove = $derived(snapPoint(this.move));
-	snapDrag = $derived(snapPoint(this.drag));
-
 	clear() {
-		console.log("clear()");
 		this.move = undefined;
 		this.drag = undefined;
-		// this.presses = [];
-		// this.releases = [];
-		while (this.presses.length) { this.presses.pop(); }
-		while (this.releases.length) { this.releases.pop(); }
+		this.presses = [];
+		this.releases = [];
+		// while (this.presses.length) { this.presses.pop(); }
+		// while (this.releases.length) { this.releases.pop(); }
 	}
 };
 
-// class ToolState {
-// 	touches: TouchManager;
-// 	constructor() {
-// 		this.touches = new TouchManager();
-// 	}
-// }
-
-// export const touches: TouchManager; // = new TouchManager();
-export const touches = new TouchManager();
-
-// class SVGShapes {
-// 	box: Box | undefined = $derived((
-// 		!touches.presses.length || !touches.drag
-// 			? undefined
-// 			: boundingBox([touches.presses[touches.presses.length - 1], touches.drag])));
-// };
-
-// export const svgShapes = new SVGShapes();
-// export let svgShapes; // : SVGShapes | undefined;
-
-export const SVGShapes = ((touches: TouchManager) => {
+const SVGShapes = ((touches: TouchManager) => {
 	const rect: Rect | undefined = $derived((
 		!touches.presses.length || !touches.drag
 			? undefined
@@ -82,49 +54,115 @@ export const SVGShapes = ((touches: TouchManager) => {
 		get rect() { return rect; },
 	};
 });
-export let svgShapes: { rect: Rect | undefined } | undefined;
+
+const state: { touches: TouchManager | undefined, svgShapes: any } = {
+	touches: undefined,
+	svgShapes: undefined,
+};
 
 export const reset = () => {
-	console.log("circle reset");
-	touches.clear();
+	state.touches?.clear();
 };
+
+const MakeRect = ((touches: TouchManager) => ($effect.root(() => {
+	$effect(() => {
+		// console.log("rect (press, release)", touches.presses.length, touches.releases.length);
+		if (!touches.presses.length || !touches.releases.length) { return; }
+		const rect = makeRect(
+			touches.presses[touches.presses.length - 1],
+			touches.releases[touches.releases.length - 1],
+		);
+		if (rect) {
+			model.addRect(rect.x, rect.y, rect.width, rect.height);
+		}
+		setTimeout(reset, 0);
+	});
+	return () => { };
+})));
 
 let unsub: Function[] = [];
 
-export const subscribe = () => {
-	console.log("subscribe to circle");
-	unsub = [
-		$effect.root(() => {
-			console.log("circle effect.root initialize");
-			svgShapes = SVGShapes(touches);
-			// touches = new TouchManager();
+const deinit = () => {
+	state.touches = undefined;
+	state.svgShapes = undefined;
+	console.log("rect, state.touches = undefined");
+	console.log("rect, state.svgShapes = undefined");
+};
 
-			$effect(() => {
-				$inspect(svgShapes?.rect);
-				console.log("circle (press, release)", touches.presses.length, touches.releases.length);
-				if (touches.presses.length && touches.releases.length) {
-					// const circle = makeCircle(touches.presses[0], touches.releases[0]);
-					const rect = makeRect(
-						touches.presses[touches.presses.length - 1],
-						touches.releases[touches.releases.length - 1],
-					);
-					if (rect) {
-						model.addRect(rect.x, rect.y, rect.width, rect.height);
-					}
-					reset();
-				}
-			});
-			return () => {
-				svgShapes = undefined;
-				console.log("circle effect.root cleanup");
-			};
-		}),
-	];
+export const subscribe = () => {
+	state.touches = new TouchManager();
+	state.svgShapes = SVGShapes(state.touches);
+	console.log("rect, new TouchManager()");
+	console.log("rect, SVGShapes()");
+	unsub = [MakeRect(state.touches), deinit];
 };
 
 export const unsubscribe = () => {
-	console.log("unsubscribe from circle");
+	// console.log("unsubscribe from rect");
 	unsub.forEach((u) => u());
 	unsub = [];
 	reset();
 };
+
+export default state;
+
+// class ToolState {
+// 	touches: TouchManager | undefined;
+// 	// svgShapes: { rect: Rect | undefined } | undefined;
+// 	svgShapes: { rect: Rect | undefined } | undefined = { rect: undefined };
+// 	unsub: Function[] = [];
+
+// 	constructor() {}
+
+// 	subscribe() {
+// 		this.unsub = [
+// 			$effect.root(() => {
+// 				this.touches = new TouchManager();
+// 				console.log("rect, new TouchManager()");
+// 				this.svgShapes = SVGShapes(this.touches);
+// 				console.log("rect, SVGShapes()");
+
+// 				$effect(() => {
+// 					if (!this.touches) {
+// 						console.log("BAD BAD");
+// 						return;
+// 					}
+// 					console.log("rect (press, release)", this.touches.presses.length, this.touches.releases.length);
+// 					// $inspect(svgShapes?.rect);
+// 					if (this.touches.presses.length && this.touches.releases.length) {
+// 						// const rect = makeCircle(this.touches.presses[0], this.touches.releases[0]);
+// 						const rect = makeRect(
+// 							this.touches.presses[this.touches.presses.length - 1],
+// 							this.touches.releases[this.touches.releases.length - 1],
+// 						);
+// 						if (rect) {
+// 							model.addRect(rect.x, rect.y, rect.width, rect.height);
+// 						}
+
+// 						this.reset();
+// 					}
+// 				});
+// 				return () => {
+// 					this.touches = undefined;
+// 					console.log("rect, this.touches = undefined");
+// 					this.svgShapes = undefined;
+// 					console.log("rect, this.svgShapes = undefined");
+// 					// this.svgShapes.rect = undefined;
+// 				};
+// 			}),
+// 		];
+// 	}
+
+// 	unsubscribe() {
+// 		// console.log("unsubscribe from rect");
+// 		this.unsub.forEach((u) => u());
+// 		this.unsub = [];
+// 		this.reset();
+// 	}
+
+// 	reset() {
+// 		this.touches?.clear();
+// 	};
+// };
+
+// export default new ToolState();
