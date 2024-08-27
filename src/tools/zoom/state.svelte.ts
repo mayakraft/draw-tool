@@ -15,44 +15,63 @@ class TouchManager {
 	release: [number, number] | undefined = $state();
 	move: [number, number] | undefined = $state();
 	drag: [number, number] | undefined = $state();
+	dragVector: [number, number] = $derived(!this.drag || !this.press
+		? [0, 0]
+		: subtract2(this.drag, this.press));
 };
 
-export const touches = new TouchManager();
+const state: {
+	touches: TouchManager | undefined,
+	subscribe: Function,
+	unsubscribe: Function,
+	reset: Function,
+} = {};
 
-const dragVector: [number, number] | undefined = $derived(
-	!touches.drag || !touches.press
-		? [0, 0]
-		: subtract2(touches.drag, touches.press));
+// export const touches = new TouchManager();
 
-export const reset = () => {
-	touches.move = undefined;
-	touches.drag = undefined;
-	touches.press = undefined;
-	touches.release = undefined;
+// const dragVector: [number, number] | undefined = $derived(
+// 	!state.touches.drag || !state.touches.press
+// 		? [0, 0]
+// 		: subtract2(state.touches.drag, state.touches.press));
+
+state.reset = () => {
+	if (!state.touches) { return; }
+	state.touches.move = undefined;
+	state.touches.drag = undefined;
+	state.touches.press = undefined;
+	state.touches.release = undefined;
 };
 
 let unsub: Function[] = [];
 
-export const subscribe = () => {
-	// console.log("subscribe to zoom");
+const deinit = () => {
+	state.touches = undefined;
+}
+
+state.subscribe = () => {
+	state.touches = new TouchManager();
+
+	console.log("subscribe to zoom");
 	unsub = [
+		deinit,
 		$effect.root(() => {
 			$effect(() => {
+				if (!state.touches) { return; }
 				cameraMatrix.value = multiplyMatrices2(
 					cameraMatrix.value,
-					makeMatrix2Translate(...rewrap(dragVector, verticalUp.value)),
+					makeMatrix2Translate(...rewrap(state.touches.dragVector, verticalUp.value)),
 				);
 			});
-			// return () => {
-			// 	console.log('zoom $effect cleanup');
-			// };
+			return () => {};
 		}),
 	];
 };
 
-export const unsubscribe = () => {
-	// console.log("unsubscribe to zoom");
+state.unsubscribe = () => {
+	console.log("unsubscribe to zoom");
 	unsub.forEach((u) => u());
 	unsub = [];
-	reset();
+	state.reset();
 };
+
+export default state;
