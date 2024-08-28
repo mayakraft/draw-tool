@@ -26,3 +26,9 @@ export type ScaledWheelEvent = WheelEvent & {
 	// wheelDelta: number,
 	point: [number, number],
 };
+
+export interface StateManagerType {
+	subscribe(): void;
+	unsubscribe(): void;
+	reset(): void;
+};

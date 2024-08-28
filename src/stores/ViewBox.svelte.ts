@@ -133,9 +133,22 @@ export const viewBox = (() => {
 		const [w, h] = multiplyMatrix2Vector2(m, [1, 1]);
 		return [x, y, w, h];
 	});
+
 	const string = $derived(array.join(" "));
+
+	const polygon: [number, number][] = $derived.by(() => {
+		const [x, y, w, h] = array;
+		return [
+			[x - w * 10, y - h * 10],
+			[x + w * 11, y - h * 10],
+			[x + w * 11, y + h * 11],
+			[x - w * 10, y + h * 11],
+		];
+	});
+
 	return {
 		get array() { return array; },
-		get string() { return string; }
+		get string() { return string; },
+		get polygon() { return polygon; },
 	};
 })();

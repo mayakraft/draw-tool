@@ -1,84 +1,81 @@
-import { toStore } from "svelte/store";
 import { boundingBox } from "rabbit-ear/math/polygon.js";
 import { type Box } from "rabbit-ear/types.js";
 
-export const presses = (() => {
-	let value: [number, number][] = $state([]);
-	return {
-		get value() { return value; },
-		set value(v) { value = v; },
-		clear() { while (value.length) { value.pop(); }},
-	};
-})();
+class TouchManager {
+	press: [number, number] | undefined = $state();
+	release: [number, number] | undefined = $state();
+	move: [number, number] | undefined = $state();
+	drag: [number, number] | undefined = $state();
 
-export const releases = (() => {
-	let value: [number, number][] = $state([]);
-	return {
-		get value() { return value; },
-		set value(v) { value = v; },
-		clear() { while (value.length) { value.pop(); }},
-	};
-})();
-
-export const move = (() => {
-	let value: [number, number] | undefined = $state();
-	return {
-		get value() { return value; },
-		set value(v) { value = v; },
-	};
-})();
-
-export const drag = (() => {
-	let value: [number, number] | undefined = $state();
-	return {
-		get value() { return value; },
-		set value(v) { value = v; },
-	};
-})();
-
-export const selectionRect = (() => {
-	const value: Box | undefined = $derived.by(() => {
-		if (!presses.value.length || !drag.value) { return undefined; }
-		const points = [...$state.snapshot(presses.value), $state.snapshot(drag.value)];
-		return boundingBox(points);
-	});
-	return {
-		get value() { return value; },
-	};
-})();
-
-const doSelection = $derived.by(() => {
-	if (presses.value.length && releases.value.length) {
-		const points = [
-			$state.snapshot(presses.value[0]),
-			$state.snapshot(releases.value[0]),
-		];
-		// console.log("make selection", ...points);
-		reset();
+	reset() {
+		this.move = undefined;
+		this.drag = undefined;
+		this.press = undefined;
+		this.release = undefined;
 	}
-});
-
-const doSelectionStore = toStore(() => doSelection);
-
-export const reset = () => {
-	move.value = undefined;
-	drag.value = undefined;
-	presses.clear();
-	releases.clear();
 };
 
-let unsub: Function[] = [];
+class ToolState {
+	touches: TouchManager | undefined;
+	shapes: { rect: Box | undefined } | undefined;
+	unsub: Function[] = [];
 
-export const subscribe = () => {
-	// console.log("subscribe");
-	unsub = [
-		doSelectionStore.subscribe(() => {}),
-	];
+	subscribe() {
+		this.touches = new TouchManager();
+		this.shapes = (() => {
+			const box: Box | undefined = $derived.by(() => {
+				if (!this.touches) { return undefined; }
+				if (!this.touches.press || !this.touches.drag) { return undefined; }
+				const points = [
+					$state.snapshot(this.touches.press),
+					$state.snapshot(this.touches.drag),
+				];
+				return boundingBox(points);
+			});
+			const rect: any = $derived(box && box.span
+				? {
+					x: box.min[0],
+					y: box.min[1],
+					width: box.span[0],
+					height: box.span[1],
+				} : undefined);
+			return {
+				get box() { return box; },
+				get rect() { return rect; },
+			};
+		})();
+
+		this.unsub = [this.doSelection()];
+	}
+
+	unsubscribe() {
+		this.unsub.forEach((u) => u());
+		this.unsub = [];
+		this.touches = undefined;
+		this.shapes = undefined;
+		this.reset();
+	}
+
+	reset() {
+		this.touches?.reset();
+	}
+
+	doSelection() {
+		return $effect.root(() => {
+			$effect(() => {
+				if (!this.touches) { return; }
+				if (this.touches.press && this.touches.release) {
+					const points = [
+						$state.snapshot(this.touches.press),
+						$state.snapshot(this.touches.release),
+					];
+					console.log("make selection", ...points);
+					this.reset();
+				}
+			});
+			return () => { };
+		});
+	}
 };
 
-export const unsubscribe = () => {
-	// console.log("unsubscribe");
-	unsub.forEach((u) => u());
-	unsub = [];
-	reset();
-};
+export default (new ToolState());

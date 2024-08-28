@@ -1,45 +1,11 @@
-import { boundingBox } from "rabbit-ear/math/polygon.js";
-import { snapToPoint } from "../../js/snap.js";
+import type { VecLine2 } from "rabbit-ear/types.js";
+import { pointsToLine2 } from "rabbit-ear/math/convert.js";
+import type { StateManagerType } from "../../types.ts";
+import { snapToLine } from "../../js/snap.ts";
+import { snapPoint } from "../../math/snap.svelte.ts";
 import { model } from "../../stores/model.svelte.ts";
-import {
-	SnapPoints,
-	SnapRadius,
-	GridSnapFunction,
-} from "../../stores/snap.svelte.js";
 
-type Rect = {
-	x: number,
-	y: number,
-	width: number,
-	height: number,
-};
-
-const makeRect = (p0: [number, number], p1: [number, number]): Rect | undefined => {
-	const box = boundingBox([p0, p1]);
-	if (!box || !box.span) { return undefined; }
-	const { span, min } = box;
-	return { x: min[0], y: min[1], width: span[0], height: span[1] };
-};
-
-// there should be two levels of functions:
-// - core level, like snapToPoint.
-// - app level, like this wrapper snapPoint, where it hard codes app parameters
-// like SnapRadius, GridSnapfunction etc..
-const snapPoint = (p: [number, number] | undefined) => (
-	snapToPoint(p, SnapPoints, SnapRadius, GridSnapFunction.value)
-);
-
-const SVGShapes = ((touches: TouchManager) => {
-	const rect: Rect | undefined = $derived((
-		!touches.presses.length || !touches.drag
-			? undefined
-			: makeRect(touches.presses[touches.presses.length - 1], touches.drag)));
-	return {
-		get rect() { return rect; },
-	};
-});
-
-class TouchManager {
+class ToolState {
 	presses: [number, number][] = $state([]);
 	releases: [number, number][] = $state([]);
 	move: [number, number] | undefined = $state();
@@ -51,73 +17,73 @@ class TouchManager {
 	snapMove = $derived(snapPoint(this.move));
 	snapDrag = $derived(snapPoint(this.drag));
 
-	clear() {
+	line: VecLine2 | undefined = $derived.by(() => {
+		if (this.presses.length && this.releases.length) {
+			return pointsToLine2(this.presses[0], this.releases[0]);
+		}
+		if (this.presses.length && this.drag) {
+			return pointsToLine2(this.presses[0], this.drag);
+		}
+		return undefined;
+	});
+
+	segment: [number, number][] | undefined = $derived.by(() => {
+		if (!this.line) { return undefined; }
+		const snapLines = [{ line: this.line, clamp: (a) => a, domain: () => true }];
+		const point1Snap = this.presses.length >= 2
+			? snapToLine(this.presses[1], snapLines)
+			: snapToLine(this.move, snapLines);
+		const point2Snap = this.releases.length >= 2
+			? snapToLine(this.releases[1], snapLines)
+			: snapToLine(this.drag, snapLines);
+		const point1 = point1Snap.coords;
+		const point2 = point2Snap.coords;
+		return point1 && point2 ? [point1, point2] : undefined;
+	});
+
+	reset() {
 		this.move = undefined;
 		this.drag = undefined;
-		// this.presses = [];
-		// this.releases = [];
-		while (this.presses.length) { this.presses.pop(); }
-		while (this.releases.length) { this.releases.pop(); }
+		this.presses = [];
+		this.releases = [];
 	}
-};
 
-class ToolState {
-	touches: TouchManager | undefined;
-	svgShapes: { rect: Rect | undefined } | undefined;
+	makeLine() {
+		return $effect.root(() => {
+			$effect(() => {
+				if (this.presses.length >= 2 && this.releases.length >= 2 && this.segment) {
+					const [[x1, y1], [x2, y2]] = this.segment;
+					model.addLine(x1, y1, x2, y2);
+					this.reset();
+				}
+			});
+			return () => {};
+		});
+	};
+}
+
+class StateManager implements StateManagerType {
+	tool: ToolState | undefined;
 	unsub: Function[] = [];
 
 	constructor() {}
 
 	subscribe() {
-		this.touches = new TouchManager();
-		console.log("line, new TouchManager()");
-		this.svgShapes = SVGShapes(this.touches);
-		console.log("line, SVGShapes()");
-
-		// console.log("subscribe to rect");
-		this.unsub = [
-			$effect.root(() => {
-				$effect(() => {
-					if (!this.touches) {
-						console.log("BAD BAD");
-						return;
-					}
-					// $inspect(svgShapes?.rect);
-					// console.log("rect (press, release)", touches.presses.length, touches.releases.length);
-					if (this.touches.presses.length && this.touches.releases.length) {
-						// const rect = makeCircle(this.touches.presses[0], this.touches.releases[0]);
-						const rect = makeRect(
-							this.touches.presses[this.touches.presses.length - 1],
-							this.touches.releases[this.touches.releases.length - 1],
-						);
-						if (rect) {
-							model.addRect(rect.x, rect.y, rect.width, rect.height);
-						}
-						this.reset();
-					}
-				});
-				return () => {
-					this.touches = undefined;
-					console.log("line, this.touches = undefined");
-					this.svgShapes = undefined;
-					console.log("line, this.svgShapes = undefined");
-					// console.log("rect effect.root cleanup");
-				};
-			}),
-		];
+		this.tool = new ToolState();
+		console.log("line, subscribe");
+		this.unsub.push(this.tool.makeLine());
 	}
 
 	unsubscribe() {
-		// console.log("unsubscribe from rect");
+		console.log("line, unsubscribe");
 		this.unsub.forEach((u) => u());
 		this.unsub = [];
 		this.reset();
 	}
 
 	reset() {
-		// console.log("rect reset");
-		this.touches?.clear();
+		this.tool?.reset();
 	};
 };
 
-export default (new ToolState());
+export default (new StateManager());

@@ -1,3 +1,4 @@
+import type { VecLine2 } from "rabbit-ear/types.js";
 import { distance2, subtract2 } from "rabbit-ear/math/vector.js";
 import { clampSegment } from "rabbit-ear/math/line.js";
 import { nearestPointOnLine } from "rabbit-ear/math/nearest.js";
@@ -46,17 +47,17 @@ export const squareGridSnapFunction = (point, snapRadius): [number, number] | un
  * @description Snap a point to either one point from a list of points
  * or to a grid-line point if either is within the range specified
  * by a snap radius.
- * @param {number[]} point the point we want to snap
+ * @param {[number, number]} point the point we want to snap
  * @param {number[][]} points a list of snap points to test against
  * @param {number} snapRadius the epsilon range, any points outside
  * this will be ignored.
  * @returns {object} object with coords {number[]} and snap {boolean}
  */
 export const snapToPoint = (
-	point,
-	points,
-	snapRadius,
-	gridSnapFunction = squareGridSnapFunction,
+	point: [number, number],
+	points: [number, number][],
+	snapRadius: number,
+	gridSnapFunction: Function = squareGridSnapFunction,
 ): SnapResult => {
 	// console.log("snapToPoint", point, points, snapRadius);
 	if (!point) {
@@ -90,12 +91,20 @@ export const snapToPoint = (
 };
 
 /**
- * @param {number[]} point
- * @param {number[][]} points
- * @param { line: VecLine, clamp: function, domain: function } rulers
+ * @param {[number, number]} point
+ * @param {[number, number][]} points
+ * @param {{ line: VecLine2, clamp: Function, domain: Function }[]} rulers
  * @param {number} snapRadius
  */
-export const snapToRulerLine = (point, points, rulers, snapRadius): SnapResult => {
+export const snapToLine = (
+	point: [number, number],
+	rulers: { line: VecLine2, clamp: Function, domain: Function }[],
+	points: [number, number][] = [],
+	snapRadius: number = 0): SnapResult => {
+	// for a line:
+	// clamp: a => a,
+	// domain: () => true,
+
 	// console.log("snapToRulerLine", point, points, rulers, snapRadius);
 	if (!point) {
 		return { coords: undefined, snap: false };
