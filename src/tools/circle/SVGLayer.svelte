@@ -1,10 +1,9 @@
 <script>
-	import { svgShapes } from "./state.svelte.ts";
-	// $inspect(svgShapes.circle);
+	import state from "./state.svelte.ts";
 </script>
 
-{#if svgShapes && svgShapes.circle}
-	<circle class="animated-dashed-line" {...svgShapes.circle} />
+{#if state && state.tool && state.tool.circle}
+	<circle class="animated-dashed-line" {...state.tool.circle} />
 {/if}
 
 <style>

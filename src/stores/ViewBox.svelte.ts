@@ -24,7 +24,7 @@ export const verticalUp = (() => {
 	};
 })();
 
-console.log("verticalUp", verticalUp.value);
+// console.log("verticalUp", verticalUp.value);
 
 // const VerticalUpOnBoot = localStorage.getItem("VerticalUp") !== null
 // 	? localStorage.getItem("VerticalUp") === "true"

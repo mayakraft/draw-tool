@@ -2,8 +2,8 @@
 	import state from "./state.svelte.ts";
 </script>
 
-{#if state.shapes && state.shapes.rect}
-	<rect class="animated-dashed-line" {...state.shapes.rect} />
+{#if state.tool && state.tool.rect}
+	<rect class="animated-dashed-line" {...state.tool.rect} />
 {/if}
 
 <style>

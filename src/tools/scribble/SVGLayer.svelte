@@ -1,9 +1,9 @@
 <script>
-	import { state } from "./state.svelte.ts";
+	import state from "./state.svelte.ts";
 </script>
 
-{#if state.pathD}
-	<path class="animated-dashed-line" d={state.pathD} />
+{#if state.tool?.pathD}
+	<path class="animated-dashed-line" d={state.tool?.pathD} />
 {/if}
 
 <style>

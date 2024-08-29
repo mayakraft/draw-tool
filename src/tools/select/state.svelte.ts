@@ -1,11 +1,29 @@
 import { boundingBox } from "rabbit-ear/math/polygon.js";
 import { type Box } from "rabbit-ear/types.js";
+import type { StateManagerType } from "../../types.ts";
 
-class TouchManager {
+class ToolState {
 	press: [number, number] | undefined = $state();
 	release: [number, number] | undefined = $state();
 	move: [number, number] | undefined = $state();
 	drag: [number, number] | undefined = $state();
+
+	box: Box | undefined = $derived.by(() => {
+		if (!this.press || !this.drag) { return undefined; }
+		const points = [
+			$state.snapshot(this.press),
+			$state.snapshot(this.drag),
+		];
+		return boundingBox(points);
+	});
+
+	rect: any = $derived(this.box && this.box.span
+		? {
+			x: this.box.min[0],
+			y: this.box.min[1],
+			width: this.box.span[0],
+			height: this.box.span[1],
+		} : undefined);
 
 	reset() {
 		this.move = undefined;
@@ -13,69 +31,46 @@ class TouchManager {
 		this.press = undefined;
 		this.release = undefined;
 	}
-};
-
-class ToolState {
-	touches: TouchManager | undefined;
-	shapes: { rect: Box | undefined } | undefined;
-	unsub: Function[] = [];
-
-	subscribe() {
-		this.touches = new TouchManager();
-		this.shapes = (() => {
-			const box: Box | undefined = $derived.by(() => {
-				if (!this.touches) { return undefined; }
-				if (!this.touches.press || !this.touches.drag) { return undefined; }
-				const points = [
-					$state.snapshot(this.touches.press),
-					$state.snapshot(this.touches.drag),
-				];
-				return boundingBox(points);
-			});
-			const rect: any = $derived(box && box.span
-				? {
-					x: box.min[0],
-					y: box.min[1],
-					width: box.span[0],
-					height: box.span[1],
-				} : undefined);
-			return {
-				get box() { return box; },
-				get rect() { return rect; },
-			};
-		})();
-
-		this.unsub = [this.doSelection()];
-	}
-
-	unsubscribe() {
-		this.unsub.forEach((u) => u());
-		this.unsub = [];
-		this.touches = undefined;
-		this.shapes = undefined;
-		this.reset();
-	}
-
-	reset() {
-		this.touches?.reset();
-	}
 
 	doSelection() {
 		return $effect.root(() => {
 			$effect(() => {
-				if (!this.touches) { return; }
-				if (this.touches.press && this.touches.release) {
-					const points = [
-						$state.snapshot(this.touches.press),
-						$state.snapshot(this.touches.release),
-					];
-					console.log("make selection", ...points);
-					this.reset();
-				}
+				if (!this.press || !this.release) { return; }
+				const points = [
+					$state.snapshot(this.press),
+					$state.snapshot(this.release),
+				];
+				console.log("make selection", ...points);
+				this.reset();
 			});
 			return () => { };
 		});
 	}
 };
 
-export default (new ToolState());
+class StateManager implements StateManagerType {
+	tool: ToolState | undefined;
+	unsub: Function[] = [];
+
+	constructor() {}
+
+	subscribe() {
+		console.log("select, subscribe");
+		this.tool = new ToolState();
+		this.unsub.push(this.tool.doSelection());
+	}
+
+	unsubscribe() {
+		console.log("select, unsubscribe");
+		this.unsub.forEach((u) => u());
+		this.unsub = [];
+		this.reset();
+		this.tool = undefined;
+	}
+
+	reset() {
+		this.tool?.reset();
+	};
+};
+
+export default (new StateManager());

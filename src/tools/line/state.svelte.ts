@@ -6,16 +6,16 @@ import { snapPoint } from "../../math/snap.svelte.ts";
 import { model } from "../../stores/model.svelte.ts";
 
 class ToolState {
-	presses: [number, number][] = $state([]);
-	releases: [number, number][] = $state([]);
 	move: [number, number] | undefined = $state();
 	drag: [number, number] | undefined = $state();
+	presses: [number, number][] = $state([]);
+	releases: [number, number][] = $state([]);
 
 	// the above, but snapped to grid
-	snapPresses = $derived(this.presses.map(snapPoint).map(el => el.coords));
-	snapReleases = $derived(this.releases.map(snapPoint).map(el => el.coords));
 	snapMove = $derived(snapPoint(this.move));
 	snapDrag = $derived(snapPoint(this.drag));
+	snapPresses = $derived(this.presses.map(snapPoint).map(el => el.coords));
+	snapReleases = $derived(this.releases.map(snapPoint).map(el => el.coords));
 
 	line: VecLine2 | undefined = $derived.by(() => {
 		if (this.presses.length && this.releases.length) {
@@ -51,8 +51,10 @@ class ToolState {
 	reset() {
 		this.move = undefined;
 		this.drag = undefined;
-		this.presses = [];
-		this.releases = [];
+		// this.presses = [];
+		// this.releases = [];
+		while (this.presses.length) { this.presses.pop(); }
+		while (this.releases.length) { this.releases.pop(); }
 	}
 
 	makeLine() {
@@ -76,8 +78,8 @@ class StateManager implements StateManagerType {
 	constructor() {}
 
 	subscribe() {
-		this.tool = new ToolState();
 		console.log("line, subscribe");
+		this.tool = new ToolState();
 		this.unsub.push(this.tool.makeLine());
 	}
 
@@ -86,6 +88,7 @@ class StateManager implements StateManagerType {
 		this.unsub.forEach((u) => u());
 		this.unsub = [];
 		this.reset();
+		this.tool = undefined;
 	}
 
 	reset() {

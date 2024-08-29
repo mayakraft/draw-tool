@@ -2,8 +2,8 @@
 	import state from "./state.svelte.ts";
 </script>
 
-{#if state && state.svgShapes && state.svgShapes.rect}
-	<rect {...state.svgShapes.rect} />
+{#if state && state.tool && state.tool.rect}
+	<rect {...state.tool.rect} />
 {/if}
 
 <style>

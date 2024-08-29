@@ -8,9 +8,7 @@ export default <Tool>{
 	key: "line",
 	name: "line",
 	icon,
-	reset: () => state?.reset(),
-	subscribe: () => state?.subscribe(),
-	unsubscribe: () => state?.unsubscribe(),
+	state,
 	SVGLayer,
 	panel: undefined,
 	// pointer

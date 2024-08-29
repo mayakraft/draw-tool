@@ -1,99 +1,67 @@
-import { toStore } from "svelte/store";
+import type { StateManagerType } from "../../types.ts";
 import { snapPoint } from "../../math/snap.svelte.ts";
 import { model } from "../../stores/model.svelte.ts";
 
-export const presses = (() => {
-	let value: [number, number][] = $state([]);
-	const snap = $derived(value
-		.map(p => snapPoint(p).coords));
-	return {
-		get value() { return value; },
-		set value(v) { value = v; },
-		clear() { while (value.length) { value.pop(); }},
-		get snap() { return snap; },
-	};
-})();
+class ToolState {
+	presses: [number, number][] = $state([]);
+	releases: [number, number][] = $state([]);
+	move: [number, number] | undefined = $state();
+	drag: [number, number] | undefined = $state();
 
-export const releases = (() => {
-	let value: [number, number][] = $state([]);
-	const snap = $derived(value
-		.map(p => snapPoint(p).coords));
-	return {
-		get value() { return value; },
-		set value(v) { value = v; },
-		clear() { while (value.length) { value.pop(); }},
-		get snap() { return snap; },
-	};
-})();
+	// the above, but snapped to grid
+	snapPresses = $derived(this.presses.map(snapPoint).map(el => el.coords));
+	snapReleases = $derived(this.releases.map(snapPoint).map(el => el.coords));
+	snapMove = $derived(snapPoint(this.move));
+	snapDrag = $derived(snapPoint(this.drag));
 
-export const move = (() => {
-	let value: [number, number] | undefined = $state();
-	/** @type {{ coords: [number, number], snap: boolean }} */
-	const snap = $derived(snapPoint(value));
-	const coords = $derived(snap.coords);
-	return {
-		get value() { return value; },
-		set value(v) { value = v; },
-		get snap() { return snap; },
-		get coords() { return coords; },
-	};
-})();
-
-export const drag = (() => {
-	let value: [number, number] | undefined = $state();
-	/** @type {{ coords: [number, number], snap: boolean }} */
-	const snap = $derived(snapPoint(value));
-	const coords = $derived(snap.coords);
-	return {
-		get value() { return value; },
-		set value(v) { value = v; },
-		get snap() { return snap; },
-		get coords() { return coords; },
-	};
-})();
-
-const addSegment = $derived.by(() => {
-	// console.log(presses.value.length, releases.value.length);
-	if (presses.value.length && releases.value.length) {
-		const points = [
-			$state.snapshot(presses.value[0]),
-			$state.snapshot(releases.value[0]),
-		];
-		// console.log("segment", ...points);
-		model.addLine(points[0][0], points[0][1], points[1][0], points[1][1]);
-		// executeCommand("segment", [$Press1Coords, $Release1Coords]);
-		reset();
+	reset() {
+		this.move = undefined;
+		this.drag = undefined;
+		// this.presses = [];
+		// this.releases = [];
+		while (this.presses.length) { this.presses.pop(); }
+		while (this.releases.length) { this.releases.pop(); }
 	}
-});
 
-const addSegmentStore = toStore(() => addSegment);
-
-export const reset = () => {
-	// console.log("reset");
-	move.value = undefined;
-	drag.value = undefined;
-	// console.log("before");
-	// console.log(presses);
-	// presses.value = [];
-	// releases.value = [];
-	presses.clear();
-	releases.clear();
-	// console.log("after");
-	// console.log(presses);
+	makeSegment() {
+		return $effect.root(() => {
+			$effect(() => {
+				if (!this.presses.length || !this.releases.length) { return; }
+				const points = [
+					$state.snapshot(this.presses[0]),
+					$state.snapshot(this.releases[0]),
+				];
+				// console.log("segment", ...points);
+				model.addLine(points[0][0], points[0][1], points[1][0], points[1][1]);
+				// executeCommand("segment", [$Press1Coords, $Release1Coords]);
+				this.reset();
+			});
+			return () => { };
+		});
+	}
 };
 
-let unsub: Function[] = [];
+class StateWrapper implements StateManagerType {
+	tool: ToolState | undefined;
+	unsub: Function[] = [];
 
-export const subscribe = () => {
-	// console.log("subscribe");
-	unsub = [
-		addSegmentStore.subscribe(() => {}),
-	];
+	subscribe() {
+		console.log("segment, subscribe");
+		this.tool = new ToolState();
+		this.unsub.push(this.tool.makeSegment());
+	}
+
+	unsubscribe() {
+		console.log("segment, unsubscribe");
+		this.unsub.forEach((u) => u());
+		this.unsub = [];
+		this.reset();
+		this.tool = undefined;
+	}
+
+	reset() {
+		this.tool?.reset();
+	};
 };
 
-export const unsubscribe = () => {
-	// console.log("unsubscribe");
-	unsub.forEach((u) => u());
-	unsub = [];
-	reset();
-};
+export default (new StateWrapper());

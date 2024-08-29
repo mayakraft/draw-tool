@@ -1,16 +1,14 @@
 import { type Tool } from "../../types.ts";
 import icon from "./icon.svelte";
 import SVGLayer from "./SVGLayer.svelte";
-import { reset, subscribe, unsubscribe } from "./state.svelte.ts";
+import state from "./state.svelte.ts";
 import { onmousemove, onmousedown, onmouseup } from "./events.ts";
 
 export default <Tool>{
 	key: "scribble",
 	name: "scribble",
 	icon,
-	reset,
-	subscribe,
-	unsubscribe,
+	state,
 	SVGLayer,
 	panel: undefined,
 	// pointer

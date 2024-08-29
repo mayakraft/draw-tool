@@ -1,13 +1,13 @@
 <script>
-	import { presses, drag } from "./state.svelte.ts";
+	import state from "./state.svelte.ts";
 </script>
 
-{#if presses.value.length && drag.value}
+{#if state.tool?.presses.length && state.tool?.drag}
 	<line
-		x1={presses.value[0][0]}
-		y1={presses.value[0][1]}
-		x2={drag.value[0]}
-		y2={drag.value[1]}
+		x1={state.tool.presses[0][0]}
+		y1={state.tool.presses[0][1]}
+		x2={state.tool.drag[0]}
+		y2={state.tool.drag[1]}
 		class="animated-dashed-line"
 	/>
 {/if}

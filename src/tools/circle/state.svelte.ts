@@ -1,40 +1,7 @@
 import { distance2 } from "rabbit-ear/math/vector.js";
+import type { StateManagerType } from "../../types.ts";
 import { snapPoint } from "../../math/snap.svelte.ts";
 import { model } from "../../stores/model.svelte.ts";
-
-class TouchManager {
-	presses: [number, number][] = $state([]);
-	releases: [number, number][] = $state([]);
-	move: [number, number] | undefined = $state();
-	drag: [number, number] | undefined = $state();
-
-	// the above, but snapped to grid
-	snapPresses = $derived(this.presses.map(snapPoint).map(el => el.coords));
-	snapReleases = $derived(this.releases.map(snapPoint).map(el => el.coords));
-	snapMove = $derived(snapPoint(this.move));
-	snapDrag = $derived(snapPoint(this.drag));
-
-	clear() {
-		// console.log("clear()");
-		this.move = undefined;
-		this.drag = undefined;
-		// this.presses = [];
-		// this.releases = [];
-		while (this.presses.length) { this.presses.pop(); }
-		while (this.releases.length) { this.releases.pop(); }
-	}
-};
-
-// class ToolState {
-// 	touches: TouchManager;
-// 	constructor() {
-// 		this.touches = new TouchManager();
-// 	}
-// }
-
-// export const touches: TouchManager; // = new TouchManager();
-export const touches = new TouchManager();
-console.log("circle, new TouchManager()");
 
 const makeCircle = (p0: [number, number], p1: [number, number]): { cx: number, cy: number, r: number } => {
 	const [cx, cy] = p0;
@@ -42,69 +9,74 @@ const makeCircle = (p0: [number, number], p1: [number, number]): { cx: number, c
 	return { cx, cy, r };
 };
 
-// class SVGShapes {
-// 	circle: { cx: number, cy: number, r: number } | undefined = $derived((
-// 		!touches.presses.length || !touches.drag
-// 			? undefined
-// 			: makeCircle(touches.presses[touches.presses.length - 1], touches.drag)));
-// };
+class ToolState {
+	move: [number, number] | undefined = $state();
+	drag: [number, number] | undefined = $state();
+	presses: [number, number][] = $state([]);
+	releases: [number, number][] = $state([]);
 
-// export const svgShapes = new SVGShapes();
-
-// export const svgShapes = (() => {
-export const SVGShapes = ((touches: TouchManager) => {
-	const circle: { cx: number, cy: number, r: number } | undefined = $derived((
-		!touches.presses.length || !touches.drag
+	circle: { cx: number, cy: number, r: number } | undefined = $derived((
+		!this.presses.length || !this.drag
 			? undefined
-			: makeCircle(touches.presses[touches.presses.length - 1], touches.drag)));
-	return {
-		get circle() { return circle; },
-	};
-});
-// export let svgShapes; // : SVGShapes | undefined;
-export let svgShapes: { circle: { cx: number, cy: number, r: number } | undefined } | undefined;
+			: makeCircle(this.presses[this.presses.length - 1], this.drag)));
 
-export const reset = () => {
-	// console.log("circle reset");
-	touches.clear();
-};
+	// the above, but snapped to grid
+	snapMove = $derived(snapPoint(this.move));
+	snapDrag = $derived(snapPoint(this.drag));
+	snapPresses = $derived(this.presses.map(snapPoint).map(el => el.coords));
+	snapReleases = $derived(this.releases.map(snapPoint).map(el => el.coords));
 
-let unsub: Function[] = [];
+	reset() {
+		// console.log("circle reset");
+		this.move = undefined;
+		this.drag = undefined;
+		// this.presses = [];
+		// this.releases = [];
+		while (this.presses.length) { this.presses.pop(); }
+		while (this.releases.length) { this.releases.pop(); }
+	}
 
-export const subscribe = () => {
-	// console.log("subscribe to circle");
-	unsub = [
-		$effect.root(() => {
-			// console.log("circle effect.root initialize");
-			svgShapes = SVGShapes(touches);
-			console.log("circle, SVGShapes()");
-			// touches = new TouchManager();
-
+	makeCircle() {
+		return $effect.root(() => {
 			$effect(() => {
-				$inspect(svgShapes?.circle);
-				// console.log("circle (press, release)", touches.presses.length, touches.releases.length);
-				if (touches.presses.length && touches.releases.length) {
-					// const circle = makeCircle(touches.presses[0], touches.releases[0]);
-					const circle = makeCircle(
-						touches.presses[touches.presses.length - 1],
-						touches.releases[touches.releases.length - 1],
-					);
-					model.addCircle(circle.cx, circle.cy, circle.r);
-					reset();
-				}
+				// console.log("circle (press, release)", this.presses.length, this.releases.length);
+				if (!this.presses.length || !this.releases.length) { return; }
+				// const circle = makeCircle(this.presses[0], this.releases[0]);
+				const circle = makeCircle(
+					this.presses[this.presses.length - 1],
+					this.releases[this.releases.length - 1],
+				);
+				model.addCircle(circle.cx, circle.cy, circle.r);
+				this.reset();
+				// console.log("going to call reset", this.reset);
+				// setTimeout(this.reset, 10);
 			});
-			return () => {
-				svgShapes = undefined;
-				console.log("circle, SVGShapes = undefined");
-				// console.log("circle effect.root cleanup");
-			};
-		}),
-	];
+			return () => {};
+		});
+	}
 };
 
-export const unsubscribe = () => {
-	// console.log("unsubscribe from circle");
-	unsub.forEach((u) => u());
-	unsub = [];
-	reset();
+class StateManager implements StateManagerType {
+	tool: ToolState | undefined;
+	unsub: Function[] = [];
+
+	subscribe() {
+		console.log("circle, subscribe");
+		this.tool = new ToolState();
+		this.unsub.push(this.tool.makeCircle());
+	}
+
+	unsubscribe() {
+		console.log("circle, unsubscribe");
+		this.unsub.forEach((u) => u());
+		this.unsub = [];
+		this.reset();
+		this.tool = undefined;
+	}
+
+	reset() {
+		this.tool?.reset();
+	};
 };
+
+export default (new StateManager());

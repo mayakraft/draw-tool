@@ -14,12 +14,12 @@ export const tool = (() => {
 	return {
 		get value() { return value; },
 		set value(newTool) {
-			if (value && value.unsubscribe) {
-				value.unsubscribe();
+			if (value && value.state && value.state.unsubscribe) {
+				value.state.unsubscribe();
 			}
 			// resetUI();
-			if (newTool && newTool.subscribe) {
-				newTool.subscribe();
+			if (newTool && newTool.state && newTool.state.subscribe) {
+				newTool.state.subscribe();
 			}
 			value = newTool;
 		},

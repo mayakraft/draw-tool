@@ -7,9 +7,7 @@ export default <Tool>{
 	key: "zoom",
 	name: "zoom",
 	icon,
-	reset: state.reset,
-	subscribe: state.subscribe,
-	unsubscribe: state.unsubscribe,
+	state,
 	SVGLayer: undefined,
 	panel: undefined,
 	// pointer

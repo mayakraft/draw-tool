@@ -1,5 +1,11 @@
 import type { Component, ComponentType, SvelteComponentTyped } from "svelte";
 
+export interface StateManagerType {
+	subscribe(): void;
+	unsubscribe(): void;
+	reset(): void;
+};
+
 export type Tool = {
 	key: string;
 	name: string;
@@ -7,9 +13,10 @@ export type Tool = {
 	icon: ComponentType<SvelteComponentTyped>;
 	panel: any;
 	SVGLayer: any;
-	reset?: Function;
-	subscribe?: Function;
-	unsubscribe?: Function;
+	state?: StateManagerType,
+	// reset?: Function;
+	// subscribe?: Function;
+	// unsubscribe?: Function;
 	// touch events
 	onmousemove?: Function;
 	onmousedown?: Function;
@@ -25,10 +32,4 @@ export type ScaledMouseEvent = MouseEvent & {
 export type ScaledWheelEvent = WheelEvent & {
 	// wheelDelta: number,
 	point: [number, number],
-};
-
-export interface StateManagerType {
-	subscribe(): void;
-	unsubscribe(): void;
-	reset(): void;
 };

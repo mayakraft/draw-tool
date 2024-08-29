@@ -1,27 +1,27 @@
-import {
-	state,
-	reset,
-} from "./state.svelte.ts";
+import state from "./state.svelte.ts";
 import { type ScaledMouseEvent, type ScaledWheelEvent} from "../../types.ts";
 
 export const onmousemove = ({ point, buttons }: ScaledMouseEvent) => {
-	state.move = (buttons ? undefined : point);
+	if (!state.tool) { return; }
+	state.tool.move = (buttons ? undefined : point);
 	if (buttons) {
-		state.drags.push(point);
+		state.tool.drags.push(point);
 	}
 };
 
 export const onmousedown = ({ point, buttons }: ScaledMouseEvent) => {
-	state.move = (buttons ? undefined : point);
-	state.drags = [];
-	state.presses.push(point);
+	if (!state.tool) { return; }
+	state.tool.move = (buttons ? undefined : point);
+	state.tool.drags = [];
+	state.tool.presses.push(point);
 };
 
 export const onmouseup = ({ point, buttons }: ScaledMouseEvent) => {
-	state.move = (buttons ? undefined : point);
+	if (!state.tool) { return; }
+	state.tool.move = (buttons ? undefined : point);
 	// state.drags = (buttons ? point : undefined);
-	state.releases.push(point);
-	state.addToModel();
+	state.tool.releases.push(point);
+	state.tool.addToModel();
 };
 
 // export const onmouseleave = (event: ScaledMouseEvent) => {
