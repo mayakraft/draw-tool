@@ -27,19 +27,26 @@ class ToolState {
 		return undefined;
 	});
 
-	segment: [number, number][] | undefined = $derived.by(() => {
+	segmentPoints: [number, number][] | undefined = $derived.by(() => {
 		if (!this.line) { return undefined; }
+		if (!this.presses.length || !this.releases.length) { return undefined; }
 		const snapLines = [{ line: this.line, clamp: (a) => a, domain: () => true }];
-		const point1Snap = this.presses.length >= 2
-			? snapToLine(this.presses[1], snapLines)
-			: snapToLine(this.move, snapLines);
-		const point2Snap = this.releases.length >= 2
-			? snapToLine(this.releases[1], snapLines)
-			: snapToLine(this.drag, snapLines);
-		const point1 = point1Snap.coords;
-		const point2 = point2Snap.coords;
-		return point1 && point2 ? [point1, point2] : undefined;
+		const point1 = this.presses.length >= 2
+			? snapToLine(this.presses[1], snapLines).coords
+			: snapToLine(this.move, snapLines).coords;
+		const point2 = this.releases.length >= 2
+			? snapToLine(this.releases[1], snapLines).coords
+			: snapToLine(this.drag, snapLines).coords;
+		const result = [];
+		if (point1) { result.push(point1); }
+		if (point2) { result.push(point2); }
+		return result;
 	});
+
+	segment: [number, number][] | undefined = $derived(
+		this.segmentPoints && this.segmentPoints.length < 2
+			? undefined
+			: this.segmentPoints);
 
 	reset() {
 		this.move = undefined;

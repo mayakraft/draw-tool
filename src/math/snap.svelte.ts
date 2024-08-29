@@ -1,9 +1,9 @@
-import { snapToPoint } from "../js/snap.js";
+import { snapToPoint } from "../js/snap.ts";
 import {
 	SnapPoints,
 	SnapRadius,
 	GridSnapFunction,
-} from "../stores/snap.svelte.js";
+} from "../stores/snap.svelte.ts";
 
 // there should be two levels of functions:
 // - core level, like snapToPoint.

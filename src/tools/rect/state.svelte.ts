@@ -1,11 +1,6 @@
 import { boundingBox } from "rabbit-ear/math/polygon.js";
 import { model } from "../../stores/model.svelte.ts";
-import { snapToPoint } from "../../js/snap.js";
-import {
-	SnapPoints,
-	SnapRadius,
-	GridSnapFunction,
-} from "../../stores/snap.svelte.js";
+import { snapPoint } from "../../math/snap.svelte.ts";
 
 type Rect = {
 	x: number,
@@ -20,14 +15,6 @@ const makeRect = (p0: [number, number], p1: [number, number]): Rect | undefined 
 	const { span, min } = box;
 	return { x: min[0], y: min[1], width: span[0], height: span[1] };
 };
-
-// there should be two levels of functions:
-// - core level, like snapToPoint.
-// - app level, like this wrapper snapPoint, where it hard codes app parameters
-// like SnapRadius, GridSnapfunction etc..
-const snapPoint = (p: [number, number] | undefined) => (
-	snapToPoint(p, SnapPoints, SnapRadius, GridSnapFunction.value)
-);
 
 class TouchManager {
 	presses: [number, number][] = $state([]);

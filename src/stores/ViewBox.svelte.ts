@@ -7,6 +7,12 @@ import {
 	makeMatrix2UniformScale,
 } from "rabbit-ear/math/matrix2.js";
 
+/**
+ * @description vertex radius is is dynamic according to the zoom level
+ * this number is a scale of the size of the viewbox.
+ */
+const VertexRadiusFactor = $state(0.00666);
+
 export const verticalUp = (() => {
 	let value = $state(
 		localStorage.getItem("VerticalUp") !== null
@@ -146,9 +152,15 @@ export const viewBox = (() => {
 		];
 	});
 
+	// SVG circle elements use this for their radius value.
+	const circleRadius = $derived(
+		Math.max(array[2], array[3]) * VertexRadiusFactor,
+	);
+
 	return {
 		get array() { return array; },
 		get string() { return string; },
 		get polygon() { return polygon; },
+		get circleRadius() { return circleRadius; }
 	};
 })();

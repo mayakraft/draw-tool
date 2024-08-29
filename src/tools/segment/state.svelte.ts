@@ -1,17 +1,11 @@
 import { toStore } from "svelte/store";
-import { snapToPoint } from "../../js/snap.js";
+import { snapPoint } from "../../math/snap.svelte.ts";
 import { model } from "../../stores/model.svelte.ts";
-import {
-	SnapPoints,
-	SnapRadius,
-	GridSnapFunction,
-} from "../../stores/snap.svelte.js";
 
 export const presses = (() => {
 	let value: [number, number][] = $state([]);
 	const snap = $derived(value
-		.map(p => snapToPoint(p, SnapPoints, SnapRadius, GridSnapFunction.value)
-			.coords));
+		.map(p => snapPoint(p).coords));
 	return {
 		get value() { return value; },
 		set value(v) { value = v; },
@@ -23,8 +17,7 @@ export const presses = (() => {
 export const releases = (() => {
 	let value: [number, number][] = $state([]);
 	const snap = $derived(value
-		.map(p => snapToPoint(p, SnapPoints, SnapRadius, GridSnapFunction.value)
-			.coords));
+		.map(p => snapPoint(p).coords));
 	return {
 		get value() { return value; },
 		set value(v) { value = v; },
@@ -36,7 +29,7 @@ export const releases = (() => {
 export const move = (() => {
 	let value: [number, number] | undefined = $state();
 	/** @type {{ coords: [number, number], snap: boolean }} */
-	const snap = $derived(snapToPoint(value, SnapPoints, SnapRadius, GridSnapFunction.value));
+	const snap = $derived(snapPoint(value));
 	const coords = $derived(snap.coords);
 	return {
 		get value() { return value; },
@@ -49,7 +42,7 @@ export const move = (() => {
 export const drag = (() => {
 	let value: [number, number] | undefined = $state();
 	/** @type {{ coords: [number, number], snap: boolean }} */
-	const snap = $derived(snapToPoint(value, SnapPoints, SnapRadius, GridSnapFunction.value));
+	const snap = $derived(snapPoint(value));
 	const coords = $derived(snap.coords);
 	return {
 		get value() { return value; },
