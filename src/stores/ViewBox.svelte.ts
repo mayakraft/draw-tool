@@ -122,7 +122,12 @@ const viewMatrix = $derived.by(() => {
  * @description In a typical fashion, the model and view matrices are
  * multiplied together to make this model-view matrix.
  */
-const modelViewMatrix = $derived(multiplyMatrices2(modelMatrix.value, viewMatrix));
+export const modelViewMatrix = (() => {
+	const value = $derived(multiplyMatrices2(modelMatrix.value, viewMatrix));
+	return {
+		get value() { return value; },
+	};
+})();
 
 /**
  * @description The SVG will set its "viewBox" property with this value,
@@ -130,7 +135,7 @@ const modelViewMatrix = $derived(multiplyMatrices2(modelMatrix.value, viewMatrix
  */
 export const viewBox = (() => {
 	const array: [number, number, number, number] = $derived.by(() => {
-		const m = [...modelViewMatrix];
+		const m = [...modelViewMatrix.value];
 		// get the translation component
 		const [, , , , x, y] = m;
 		// remove the translation component

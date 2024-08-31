@@ -1,7 +1,7 @@
 import { type Tool } from "../../types.ts";
 import icon from "./icon.svelte";
 import state from "./state.svelte.ts";
-import { onmousemove, onmousedown, onmouseup, onmouseleave } from "./pointerEvent.ts";
+import * as events from "./events.ts";
 
 export default <Tool>{
 	key: "zoom",
@@ -10,9 +10,5 @@ export default <Tool>{
 	state,
 	SVGLayer: undefined,
 	panel: undefined,
-	// pointer
-	onmousemove,
-	onmousedown,
-	onmouseup,
-	onmouseleave,
+	...events,
 };

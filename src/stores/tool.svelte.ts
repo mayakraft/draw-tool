@@ -1,4 +1,4 @@
-import { type Tool } from "../types.ts";
+import type { Tool } from "../types.ts";
 
 /**
  * @description This is the currently selected UI tool, as seen on the

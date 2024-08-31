@@ -44,12 +44,11 @@ class StateWrapper implements StateManagerType {
 	tool: ToolState | undefined;
 
 	subscribe() {
-		console.log("scribble, subscribe");
+		this.unsubscribe();
 		this.tool = new ToolState();
 	}
 
 	unsubscribe() {
-		console.log("scribble, unsubscribe");
 		this.reset();
 		this.tool = undefined;
 	}

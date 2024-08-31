@@ -45,22 +45,24 @@
 	];
 
 	const formatMouseEvent = (e: MouseEvent): ScaledMouseEvent => Object.assign(e, {
+		id: svg?.getAttribute("id") || undefined,
 		// buttons: e.buttons,
 		point: unwrap(convertToViewBox(getSVG(e), [e.x, e.y])),
 	});
 
 	const formatWheelEvent = (e: WheelEvent): ScaledWheelEvent => Object.assign(e, {
+		id: svg?.getAttribute("id") || undefined,
 		// wheelDelta: e.wheelDelta,
 		// wheelDelta: e.deltaMode,
 		// wheelDelta: e.deltaY,
 		point: convertToViewBox(getSVG(e), [e.x, e.y]),
 	});
 
-	const onmousedown = (e: MouseEvent) => down ? down(formatMouseEvent(e)) : undefined;
-	const onmousemove = (e: MouseEvent) => move ? move(formatMouseEvent(e)) : undefined;
-	const onmouseup = (e: MouseEvent) => up ? up(formatMouseEvent(e)) : undefined;
-	const onmouseleave = (e: MouseEvent) => leave ? leave(formatMouseEvent(e)) : undefined;
-	const onwheel = (e: WheelEvent) => wheel ? wheel(formatWheelEvent(e)) : undefined;
+	const onmousedown = (e: MouseEvent) => down?.(formatMouseEvent(e));
+	const onmousemove = (e: MouseEvent) => move?.(formatMouseEvent(e));
+	const onmouseup = (e: MouseEvent) => up?.(formatMouseEvent(e));
+	const onmouseleave = (e: MouseEvent) => leave?.(formatMouseEvent(e));
+	const onwheel = (e: WheelEvent) => wheel?.(formatWheelEvent(e));
 </script>
 
 <SVGCanvas

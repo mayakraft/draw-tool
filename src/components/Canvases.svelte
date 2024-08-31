@@ -23,24 +23,62 @@
 	});
 </script>
 
-<!-- <SvgCanvas -->
-<SVGTouchCanvas
-	{onmousemove}
-	{onmousedown}
-	{onmouseup}
-	{onmouseleave}
-	{onwheel}
-	viewBox={viewBox.string}
-	fill="none"
-	stroke="white"
-	stroke-width={strokeWidth.value}>
-	<GridLayer viewBoxArray={viewBox.array} />
-	<g bind:this={shapeLayer}></g>
-	{#if tool && tool.value && tool.value.SVGLayer}
-		{@const ToolLayer = tool.value.SVGLayer}
-		<!-- distribute css variables to all children -->
-		<g style={`--stroke-dash-length: ${strokeDashLength.value};`}>
-			<ToolLayer />
-		</g>
-	{/if}
-</SVGTouchCanvas>
+<div class="row">
+	<SVGTouchCanvas
+		id="left-canvas"
+		{onmousemove}
+		{onmousedown}
+		{onmouseup}
+		{onmouseleave}
+		{onwheel}
+		viewBox={viewBox.string}
+		fill="none"
+		stroke="white"
+		stroke-width={strokeWidth.value}>
+		<GridLayer viewBoxArray={viewBox.array} />
+		<g bind:this={shapeLayer}></g>
+		{#if tool && tool.value && tool.value.SVGLayer}
+			{@const ToolLayer = tool.value.SVGLayer}
+			<!-- distribute css variables to all children -->
+			<g style={`--stroke-dash-length: ${strokeDashLength.value};`}>
+				<ToolLayer />
+			</g>
+		{/if}
+	</SVGTouchCanvas>
+
+	<div class="gap"></div>
+
+	<SVGTouchCanvas
+		id="right-canvas"
+		{onmousemove}
+		{onmousedown}
+		{onmouseup}
+		{onmouseleave}
+		{onwheel}
+		viewBox={viewBox.string}
+		fill="none"
+		stroke="white"
+		stroke-width={strokeWidth.value}>
+		<GridLayer viewBoxArray={viewBox.array} />
+		<g bind:this={shapeLayer}></g>
+		{#if tool && tool.value && tool.value.SVGLayer}
+			{@const ToolLayer = tool.value.SVGLayer}
+			<!-- distribute css variables to all children -->
+			<g style={`--stroke-dash-length: ${strokeDashLength.value};`}>
+				<ToolLayer />
+			</g>
+		{/if}
+	</SVGTouchCanvas>
+</div>
+
+<style>
+	.row {
+		display: flex;
+		flex-direction: row;
+		height: 100%;
+	}
+	.gap {
+		width: 3px;
+		background-color: #999;
+	}
+</style>

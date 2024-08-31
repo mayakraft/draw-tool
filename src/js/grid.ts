@@ -31,16 +31,22 @@ export const makeIntervals = (start: number, size: number, spacing = 1) => {
 // of the container div housing the SVG or the SVG itself, and relay this
 // to the viewport to resize it in these equations only.
 
-export const makeSquareGrid = (viewBoxArray: [number, number, number, number]) =>
-	[
-		makeIntervals(viewBoxArray[0] - viewBoxArray[2] * 1, viewBoxArray[2] * 3)
+export const makeSquareGrid = (viewBoxArray: [number, number, number, number]) => {
+	// calculate correct spacing ahead of time
+	const size = Math.max(viewBoxArray[2] * 3, viewBoxArray[3] * 4);
+	let spacing = 1;
+	while (size / spacing > 64) {
+		spacing *= 2;
+	}
+	return [
+		makeIntervals(viewBoxArray[0] - viewBoxArray[2] * 1, viewBoxArray[2] * 3, spacing)
 			.map((x) => ({
 				x1: x,
 				y1: viewBoxArray[1] - viewBoxArray[3],
 				x2: x,
 				y2: viewBoxArray[1] + viewBoxArray[3] * 3,
 			})),
-		makeIntervals(viewBoxArray[1] - viewBoxArray[3] * 1, viewBoxArray[3] * 4)
+		makeIntervals(viewBoxArray[1] - viewBoxArray[3] * 1, viewBoxArray[3] * 4, spacing)
 			.map((y) => ({
 				x1: viewBoxArray[0] - viewBoxArray[2],
 				y1: y,
@@ -48,6 +54,7 @@ export const makeSquareGrid = (viewBoxArray: [number, number, number, number]) =
 				y2: y,
 			})),
 	].flat();
+};
 
 export const makeTriangleGrid = (viewport: [number, number, number, number]) => {
 	// the result of this method are 3 sets of parallel lines,

@@ -44,16 +44,13 @@ class StateManager implements StateManagerType {
 	tool: ToolState | undefined;
 	unsub: Function[] = [];
 
-	constructor() {}
-
 	subscribe() {
-		console.log("zoom, subscribe");
+		this.unsubscribe();
 		this.tool = new ToolState();
 		this.unsub.push(this.tool.doZoom());
 	}
 
 	unsubscribe() {
-		console.log("zoom, unsubscribe");
 		this.unsub.forEach((u) => u());
 		this.unsub = [];
 		this.reset();

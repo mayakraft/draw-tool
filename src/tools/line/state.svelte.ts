@@ -78,13 +78,12 @@ class StateManager implements StateManagerType {
 	constructor() {}
 
 	subscribe() {
-		console.log("line, subscribe");
+		this.unsubscribe();
 		this.tool = new ToolState();
 		this.unsub.push(this.tool.makeLine());
 	}
 
 	unsubscribe() {
-		console.log("line, unsubscribe");
 		this.unsub.forEach((u) => u());
 		this.unsub = [];
 		this.reset();

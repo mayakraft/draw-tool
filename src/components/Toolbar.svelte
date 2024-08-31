@@ -1,8 +1,6 @@
 <script>
 	import Tools from "../tools/index.ts";
 	import { tool } from "../stores/tool.svelte.ts";
-	import { verticalUp } from "../stores/viewBox.svelte.ts";
-	// import { executeCommand } from "../kernel/execute.js";
 </script>
 
 	<div class="grid-columns">
@@ -18,31 +16,7 @@
 			</button>
 		{/each}
 	</div>
-
-	<hr />
-
-	<input type="checkbox" id="verticalUp" checked={verticalUp.value}/>
-	<label for="verticalUp">Y up/down</label>
-
 <style>
-	/*label {
-		user-select: none;
-	}
-	p {
-		color: var(--text);
-		margin: 1rem 0 0.25rem 0;
-		font-style: italic;
-		user-select: none;
-	}
-	p:first-of-type { margin-top: 0; }
-	.vertical-radio {
-		display: grid;
-		grid-template-columns: min-content 1fr;
-	}
-	.vertical-radio input {
-		grid-column: 1;
-	}*/
-
 	/* button grid layout */
 	.grid-columns {
 		display: grid;

@@ -46,13 +46,12 @@ class StateWrapper implements StateManagerType {
 	unsub: Function[] = [];
 
 	subscribe() {
-		console.log("segment, subscribe");
+		this.unsubscribe();
 		this.tool = new ToolState();
 		this.unsub.push(this.tool.makeSegment());
 	}
 
 	unsubscribe() {
-		console.log("segment, unsubscribe");
 		this.unsub.forEach((u) => u());
 		this.unsub = [];
 		this.reset();

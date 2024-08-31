@@ -2,19 +2,18 @@ import {
 	makeMatrix2UniformScale,
 	multiplyMatrices2,
 	determinant2,
+	makeMatrix2Translate,
 } from "rabbit-ear/math/matrix2.js";
 import { getScreenPoint } from "../js/matrix.ts";
 import {
 	cameraMatrix,
 	modelMatrix,
+	modelViewMatrix,
 } from "./viewBox.svelte.ts";
 import { tool } from "./tool.svelte.ts";
 import { type ScaledMouseEvent, type ScaledWheelEvent } from "../types.ts";
 
-/**
- * @description SVG canvas scrolling event gets bound to this.
- */
-export const wheelWindowZoom = ({ point, deltaY }: ScaledWheelEvent) => {
+const wheelEventZoomMatrix = ({ point, deltaY }: { point: [number, number], deltaY: number }) => {
 	const scaleOffset = deltaY / 333;
 	const scale = 1 - scaleOffset;
 
@@ -34,16 +33,37 @@ export const wheelWindowZoom = ({ point, deltaY }: ScaledWheelEvent) => {
 	// inverse of this matrix, a bad det makes an invalid inverse.
 	const newMatrix = multiplyMatrices2(cameraMatrix.value, matrix);
 	const det = determinant2(newMatrix);
-	const tooSmall = Math.abs(det) < 1e-11;
-	const tooLarge = Math.abs(det) > 1e11;
-	if (tooSmall) {
-		cameraMatrix.value = [1e-5, 0, 0, 1e-5, cameraMatrix.value[4], cameraMatrix.value[5]];
+	if (Math.abs(det) < 1e-11) {
+		return [1e-5, 0, 0, 1e-5, cameraMatrix.value[4], cameraMatrix.value[5]];
 	}
-	else if (tooLarge) {
-		cameraMatrix.value = [1e5, 0, 0, 1e5, 0, 0];
+	if (Math.abs(det) > 1e11) {
+		return [1e5, 0, 0, 1e5, 0, 0];
 	}
-	else {
-		cameraMatrix.value = newMatrix;
+	return newMatrix;
+};
+
+const wheelPanMatrix = ({ deltaX, deltaY }: { deltaX: number, deltaY: number }) => {
+	const touchScale = -0.005;
+	const impliedScale = modelViewMatrix.value[0];
+	const translate = [
+		deltaX * touchScale * impliedScale,
+		deltaY * touchScale * impliedScale,
+	];
+	const matrix = makeMatrix2Translate(translate[0], translate[1]);
+	return multiplyMatrices2(cameraMatrix.value, matrix);
+};
+
+export const windowWheelEvent = ({ point, deltaX, deltaY, id }: ScaledWheelEvent) => {
+	switch (id) {
+		case "left-canvas":
+			cameraMatrix.value = wheelEventZoomMatrix({ point, deltaY });
+			break;
+		case "right-canvas":
+			cameraMatrix.value = wheelPanMatrix({ deltaX, deltaY });
+			break;
+		default:
+			cameraMatrix.value = wheelEventZoomMatrix({ point, deltaY });
+			break;
 	}
 };
 
@@ -64,6 +84,6 @@ export const onwheel = (event: ScaledWheelEvent) => {
 		tool.value.onwheel(event);
 	}
 	else {
-		wheelWindowZoom(event);
+		windowWheelEvent(event);
 	}
 };

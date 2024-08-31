@@ -61,13 +61,12 @@ class StateManager implements StateManagerType {
 	unsub: Function[] = [];
 
 	subscribe() {
-		console.log("circle, subscribe");
+		this.unsubscribe();
 		this.tool = new ToolState();
 		this.unsub.push(this.tool.makeCircle());
 	}
 
 	unsubscribe() {
-		console.log("circle, unsubscribe");
 		this.unsub.forEach((u) => u());
 		this.unsub = [];
 		this.reset();

@@ -55,13 +55,12 @@ class StateManager implements StateManagerType {
 	constructor() {}
 
 	subscribe() {
-		console.log("select, subscribe");
+		this.unsubscribe();
 		this.tool = new ToolState();
 		this.unsub.push(this.tool.doSelection());
 	}
 
 	unsubscribe() {
-		console.log("select, unsubscribe");
 		this.unsub.forEach((u) => u());
 		this.unsub = [];
 		this.reset();

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import Toolbar from "./Toolbar.svelte";
+	import DebugPanel from "./DebugPanel.svelte";
 	import Canvases from "./Canvases.svelte";
 
 	// the toolbar's scrollbar will cover up the buttons, flexbox doesn't
@@ -27,6 +28,7 @@
 	<div class="gui horizontal">
 		<div class="toolbar" role="toolbar" bind:this={divToolbar}>
 			<Toolbar />
+			<DebugPanel />
 		</div>
 		<div class="canvases">
 			<Canvases />

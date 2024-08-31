@@ -14,9 +14,6 @@ export type Tool = {
 	panel: any;
 	SVGLayer: any;
 	state?: StateManagerType,
-	// reset?: Function;
-	// subscribe?: Function;
-	// unsubscribe?: Function;
 	// touch events
 	onmousemove?: Function;
 	onmousedown?: Function;
@@ -27,9 +24,11 @@ export type Tool = {
 
 export type ScaledMouseEvent = MouseEvent & {
 	point: [number, number],
+	id?: string,
 };
 
 export type ScaledWheelEvent = WheelEvent & {
 	// wheelDelta: number,
 	point: [number, number],
+	id?: string,
 };
