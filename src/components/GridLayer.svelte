@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { gridType } from "../stores/grid.svelte.ts";
-	import { verticalUp } from "../stores/viewBox.svelte.ts";
+	import { renderer } from "../stores/renderer.svelte.ts";
 	import { viewBoxOrigin } from "../js/matrix.ts";
 	import {
 		makeSquareGrid,
@@ -15,7 +15,7 @@
 		viewBoxArray = [0, 0, 1, 1],
 	}: PropsType = $props();
 
-	const origin = $derived(viewBoxOrigin(viewBoxArray, verticalUp.value));
+	const origin = $derived(viewBoxOrigin(viewBoxArray, renderer.view.verticalUp));
 
 	const actualViewport: [number, number, number, number] = $derived([
 		origin[0],

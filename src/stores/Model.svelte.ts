@@ -7,7 +7,7 @@ type Shape = {
 	params: object;
 };
 
-const shapeToElement = ({ name, params }: Shape) => {
+export const shapeToElement = ({ name, params }: Shape) => {
 	switch (name) {
 		case "rect": return ear.svg.rect(params.x, params.y, params.width, params.height);
 		case "line": return ear.svg.line(params.x1, params.y1, params.x2, params.y2);

@@ -1,7 +1,7 @@
 <script>
 	import state from "./state.svelte.ts";
 	import { clipLineInViewBox } from "../../math/clip.svelte.ts";
-	import { viewBox } from "../../stores/viewBox.svelte.ts";
+	import { renderer } from "../../stores/renderer.svelte.ts";
 
 	const lineClipped = $derived(clipLineInViewBox(state.tool?.line));
 
@@ -20,7 +20,7 @@
 	const svgCircles = $derived(!state.tool?.segmentPoints
 		? []
 		: state.tool?.segmentPoints
-			.map(([cx, cy]) => ({ cx, cy, r: viewBox.circleRadius })));
+			.map(([cx, cy]) => ({ cx, cy, r: renderer.circleRadius })));
 </script>
 
 {#if svgLine}

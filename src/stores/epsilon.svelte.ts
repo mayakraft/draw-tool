@@ -1,4 +1,4 @@
-import { viewBox } from "./viewBox.svelte.ts";
+import { renderer } from "./renderer.svelte.ts";
 
 /**
  * @description a UI touch event, coming from a pointer device, will have some
@@ -15,7 +15,7 @@ const UIEpsilonFactor = 0.01;
  * correcting value.
  */
 export const UIEpsilon = (() => {
-	const value = $derived(Math.max(viewBox.array[2], viewBox.array[3]) * UIEpsilonFactor);
+	const value = $derived(Math.max(renderer.view.viewBox[2], renderer.view.viewBox[3]) * UIEpsilonFactor);
 	return {
 		get value() { return value; },
 	};

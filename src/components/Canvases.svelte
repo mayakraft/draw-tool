@@ -1,9 +1,8 @@
 <script lang="ts">
 	import SVGTouchCanvas from "./SVGTouchCanvas.svelte";
 	import GridLayer from "./GridLayer.svelte";
-	import { modelElements } from "../stores/model.svelte.ts";
-	import { viewBox } from "../stores/viewBox.svelte.ts";
-	import { strokeWidth, strokeDashLength } from "../stores/style.svelte.ts";
+	import { model, shapeToElement } from "../stores/model.svelte.ts";
+	import { renderer } from "../stores/renderer.svelte.ts";
 	import {
 		onmousemove,
 		onmousedown,
@@ -13,13 +12,27 @@
 	} from "../stores/touchEvents.svelte.ts";
 	import { tool } from "../stores/tool.svelte.ts";
 
-	let shapeLayer: SVGGElement;
+	let shapeLayer1: SVGGElement;
+	let shapeLayer2: SVGGElement;
+
+	const remove = (el: Element) => {
+		while(el.children.length) { el.removeChild(el.children[0]); }
+	};
+
+	const elements1 = $derived(model.elements
+		.map(shapeToElement)
+		.filter(a => a !== undefined));
+	const elements2 = $derived(model.elements
+		.map(shapeToElement)
+		.filter(a => a !== undefined));
 
 	$effect(() => {
-		while(shapeLayer.children.length) {
-			shapeLayer.removeChild(shapeLayer.children[0]);
-		}
-		modelElements.elements.forEach(el => shapeLayer.appendChild(el));
+		remove(shapeLayer1);
+		elements1.forEach(el => shapeLayer1.appendChild(el));
+	});
+	$effect(() => {
+		remove(shapeLayer2);
+		elements2.forEach(el => shapeLayer2.appendChild(el));
 	});
 </script>
 
@@ -31,16 +44,16 @@
 		{onmouseup}
 		{onmouseleave}
 		{onwheel}
-		viewBox={viewBox.string}
+		viewBox={renderer.view.viewBoxString}
 		fill="none"
 		stroke="white"
-		stroke-width={strokeWidth.value}>
-		<GridLayer viewBoxArray={viewBox.array} />
-		<g bind:this={shapeLayer}></g>
+		stroke-width={renderer.strokeWidth}>
+		<GridLayer viewBoxArray={renderer.view.viewBox} />
+		<g bind:this={shapeLayer1}></g>
 		{#if tool && tool.value && tool.value.SVGLayer}
 			{@const ToolLayer = tool.value.SVGLayer}
 			<!-- distribute css variables to all children -->
-			<g style={`--stroke-dash-length: ${strokeDashLength.value};`}>
+			<g style={`--stroke-dash-length: ${renderer.strokeDashLength};`}>
 				<ToolLayer />
 			</g>
 		{/if}
@@ -55,16 +68,16 @@
 		{onmouseup}
 		{onmouseleave}
 		{onwheel}
-		viewBox={viewBox.string}
+		viewBox={renderer.view.viewBoxString}
 		fill="none"
 		stroke="white"
-		stroke-width={strokeWidth.value}>
-		<GridLayer viewBoxArray={viewBox.array} />
-		<g bind:this={shapeLayer}></g>
+		stroke-width={renderer.strokeWidth}>
+		<GridLayer viewBoxArray={renderer.view.viewBox} />
+		<g bind:this={shapeLayer2}></g>
 		{#if tool && tool.value && tool.value.SVGLayer}
 			{@const ToolLayer = tool.value.SVGLayer}
 			<!-- distribute css variables to all children -->
-			<g style={`--stroke-dash-length: ${strokeDashLength.value};`}>
+			<g style={`--stroke-dash-length: ${renderer.strokeDashLength};`}>
 				<ToolLayer />
 			</g>
 		{/if}

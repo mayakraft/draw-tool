@@ -7,9 +7,9 @@ import {
 	excludeS,
 } from "rabbit-ear/math/compare.js";
 import { clipLineConvexPolygon } from "rabbit-ear/math/clip.js";
-import { viewBox } from "../stores/viewBox.svelte";
+import { renderer } from "../stores/renderer.svelte.ts";
 
 export const clipLineInViewBox = (line: VecLine2 | undefined) => {
 	if (!line) { return undefined; }
-	return clipLineConvexPolygon(viewBox.polygon, line, include, includeL);
+	return clipLineConvexPolygon(renderer.view.viewBoxPolygon, line, include, includeL);
 };

@@ -4,8 +4,7 @@ import {
 } from "rabbit-ear/math/matrix2.js";
 import { subtract2 } from "rabbit-ear/math/vector.js";
 import type { StateManagerType } from "../../types.ts";
-import { cameraMatrix } from "../../stores/viewBox.svelte.ts";
-import { verticalUp } from "../../stores/viewBox.svelte.ts";
+import { renderer } from "../../stores/renderer.svelte.ts";
 
 const rewrap = (point: [number, number], invert: boolean): [number, number] => (
 	[point[0], point[1] * (invert ? -1 : 1)]
@@ -30,9 +29,9 @@ class ToolState {
 	doZoom() {
 		return $effect.root(() => {
 			$effect(() => {
-				cameraMatrix.value = multiplyMatrices2(
-					cameraMatrix.value,
-					makeMatrix2Translate(...rewrap(this.dragVector, verticalUp.value)),
+				renderer.view.camera = multiplyMatrices2(
+					renderer.view.camera,
+					makeMatrix2Translate(...rewrap(this.dragVector, renderer.view.verticalUp)),
 				);
 			});
 			return () => { };
