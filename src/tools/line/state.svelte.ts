@@ -12,31 +12,33 @@ class ToolState {
 	releases: [number, number][] = $state([]);
 
 	// the above, but snapped to grid
-	snapMove = $derived(snapPoint(this.move));
-	snapDrag = $derived(snapPoint(this.drag));
-	snapPresses = $derived(this.presses.map(snapPoint).map(el => el.coords));
-	snapReleases = $derived(this.releases.map(snapPoint).map(el => el.coords));
+	snapMove = $derived(snapPoint(this.move).coords);
+	snapDrag = $derived(snapPoint(this.drag).coords);
+	snapPresses = $derived(this.presses.map(snapPoint).map(el => el.coords)
+		.filter(a => a !== undefined));
+	snapReleases = $derived(this.releases.map(snapPoint).map(el => el.coords)
+		.filter(a => a !== undefined));
 
 	line: VecLine2 | undefined = $derived.by(() => {
-		if (this.presses.length && this.releases.length) {
-			return pointsToLine2(this.presses[0], this.releases[0]);
+		if (this.snapPresses.length && this.snapReleases.length) {
+			return pointsToLine2(this.snapPresses[0], this.snapReleases[0]);
 		}
-		if (this.presses.length && this.drag) {
-			return pointsToLine2(this.presses[0], this.drag);
+		if (this.snapPresses.length && this.snapDrag) {
+			return pointsToLine2(this.snapPresses[0], this.snapDrag);
 		}
 		return undefined;
 	});
 
 	segmentPoints: [number, number][] | undefined = $derived.by(() => {
 		if (!this.line) { return undefined; }
-		if (!this.presses.length || !this.releases.length) { return undefined; }
+		if (!this.snapPresses.length || !this.snapReleases.length) { return undefined; }
 		const snapLines = [{ line: this.line, clamp: (a) => a, domain: () => true }];
-		const point1 = this.presses.length >= 2
-			? snapToLine(this.presses[1], snapLines).coords
-			: snapToLine(this.move, snapLines).coords;
-		const point2 = this.releases.length >= 2
-			? snapToLine(this.releases[1], snapLines).coords
-			: snapToLine(this.drag, snapLines).coords;
+		const point1 = this.snapPresses.length >= 2
+			? snapToLine(this.snapPresses[1], snapLines).coords
+			: snapToLine(this.snapMove, snapLines).coords;
+		const point2 = this.snapReleases.length >= 2
+			? snapToLine(this.snapReleases[1], snapLines).coords
+			: snapToLine(this.snapDrag, snapLines).coords;
 		const result = [];
 		if (point1) { result.push(point1); }
 		if (point2) { result.push(point2); }
@@ -60,7 +62,7 @@ class ToolState {
 	makeLine() {
 		return $effect.root(() => {
 			$effect(() => {
-				if (this.presses.length >= 2 && this.releases.length >= 2 && this.segment) {
+				if (this.snapPresses.length >= 2 && this.snapReleases.length >= 2 && this.segment) {
 					const [[x1, y1], [x2, y2]] = this.segment;
 					model.addLine(x1, y1, x2, y2);
 					this.reset();

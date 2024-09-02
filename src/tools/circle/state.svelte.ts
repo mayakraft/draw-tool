@@ -15,16 +15,23 @@ class ToolState {
 	presses: [number, number][] = $state([]);
 	releases: [number, number][] = $state([]);
 
-	circle: { cx: number, cy: number, r: number } | undefined = $derived((
-		!this.presses.length || !this.drag
-			? undefined
-			: makeCircle(this.presses[this.presses.length - 1], this.drag)));
-
 	// the above, but snapped to grid
-	snapMove = $derived(snapPoint(this.move));
-	snapDrag = $derived(snapPoint(this.drag));
-	snapPresses = $derived(this.presses.map(snapPoint).map(el => el.coords));
-	snapReleases = $derived(this.releases.map(snapPoint).map(el => el.coords));
+	snapMove = $derived(snapPoint(this.move).coords);
+	snapDrag = $derived(snapPoint(this.drag).coords);
+	snapPresses = $derived(this.presses.map(snapPoint).map(el => el.coords)
+		.filter(a => a !== undefined));
+	snapReleases = $derived(this.releases.map(snapPoint).map(el => el.coords)
+		.filter(a => a !== undefined));
+
+	circle: { cx: number, cy: number, r: number } | undefined = $derived.by(() => {
+		if (this.snapPresses.length && this.snapReleases.length) {
+			return makeCircle(this.snapPresses[0], this.snapReleases[0]);
+		}
+		if (this.snapPresses.length && this.snapDrag) {
+			return makeCircle(this.snapPresses[0], this.snapDrag);
+		}
+		return undefined;
+	});
 
 	reset() {
 		// console.log("circle reset");
@@ -40,15 +47,11 @@ class ToolState {
 		return $effect.root(() => {
 			$effect(() => {
 				// console.log("circle (press, release)", this.presses.length, this.releases.length);
-				if (!this.presses.length || !this.releases.length) { return; }
-				// const circle = makeCircle(this.presses[0], this.releases[0]);
-				const circle = makeCircle(
-					this.presses[this.presses.length - 1],
-					this.releases[this.releases.length - 1],
-				);
-				model.addCircle(circle.cx, circle.cy, circle.r);
+				if (!this.snapPresses.length || !this.snapReleases.length || !this.circle) {
+					return;
+				}
+				model.addCircle(this.circle.cx, this.circle.cy, this.circle.r);
 				this.reset();
-				// console.log("going to call reset", this.reset);
 				// setTimeout(this.reset, 10);
 			});
 			return () => {};

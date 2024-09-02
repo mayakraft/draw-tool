@@ -2,14 +2,8 @@
 	import state from "./state.svelte.ts";
 </script>
 
-{#if state.tool?.presses.length && state.tool?.drag}
-	<line
-		x1={state.tool.presses[0][0]}
-		y1={state.tool.presses[0][1]}
-		x2={state.tool.drag[0]}
-		y2={state.tool.drag[1]}
-		class="animated-dashed-line"
-	/>
+{#if state.tool?.svgSegment}
+	<line class="animated-dashed-line" {...state.tool?.svgSegment} />
 {/if}
 
 <style>

@@ -9,10 +9,32 @@ class ToolState {
 	drag: [number, number] | undefined = $state();
 
 	// the above, but snapped to grid
-	snapPresses = $derived(this.presses.map(snapPoint).map(el => el.coords));
-	snapReleases = $derived(this.releases.map(snapPoint).map(el => el.coords));
-	snapMove = $derived(snapPoint(this.move));
-	snapDrag = $derived(snapPoint(this.drag));
+	snapPresses = $derived(this.presses.map(snapPoint).map(el => el.coords)
+		.filter(a => a !== undefined));
+	snapReleases = $derived(this.releases.map(snapPoint).map(el => el.coords)
+		.filter(a => a !== undefined));
+	snapMove = $derived(snapPoint(this.move).coords);
+	snapDrag = $derived(snapPoint(this.drag).coords);
+
+	segment: [[number, number], [number, number]] | undefined = $derived.by(() => {
+		if (this.snapPresses.length && this.snapReleases.length) {
+			return [this.snapPresses[0], this.snapReleases[0]];
+		}
+		if (this.snapPresses.length && this.snapDrag) {
+			return [this.snapPresses[0], this.snapDrag];
+		}
+		return undefined;
+	});
+
+	svgSegment: { x1: number, y1: number, x2: number, y2: number, } | undefined = $derived(
+		!this.segment
+			? undefined
+			: {
+				x1: this.segment[0][0],
+				y1: this.segment[0][1],
+				x2: this.segment[1][0],
+				y2: this.segment[1][1],
+			});
 
 	reset() {
 		this.move = undefined;
@@ -26,14 +48,11 @@ class ToolState {
 	makeSegment() {
 		return $effect.root(() => {
 			$effect(() => {
-				if (!this.presses.length || !this.releases.length) { return; }
-				const points = [
-					$state.snapshot(this.presses[0]),
-					$state.snapshot(this.releases[0]),
-				];
-				// console.log("segment", ...points);
-				model.addLine(points[0][0], points[0][1], points[1][0], points[1][1]);
-				// executeCommand("segment", [$Press1Coords, $Release1Coords]);
+				if (!this.snapPresses.length || !this.snapReleases.length || !this.segment) {
+					return;
+				}
+				const [[x1, y1], [x2, y2]] = this.segment;
+				model.addLine(x1, y1, x2, y2);
 				this.reset();
 			});
 			return () => { };

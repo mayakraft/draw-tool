@@ -48,10 +48,6 @@ export const modelElements = (() => {
 	}
 })();
 
-// model.elements.push({ name: "line", params: { x1: 0, y1: 0, x2: 100, y2: 10 } });
-// model.elements.push({ name: "circle", params: { cx: 0, cy: 0, r: 1 } });
-// model.elements.push({ name: "circle", params: { cx: 0, cy: 0, r: 50 } });
-
 // export const Reset = () => {
 // 	RecalculateModelMatrix();
 // 	Selection.reset();
@@ -60,3 +56,17 @@ export const modelElements = (() => {
 // 	Frames.set(frames);
 // 	CameraMatrix.reset();
 // };
+
+model.elements.push({ name: "circle", params: { cx: 0, cy: 0, r: 1 } });
+model.elements.push({ name: "circle", params: { cx: 0, cy: 0, r: Math.SQRT2 } });
+model.elements.push({ name: "circle", params: { cx: 0, cy: 0, r: 2 } });
+model.elements.push({ name: "line", params: { x1: 2, y1: 0, x2: 1, y2: 0 } });
+model.elements.push({ name: "line", params: { x1: -1, y1: 0, x2: -2, y2: 0 } });
+model.elements.push({ name: "rect", params: { x: 2, y: -3, width: 1, height: 1 } });
+model.elements.push({ name: "rect", params: { x: -3, y: -3, width: 1, height: 1 } });
+model.elements.push({ name: "rect", params: { x: -3, y: 2, width: 1, height: 1 } });
+model.elements.push({ name: "rect", params: { x: 2, y: 2, width: 1, height: 1 } });
+model.elements.push({ name: "line", params: { x1: -1, y1: -3, x2: -3, y2: -1 } });
+model.elements.push({ name: "line", params: { x1: -3, y1: 1, x2: -1, y2: 3 } });
+model.elements.push({ name: "line", params: { x1: 1, y1: 3, x2: 3, y2: 1 } });
+model.elements.push({ name: "line", params: { x1: 3, y1: -1, x2: 1, y2: -3 } });

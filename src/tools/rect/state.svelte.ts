@@ -24,15 +24,22 @@ class ToolState {
 	releases: [number, number][] = $state([]);
 
 	// the above, but snapped to grid
-	snapMove = $derived(snapPoint(this.move));
-	snapDrag = $derived(snapPoint(this.drag));
-	snapPresses = $derived(this.presses.map(snapPoint).map(el => el.coords));
-	snapReleases = $derived(this.releases.map(snapPoint).map(el => el.coords));
+	snapMove = $derived(snapPoint(this.move).coords);
+	snapDrag = $derived(snapPoint(this.drag).coords);
+	snapPresses = $derived(this.presses.map(snapPoint).map(el => el.coords)
+		.filter(a => a !== undefined));
+	snapReleases = $derived(this.releases.map(snapPoint).map(el => el.coords)
+		.filter(a => a !== undefined));
 
-	rect: Rect | undefined = $derived((
-		!this.presses.length || !this.drag
-			? undefined
-			: makeRect(this.presses[this.presses.length - 1], this.drag)));
+	rect: Rect | undefined = $derived.by(() => {
+		if (this.snapPresses.length && this.snapReleases.length) {
+			return makeRect(this.snapPresses[0], this.snapReleases[0]);
+		}
+		if (this.snapPresses.length && this.snapDrag) {
+			return makeRect(this.snapPresses[0], this.snapDrag);
+		}
+		return undefined;
+	});
 
 	reset() {
 		this.move = undefined;
@@ -46,14 +53,8 @@ class ToolState {
 	makeRect() {
 		return $effect.root(() => {
 			$effect(() => {
-				if (!this.presses.length || !this.releases.length) { return; }
-				const rect = makeRect(
-					this.presses[this.presses.length - 1],
-					this.releases[this.releases.length - 1],
-				);
-				if (rect) {
-					model.addRect(rect.x, rect.y, rect.width, rect.height);
-				}
+				if (!this.snapPresses.length || !this.snapReleases.length || !this.rect) { return; }
+				model.addRect(this.rect.x, this.rect.y, this.rect.width, this.rect.height);
 				this.reset();
 				// setTimeout(this.reset, 0);
 			});

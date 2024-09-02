@@ -10,5 +10,5 @@ import {
 // - app level, like this wrapper snapPoint, where it hard codes app parameters
 // like SnapRadius, GridSnapfunction etc..
 export const snapPoint = (p: [number, number] | undefined) => (
-	snapToPoint(p, SnapPoints, SnapRadius, GridSnapFunction.value)
+	snapToPoint(p, SnapPoints.value, SnapRadius.value, GridSnapFunction.value)
 );

@@ -3,6 +3,7 @@
 	import Toolbar from "./Toolbar.svelte";
 	import DebugPanel from "./DebugPanel.svelte";
 	import Canvases from "./Canvases.svelte";
+	import Events from "./Events.svelte";
 
 	// the toolbar's scrollbar will cover up the buttons, flexbox doesn't
 	// give space to account for the scrollbar, we have to create a listener
@@ -23,6 +24,8 @@
 		return () => resizeObserver.unobserve(divToolbar);
 	});
 </script>
+
+<Events />
 
 <main class="vertical">
 	<div class="gui horizontal">

@@ -51,6 +51,7 @@
 		<GridLayer viewBoxArray={renderer.view.viewBox} />
 		<g bind:this={shapeLayer1}></g>
 		{#if tool && tool.value && tool.value.SVGLayer}
+			<!-- https://www.youtube.com/live/nMs4X8-L_yo?feature=shared&t=1667 -->
 			{@const ToolLayer = tool.value.SVGLayer}
 			<!-- distribute css variables to all children -->
 			<g style={`--stroke-dash-length: ${renderer.strokeDashLength};`}>
@@ -75,6 +76,7 @@
 		<GridLayer viewBoxArray={renderer.view.viewBox} />
 		<g bind:this={shapeLayer2}></g>
 		{#if tool && tool.value && tool.value.SVGLayer}
+			<!-- https://www.youtube.com/live/nMs4X8-L_yo?feature=shared&t=1667 -->
 			{@const ToolLayer = tool.value.SVGLayer}
 			<!-- distribute css variables to all children -->
 			<g style={`--stroke-dash-length: ${renderer.strokeDashLength};`}>
