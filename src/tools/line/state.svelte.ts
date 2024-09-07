@@ -10,14 +10,12 @@ class ToolState {
 	drag: [number, number] | undefined = $state();
 	presses: [number, number][] = $state([]);
 	releases: [number, number][] = $state([]);
+	snapPresses: [number, number][] = $state([]);
+	snapReleases: [number, number][] = $state([]);
 
 	// the above, but snapped to grid
 	snapMove = $derived(snapPoint(this.move).coords);
 	snapDrag = $derived(snapPoint(this.drag).coords);
-	snapPresses = $derived(this.presses.map(snapPoint).map(el => el.coords)
-		.filter(a => a !== undefined));
-	snapReleases = $derived(this.releases.map(snapPoint).map(el => el.coords)
-		.filter(a => a !== undefined));
 
 	line: VecLine2 | undefined = $derived.by(() => {
 		if (this.snapPresses.length && this.snapReleases.length) {
@@ -57,6 +55,8 @@ class ToolState {
 		// this.releases = [];
 		while (this.presses.length) { this.presses.pop(); }
 		while (this.releases.length) { this.releases.pop(); }
+		while (this.snapPresses.length) { this.snapPresses.pop(); }
+		while (this.snapReleases.length) { this.snapReleases.pop(); }
 	}
 
 	makeLine() {

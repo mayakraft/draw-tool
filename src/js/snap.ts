@@ -3,11 +3,6 @@ import { distance2, subtract2 } from "rabbit-ear/math/vector.js";
 import { clampSegment } from "rabbit-ear/math/line.js";
 import { nearestPointOnLine } from "rabbit-ear/math/nearest.js";
 import { overlapLinePoint } from "rabbit-ear/math/overlap.js";
-import {
-	nearestVertex,
-	nearestEdge,
-	nearestFace,
-} from "rabbit-ear/graph/nearest.js";
 
 type SnapResult = {
 	coords: [number, number] | undefined,
@@ -16,7 +11,7 @@ type SnapResult = {
 
 const _0_866 = Math.sqrt(3) / 2;
 
-export const triangleGridSnapFunction = (point, snapRadius): [number, number] | undefined => {
+export const triangleGridSnapFunction = (point: [number, number], snapRadius: number): [number, number] | undefined => {
 	if (!point) {
 		return undefined;
 	}
@@ -31,11 +26,12 @@ export const triangleGridSnapFunction = (point, snapRadius): [number, number] | 
 		: undefined;
 };
 
-export const squareGridSnapFunction = (point, snapRadius): [number, number] | undefined => {
+export const squareGridSnapFunction = (point: [number, number], snapRadius: number): [number, number] | undefined => {
 	if (!point) {
 		return undefined;
 	}
-	const coords = point.map((n) => Math.round(n));
+	const rounded = point.map((n) => Math.round(n));
+	const coords: [number, number] = [rounded[0], rounded[1]];
 	const isNear = point
 		.map((n, i) => Math.abs(coords[i] - n))
 		.map((d) => d < snapRadius)
@@ -138,34 +134,4 @@ export const snapToLine = (
 	);
 	const snapPoint = snapToPoint(rulerPoint, collinearSnapPoints, snapRadius);
 	return snapPoint.snap ? snapPoint : { coords: rulerPoint, snap: true };
-};
-
-/**
- * @param {number[]} point
- * @param {FOLD} graph a FOLD graph with vertices_coords, edges_vertices
- * @param {number} snapRadius
- */
-export const snapToEdge = (point, graph, snapRadius): SnapResult => {
-	if (!point || !graph || !graph.vertices_coords || !graph.edges_vertices) {
-		return { snap: false, edge: undefined, coords: undefined };
-	}
-	let edge;
-	try {
-		edge = nearestEdge(graph, point);
-	} catch (error) {
-		edge = undefined;
-	}
-	if (edge === undefined) {
-		return { snap: false, edge: undefined, coords: point };
-	}
-	const seg = graph.edges_vertices[edge].map((v) => graph.vertices_coords[v]);
-	const nearestPoint = nearestPointOnLine(
-		{ vector: subtract2(seg[1], seg[0]), origin: seg[0] },
-		point,
-		clampSegment,
-	);
-	const distance = distance2(point, nearestPoint);
-	return distance < snapRadius
-		? { snap: true, edge, coords: nearestPoint }
-		: { snap: false, edge: undefined, coords: point };
 };

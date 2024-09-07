@@ -1,7 +1,9 @@
 <script lang="ts">
-	import SVGTouchCanvas from "./SVGTouchCanvas.svelte";
-	import GridLayer from "./GridLayer.svelte";
-	import { model, shapeToElement } from "../stores/model.svelte.ts";
+	import SVGTouchCanvas from "./SVG/SVGTouchCanvas.svelte";
+	import GridLayer from "./SVG/GridLayer.svelte";
+	import SVGElements from "./SVG/SVGElements.svelte";
+	import { model } from "../stores/model.svelte.ts";
+	import { tool } from "../stores/tool.svelte.ts";
 	import { renderer } from "../stores/renderer.svelte.ts";
 	import {
 		onmousemove,
@@ -10,30 +12,9 @@
 		onmouseleave,
 		onwheel,
 	} from "../stores/touchEvents.svelte.ts";
-	import { tool } from "../stores/tool.svelte.ts";
 
-	let shapeLayer1: SVGGElement;
-	let shapeLayer2: SVGGElement;
-
-	const remove = (el: Element) => {
-		while(el.children.length) { el.removeChild(el.children[0]); }
-	};
-
-	const elements1 = $derived(model.elements
-		.map(shapeToElement)
-		.filter(a => a !== undefined));
-	const elements2 = $derived(model.elements
-		.map(shapeToElement)
-		.filter(a => a !== undefined));
-
-	$effect(() => {
-		remove(shapeLayer1);
-		elements1.forEach(el => shapeLayer1.appendChild(el));
-	});
-	$effect(() => {
-		remove(shapeLayer2);
-		elements2.forEach(el => shapeLayer2.appendChild(el));
-	});
+	// https://www.youtube.com/live/nMs4X8-L_yo?feature=shared&t=1667
+	const ToolLayer = $derived(tool.value?.SVGLayer);
 </script>
 
 <div class="row">
@@ -49,11 +30,8 @@
 		stroke="white"
 		stroke-width={renderer.strokeWidth}>
 		<GridLayer viewBoxArray={renderer.view.viewBox} />
-		<g bind:this={shapeLayer1}></g>
-		{#if tool && tool.value && tool.value.SVGLayer}
-			<!-- https://www.youtube.com/live/nMs4X8-L_yo?feature=shared&t=1667 -->
-			{@const ToolLayer = tool.value.SVGLayer}
-			<!-- distribute css variables to all children -->
+		<SVGElements elements={model.elements} />
+		{#if ToolLayer}
 			<g style={`--stroke-dash-length: ${renderer.strokeDashLength};`}>
 				<ToolLayer />
 			</g>
@@ -74,11 +52,8 @@
 		stroke="white"
 		stroke-width={renderer.strokeWidth}>
 		<GridLayer viewBoxArray={renderer.view.viewBox} />
-		<g bind:this={shapeLayer2}></g>
-		{#if tool && tool.value && tool.value.SVGLayer}
-			<!-- https://www.youtube.com/live/nMs4X8-L_yo?feature=shared&t=1667 -->
-			{@const ToolLayer = tool.value.SVGLayer}
-			<!-- distribute css variables to all children -->
+		<SVGElements elements={model.elements} />
+		{#if ToolLayer}
 			<g style={`--stroke-dash-length: ${renderer.strokeDashLength};`}>
 				<ToolLayer />
 			</g>

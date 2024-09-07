@@ -2,7 +2,7 @@
 // import { Selection } from "./Select.js";
 import ear from "rabbit-ear";
 
-type Shape = {
+export type Shape = {
 	name: string;
 	params: object;
 };
@@ -16,11 +16,27 @@ export const shapeToElement = ({ name, params }: Shape) => {
 	}
 };
 
+// temporarily returns all circles, that's all.
+const getShapesInRect = (shapes: Shape[], rect): number[] => {
+	return shapes
+		.map(({ name }, i) => name === "circle" ? i : undefined)
+		.filter(a => a !== undefined);
+};
+
 export const model = (() => {
 	let elements: Shape[] = $state([]);
+	let selected: number[] = $state([]);
+
 	return {
 		get elements() { return elements; },
 		set elements(newElements) { elements = newElements; },
+
+		get selected() { return selected; },
+		set selected(newSelected) { selected = newSelected; },
+		selectedInsideRect(rect) {
+			this.selected = getShapesInRect(this.elements, rect);
+			// console.log(this.selected);
+		},
 		push(...newElements: Shape[]) { elements.push(...newElements); },
 		pop() { elements.pop(); },
 		clear() { elements = []; },

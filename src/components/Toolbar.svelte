@@ -48,12 +48,12 @@
 		stroke: var(--background-1);
 		fill: var(--background-1);
 	}
-	button[disabled], button[disabled]:hover {
+	/* button[disabled], button[disabled]:hover {
 		background-color: transparent;
 		stroke: var(--dim);
 		fill: var(--dim);
 		cursor: initial;
-	}
+	} */
 	button:focus {
 		outline-offset: -1px;
 		outline: 2px solid var(--uiblue);

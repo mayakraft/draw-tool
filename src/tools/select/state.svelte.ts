@@ -1,6 +1,7 @@
 import { boundingBox } from "rabbit-ear/math/polygon.js";
 import { type Box } from "rabbit-ear/types.js";
 import type { StateManagerType } from "../../types.ts";
+import { model } from "../../stores/model.svelte.ts";
 
 class ToolState {
 	press: [number, number] | undefined = $state();
@@ -40,6 +41,7 @@ class ToolState {
 					$state.snapshot(this.press),
 					$state.snapshot(this.release),
 				];
+				model.selectedInsideRect(this.box);
 				console.log("make selection", ...points);
 				this.reset();
 			});

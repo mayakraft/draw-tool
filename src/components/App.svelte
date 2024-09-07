@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from "svelte";
 	import Toolbar from "./Toolbar.svelte";
 	import DebugPanel from "./DebugPanel.svelte";
 	import Canvases from "./Canvases.svelte";
@@ -9,15 +8,14 @@
 	// give space to account for the scrollbar, we have to create a listener
 	// and manually add the padding by setting a css variable.
 	let divToolbar: HTMLElement;
-	let toolbarScrollbarWidth = 0;
-	$: document.documentElement.style.setProperty(
-		"--toolbar-scrollbar-width", `${toolbarScrollbarWidth}px`)
 
-	onMount(() => {
-		// toolbar scrollbar stuff
+	// toolbar scrollbar stuff
+	$effect(() => { // on mount
 		const resizeObserver = new ResizeObserver(entries => {
 			setTimeout(() => {
-				toolbarScrollbarWidth = divToolbar.offsetWidth - divToolbar.clientWidth;
+				const width = divToolbar.offsetWidth - divToolbar.clientWidth;
+				document.documentElement.style.setProperty(
+					"--toolbar-scrollbar-width", `${width}px`)
 			}, 5);
 		});
 		resizeObserver.observe(divToolbar);

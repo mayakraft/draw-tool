@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { gridType } from "../stores/grid.svelte.ts";
-	import { renderer } from "../stores/renderer.svelte.ts";
-	import { viewBoxOrigin } from "../js/matrix.ts";
+	import { gridType } from "../../stores/grid.svelte.ts";
+	import { renderer } from "../../stores/renderer.svelte.ts";
+	import { viewBoxOrigin } from "../../js/matrix.ts";
 	import {
 		makeSquareGrid,
 		makeTriangleGrid,
-	} from "../js/grid.ts";
+	} from "../../js/grid.ts";
 
 	interface PropsType {
 		viewBoxArray: [number, number, number, number],
