@@ -20,7 +20,3 @@ export const onmouseup = ({ point, buttons, id }: ScaledMouseEvent) => {
 	state.tool.drag = (buttons ? point : undefined);
 	state.tool.releases.push(point);
 };
-
-// export const onmouseleave = (event: ScaledMouseEvent) => {
-// 	state.reset();
-// };

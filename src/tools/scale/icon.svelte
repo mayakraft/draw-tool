@@ -1,17 +1,18 @@
 <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
 	<rect
-		x="2"
-		y="2"
-		width="16"
-		height="16"
+		x="2.1"
+		y="2.1"
+		width="15.8"
+		height="15.8"
 		fill="none"
 		stroke-width="1"
-		stroke-dasharray="2 2"/>
+		stroke-dasharray="2"/>
 	<rect
-		x="7"
-		y="7"
-		width="6"
-		height="6"
-		stroke-width="1"
-		fill="none"/>
+		x="6"
+		y="6"
+		width="8"
+		height="8"
+		fill="none"
+		stroke-width="2"
+		transform="translate(-3.5 3.5)"/>
 </svg>
