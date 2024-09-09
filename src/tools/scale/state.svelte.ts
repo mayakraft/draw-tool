@@ -1,4 +1,3 @@
-// import { untrack } from "svelte";
 import { distance2, magnitude2, subtract2 } from "rabbit-ear/math/vector.js";
 import type { StateManagerType } from "../../types.ts";
 import { snapPoint } from "../../math/snap.svelte.ts";
@@ -9,15 +8,36 @@ const equivalent = (point1: [number, number], point2: [number, number]) => (
 );
 
 class Touches {
-	move: [number, number] | undefined = $state();
-	drag: [number, number] | undefined = $state();
-	press: [number, number] | undefined = $state();
-	release: [number, number] | undefined = $state();
+	#move: [number, number] | undefined = $state();
+	#drag: [number, number] | undefined = $state();
+	#press: [number, number] | undefined = $state();
+	#release: [number, number] | undefined = $state();
 
-	snapMove = $derived(snapPoint(this.move).coords);
-	snapDrag = $derived(snapPoint(this.drag).coords);
-	snapPress = $derived(snapPoint(this.press).coords);
-	snapRelease = $derived(snapPoint(this.release).coords);
+	snapMove: [number, number] | undefined = $state();
+	snapDrag: [number, number] | undefined = $state();
+	snapPress: [number, number] | undefined = $state();
+	snapRelease: [number, number] | undefined = $state();
+
+	get move() { return this.#move; }
+	get drag() { return this.#drag; }
+	get press() { return this.#press; }
+	get release() { return this.#release; }
+	set move(v: [number, number] | undefined) {
+		this.#move = v;
+		this.snapMove = snapPoint(this.#move).coords;
+	}
+	set drag(v: [number, number] | undefined) {
+		this.#drag = v;
+		this.snapDrag = snapPoint(this.#drag).coords;
+	}
+	set press(v: [number, number] | undefined) {
+		this.#press = v;
+		this.snapPress = snapPoint(this.#press).coords;
+	}
+	set release(v: [number, number] | undefined) {
+		this.#release = v;
+		this.snapRelease = snapPoint(this.#release).coords;
+	}
 
 	reset() {
 		this.move = undefined;
@@ -156,12 +176,9 @@ class StateWrapper implements StateManagerType {
 		this.touches = new Touches();
 		this.fixedPoint = new FixedPoint(this.touches);
 		this.tool = new ToolState(this.touches, this.fixedPoint);
-
 		this.unsub.push(this.tool.update());
 		this.unsub.push(this.fixedPoint.updateSelected());
 		this.unsub.push(this.fixedPoint.update());
-		// this.unsub.push(this.fixedPoint.selectOrigin());
-		// this.unsub.push(this.fixedPoint.moveOrigin());
 	}
 
 	unsubscribe() {

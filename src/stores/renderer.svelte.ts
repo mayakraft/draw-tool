@@ -45,6 +45,9 @@ class RenderView {
 		return [x, y, w, h];
 	});
 
+	vmin: number = $derived(Math.min(this.viewBox[2], this.viewBox[3]));
+	vmax: number = $derived(Math.max(this.viewBox[2], this.viewBox[3]));
+
 	viewBoxString = $derived(this.viewBox.join(" "));
 
 	viewBoxPolygon: [number, number][] = $derived([

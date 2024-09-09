@@ -5,38 +5,62 @@ import { snapToLine } from "../../js/snap.ts";
 import { snapPoint } from "../../math/snap.svelte.ts";
 import { model } from "../../stores/model.svelte.ts";
 
-class ToolState {
+class Touches {
 	move: [number, number] | undefined = $state();
 	drag: [number, number] | undefined = $state();
+	snapMove = $derived(snapPoint(this.move).coords);
+	snapDrag = $derived(snapPoint(this.drag).coords);
+
 	presses: [number, number][] = $state([]);
 	releases: [number, number][] = $state([]);
 	snapPresses: [number, number][] = $state([]);
 	snapReleases: [number, number][] = $state([]);
 
-	// the above, but snapped to grid
-	snapMove = $derived(snapPoint(this.move).coords);
-	snapDrag = $derived(snapPoint(this.drag).coords);
+	addPress(point: [number, number]) {
+		this.presses.push(point);
+		this.snapPresses.push(snapPoint(point).coords);
+	}
+
+	addRelease(point: [number, number]) {
+		this.releases.push(point);
+		this.snapReleases.push(snapPoint(point).coords);
+	}
+
+	reset() {
+		this.move = undefined;
+		this.drag = undefined;
+		while (this.presses.length) { this.presses.pop(); }
+		while (this.releases.length) { this.releases.pop(); }
+		while (this.snapPresses.length) { this.snapPresses.pop(); }
+		while (this.snapReleases.length) { this.snapReleases.pop(); }
+	}
+};
+
+class ToolState {
+	touches: Touches;
 
 	line: VecLine2 | undefined = $derived.by(() => {
-		if (this.snapPresses.length && this.snapReleases.length) {
-			return pointsToLine2(this.snapPresses[0], this.snapReleases[0]);
+		if (this.touches.snapPresses.length && this.touches.snapReleases.length) {
+			return pointsToLine2(this.touches.snapPresses[0], this.touches.snapReleases[0]);
 		}
-		if (this.snapPresses.length && this.snapDrag) {
-			return pointsToLine2(this.snapPresses[0], this.snapDrag);
+		if (this.touches.snapPresses.length && this.touches.snapDrag) {
+			return pointsToLine2(this.touches.snapPresses[0], this.touches.snapDrag);
 		}
 		return undefined;
 	});
 
 	segmentPoints: [number, number][] | undefined = $derived.by(() => {
 		if (!this.line) { return undefined; }
-		if (!this.snapPresses.length || !this.snapReleases.length) { return undefined; }
-		const snapLines = [{ line: this.line, clamp: (a) => a, domain: () => true }];
-		const point1 = this.snapPresses.length >= 2
-			? snapToLine(this.snapPresses[1], snapLines).coords
-			: snapToLine(this.snapMove, snapLines).coords;
-		const point2 = this.snapReleases.length >= 2
-			? snapToLine(this.snapReleases[1], snapLines).coords
-			: snapToLine(this.snapDrag, snapLines).coords;
+		if (!this.touches.snapPresses.length || !this.touches.snapReleases.length) {
+			return undefined;
+		}
+		const snapLines = [{ line: this.line, clamp: (a: any) => a, domain: () => true }];
+		const point1 = this.touches.snapPresses.length >= 2
+			? snapToLine(this.touches.snapPresses[1], snapLines).coords
+			: snapToLine(this.touches.snapMove, snapLines).coords;
+		const point2 = this.touches.snapReleases.length >= 2
+			? snapToLine(this.touches.snapReleases[1], snapLines).coords
+			: snapToLine(this.touches.snapDrag, snapLines).coords;
 		const result = [];
 		if (point1) { result.push(point1); }
 		if (point2) { result.push(point2); }
@@ -49,20 +73,13 @@ class ToolState {
 			: this.segmentPoints);
 
 	reset() {
-		this.move = undefined;
-		this.drag = undefined;
-		// this.presses = [];
-		// this.releases = [];
-		while (this.presses.length) { this.presses.pop(); }
-		while (this.releases.length) { this.releases.pop(); }
-		while (this.snapPresses.length) { this.snapPresses.pop(); }
-		while (this.snapReleases.length) { this.snapReleases.pop(); }
+		this.touches.reset();
 	}
 
 	makeLine() {
 		return $effect.root(() => {
 			$effect(() => {
-				if (this.snapPresses.length >= 2 && this.snapReleases.length >= 2 && this.segment) {
+				if (this.touches.snapPresses.length >= 2 && this.touches.snapReleases.length >= 2 && this.segment) {
 					const [[x1, y1], [x2, y2]] = this.segment;
 					model.addLine(x1, y1, x2, y2);
 					this.reset();
@@ -71,9 +88,14 @@ class ToolState {
 			return () => {};
 		});
 	};
+
+	constructor(touches: Touches) {
+		this.touches = touches;
+	}
 }
 
 class StateManager implements StateManagerType {
+	touches: Touches | undefined;
 	tool: ToolState | undefined;
 	unsub: Function[] = [];
 
@@ -81,7 +103,8 @@ class StateManager implements StateManagerType {
 
 	subscribe() {
 		this.unsubscribe();
-		this.tool = new ToolState();
+		this.touches = new Touches();
+		this.tool = new ToolState(this.touches);
 		this.unsub.push(this.tool.makeLine());
 	}
 

@@ -2,9 +2,9 @@
 	import state from "./state.svelte.ts";
 	import { renderer } from "../../stores/renderer.svelte.ts";
 
-	const highlighted = $derived(state.tool ? state.tool.originHighlighted : false);
+	const highlighted = $derived(state.fixedPoint ? state.fixedPoint.highlighted : false);
 	const className = $derived(highlighted ? "highlighted" : "");
-	const origin = $derived(state.tool ? state.tool.origin : [0, 0]);
+	const origin = $derived(state.fixedPoint ? state.fixedPoint.origin : [0, 0]);
 
 	// svg elements
 	const originCircle1 = $derived({
