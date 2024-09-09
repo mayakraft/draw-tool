@@ -11,14 +11,15 @@ export const onmousedown = ({ point, buttons, id }: ScaledMouseEvent) => {
 	if (!state.touches) { return; }
 	state.touches.move = (buttons ? undefined : point);
 	state.touches.drag = (buttons ? point : undefined);
-	state.touches.presses.push(point);
+	state.touches.press = point;
+	state.touches.release = undefined;
 };
 
 export const onmouseup = ({ point, buttons, id }: ScaledMouseEvent) => {
 	if (!state.touches) { return; }
 	state.touches.move = (buttons ? undefined : point);
 	state.touches.drag = (buttons ? point : undefined);
-	state.touches.releases.push(point);
+	state.touches.release = point;
 };
 
 // export const onmouseleave = (event: ScaledMouseEvent) => {
