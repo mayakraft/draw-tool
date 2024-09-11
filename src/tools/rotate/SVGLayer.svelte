@@ -62,12 +62,14 @@
 
 <ToolOrigin />
 
-{#each svgLines as line}
-	<line {...line} />
-{/each}
+{#if state.tool?.showAngleIndicator}
+	{#each svgLines as line}
+		<line {...line} />
+	{/each}
 
-{#if wedge}
-	<path d={wedge} />
+	{#if wedge}
+		<path d={wedge} />
+	{/if}
 {/if}
 
 <style>

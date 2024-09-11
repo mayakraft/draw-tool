@@ -4,6 +4,11 @@ import type { StateManagerType } from "../../types.ts";
 import { snapPoint } from "../../math/snap.svelte.ts";
 import { UIEpsilon } from "../../stores/epsilon.svelte.ts";
 
+const Effectify = (func: () => void) => ($effect.root(() => {
+	$effect(func);
+	return () => { };
+}));
+
 const equivalent = (point1: [number, number], point2: [number, number]) => (
 	distance2(point1, point2) < UIEpsilon.value * 3
 );
@@ -68,42 +73,26 @@ class FixedPoint {
 	// - false: if presses is empty, or, the press was far from the fixed point
 	// - true: if presses is not empty and the press was near to the fixed point
 	updateSelected() {
-		return $effect.root(() => {
-			$effect(() => {
-				if (this.selected) {
-					if (!this.touches.snapDrag) {
-						this.selected = false;
-					}
-				} else {
-					if (this.touches.snapPress) {
-						this.selected = equivalent(this.origin, this.touches.snapPress);
-						// untrack(() => this.selected = equivalent(this.origin, this.touches.snapPress));
-					}
-				}
-			});
-			return () => { };
-		});
+		if (this.selected) {
+			if (!this.touches.snapDrag) {
+				// console.log("fixed point selected: false");
+				this.selected = false;
+			}
+		} else {
+			if (this.touches.snapPress) {
+				// console.log("fixed point selected:", equivalent(this.origin, this.touches.snapPress));
+				this.selected = equivalent(this.origin, this.touches.snapPress);
+			}
+		}
 	}
 
 	// set this object's "origin" position, only if:
-	// "selected" is true and releases or drag is not undefined
-	update() {
-		return $effect.root(() => {
-			$effect(() => {
-				if (!this.selected) { return; }
-				if (this.touches.snapPress && this.touches.snapRelease) {
-					this.origin = this.touches.snapRelease;
-					// console.log("fixed point: set origin position, reset()");
-					// this.reset();
-					return;
-				}
-				if (this.touches.snapDrag) {
-					this.origin = this.touches.snapDrag;
-					return;
-				}
-			});
-			return () => { };
-		});
+	// "selected" is true if releases or drag is not undefined
+	updatePosition() {
+		if (this.selected && this.touches.snapDrag) {
+			// console.log("setting origin");
+			this.origin = this.touches.snapDrag;
+		}
 	}
 
 	constructor(touches: Touches) {
@@ -131,24 +120,27 @@ class ToolState {
 		? clockwiseAngle2(this.startVector, this.endVector)
 		: 0);
 
+	showAngleIndicator: boolean = $derived.by(() => (
+		this.touches.snapPress !== undefined &&
+		this.touches.snapRelease === undefined));
+
 	reset() {
 		this.fixedPoint.reset();
 		this.touches.reset();
 	}
 
 	update() {
-		return $effect.root(() => {
-			$effect(() => {
-				if (this.fixedPoint.selected) { return; }
-				if (!this.touches.snapPress || !this.touches.snapRelease) {
-					return;
-				}
-				console.log("rotate model by", this.angle);
-				// execute();
-				this.reset();
-			});
-			return () => { };
-		});
+		const wasSelected = this.fixedPoint.selected;
+		this.fixedPoint.updateSelected();
+		this.fixedPoint.updatePosition();
+
+		if (this.touches.snapPress
+			&& this.touches.snapRelease
+			&& !wasSelected
+			&& !this.fixedPoint.selected) {
+			console.log("rotate model by", this.angle);
+			this.reset();
+		}
 	}
 
 	constructor(touches: Touches, fixedPoint: FixedPoint) {
@@ -168,9 +160,7 @@ class StateWrapper implements StateManagerType {
 		this.touches = new Touches();
 		this.fixedPoint = new FixedPoint(this.touches);
 		this.tool = new ToolState(this.touches, this.fixedPoint);
-		this.unsub.push(this.tool.update());
-		this.unsub.push(this.fixedPoint.updateSelected());
-		this.unsub.push(this.fixedPoint.update());
+		this.unsub.push(Effectify(() => this.tool?.update()));
 	}
 
 	unsubscribe() {
