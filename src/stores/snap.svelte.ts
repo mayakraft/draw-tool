@@ -1,4 +1,3 @@
-import { renderer } from "./renderer.svelte.ts";
 import { gridType } from "./grid.svelte.ts";
 import {
 	triangleGridSnapFunction,
@@ -47,23 +46,6 @@ export const RadialSnapOffset = (() => {
 export const SnapPoints = (() => {
 	// const value = $derived();
 	const value: [number, number][] = [];
-	return {
-		get value() { return value; },
-	};
-})();
-
-/**
- * @description Snapping is zoom-level dependent, this is the factor
- * (out of 1) which is scaled to the viewbox to get the snap radius.
- */
-const SnapRadiusFactor = 0.05;
-
-/**
- * @description This is the radius of the snapping range to the
- * nearest snappable point, it is dependent upon the current view zoom.
- */
-export const SnapRadius = (() => {
-	const value = $derived(Math.max(renderer.view.viewBox[2], renderer.view.viewBox[3]) * SnapRadiusFactor);
 	return {
 		get value() { return value; },
 	};

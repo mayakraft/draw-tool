@@ -1,7 +1,7 @@
 import { snapToPoint } from "../js/snap.ts";
+import { viewports } from "../stores/viewport.svelte.ts";
 import {
 	SnapPoints,
-	SnapRadius,
 	GridSnapFunction,
 } from "../stores/snap.svelte.ts";
 
@@ -10,5 +10,5 @@ import {
 // - app level, like this wrapper snapPoint, where it hard codes app parameters
 // like SnapRadius, GridSnapfunction etc..
 export const snapPoint = (p: [number, number] | undefined) => (
-	snapToPoint(p, SnapPoints.value, SnapRadius.value, GridSnapFunction.value)
+	snapToPoint(p, SnapPoints.value, viewports[0].snapRadius, GridSnapFunction.value)
 );

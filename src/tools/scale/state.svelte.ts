@@ -1,10 +1,12 @@
 import { distance2, magnitude2, subtract2 } from "rabbit-ear/math/vector.js";
 import type { StateManagerType } from "../../types.ts";
 import { snapPoint } from "../../math/snap.svelte.ts";
-import { UIEpsilon } from "../../stores/epsilon.svelte.ts";
+import type { Viewport } from "../../stores/viewport.svelte.ts";
 
 const equivalent = (point1: [number, number], point2: [number, number]) => (
-	distance2(point1, point2) < UIEpsilon.value * 3
+	// todo
+	// distance2(point1, point2) < viewport.uiEpsilon * 3
+	distance2(point1, point2) < 1e-2
 );
 
 class Touches {
@@ -49,6 +51,7 @@ class Touches {
 
 class FixedPoint {
 	touches: Touches;
+	viewport: Viewport | undefined = $state();
 
 	origin: [number, number] = $state([0, 0]);
 	selected: boolean = $state(false);

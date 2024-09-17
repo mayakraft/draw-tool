@@ -7,7 +7,7 @@ import {
 	makeMatrix2UniformScale,
 } from "rabbit-ear/math/matrix2.js";
 
-class RenderView {
+class ViewportView {
 	verticalUp = $state(localStorage.getItem("VerticalUp") !== null
 		? localStorage.getItem("VerticalUp") === "true"
 		: false);
@@ -71,23 +71,61 @@ class RenderView {
 	}
 }
 
-class RenderSettings {
-	view = new RenderView();
+class ViewportStyle {
+  view: ViewportView;
+  constructor(view: ViewportView) {
+    this.view = view;
+  }
 
-	strokeWidthFactor = $state(0.001);
+  strokeWidthFactor = $state(0.001);
 	strokeWidthMin = $state(0.001);
 	vertexRadiusFactor = $state(0.00666);
 
-	circleRadius = $derived(
+	circleRadius = $derived.by(() =>
 		Math.min(this.view.viewBox[2], this.view.viewBox[3]) * this.vertexRadiusFactor,
 	);
 
-	strokeWidth = $derived(Math.max(
+	strokeWidth = $derived.by(() => Math.max(
 		this.strokeWidthMin,
 		Math.min(this.view.viewBox[2], this.view.viewBox[3]) * this.strokeWidthFactor,
 	));
 
 	strokeDashLength = $derived(this.strokeWidth * 8);
+}
+
+export class Viewport {
+	view: ViewportView;
+  style: ViewportStyle;
+
+  constructor() {
+    this.view = new ViewportView();
+    this.style = new ViewportStyle(this.view);
+  }
+
+	// epsilon and snapping
+
+	// a UI touch event, coming from a pointer device, will have some
+	// built-in error correcting (like snapping, for example), and this behavior
+	// is zoom-level dependent. This is the factor out of 1 which is
+	// scaled to the viewbox to get this ui-epsilon floating point error factor.
+	uiEpsilonFactor = 0.01;
+
+	// Snapping is zoom-level dependent, this is the factor
+	// (out of 1) which is scaled to the viewbox to get the snap radius.
+	snapRadiusFactor = 0.05;
+
+	// a UI touch event, coming from a pointer device, will have some
+	// built-in error correcting (like snapping, for example), and this behavior
+	// is zoom-level dependent. Use this variable to get an appropriate error-
+	// correcting value.
+	uiEpsilon: number = $derived.by(() => Math.max(this.view.viewBox[2], this.view.viewBox[3]) * this.uiEpsilonFactor);
+
+	// This is the radius of the snapping range to the
+	// nearest snappable point, it is dependent upon the current view zoom.
+	snapRadius: number = $derived.by(() => this.view.vmax * this.snapRadiusFactor);
 };
 
-export const renderer = (new RenderSettings());
+export const viewports = [
+  new Viewport(),
+  new Viewport(),
+];

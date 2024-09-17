@@ -4,13 +4,14 @@ import {
 	determinant2,
 	makeMatrix2Translate,
 } from "rabbit-ear/math/matrix2.js";
+import type { Viewport } from "../../stores/viewport.svelte.ts";
 import { getScreenPoint } from "../../js/matrix.ts";
-import { renderer } from "../../stores/renderer.svelte.ts";
+// import { renderer } from "../../stores/renderer.svelte.ts";
 
 /**
  *
  */
-export const zoomCameraMatrix = (scale: number, origin: [number, number]) => {
+export const zoomCameraMatrix = (camera: number[], scale: number, origin: [number, number]) => {
 	// the input point is in ModelViewMatrix space,
 	// which includes ModelMatrix. But, in the upcoming line we are only
 	// applying a change to the CameraMatrix. So, before we modify the
@@ -22,45 +23,45 @@ export const zoomCameraMatrix = (scale: number, origin: [number, number]) => {
 	// if the determininat is too small, return unchanged matrix
 	// the reason is because the viewMatrix is built from the
 	// inverse of this matrix, a bad det makes an invalid inverse.
-	const newMatrix = multiplyMatrices2(renderer.view.camera, matrix);
+	const newMatrix = multiplyMatrices2(camera, matrix);
 	const det = determinant2(newMatrix);
 	if (Math.abs(det) < 1e-11) {
-		return [1e-5, 0, 0, 1e-5, renderer.view.camera[4], renderer.view.camera[5]];
+		return [1e-5, 0, 0, 1e-5, camera[4], camera[5]];
 	}
 	if (Math.abs(det) > 1e11) {
 		return [1e5, 0, 0, 1e5, 0, 0];
 	}
-	renderer.view.camera = newMatrix;
+	return newMatrix;
 };
 
 /**
  *
  */
-export const panCameraMatrix = (translate: [number, number]) => {
+export const panCameraMatrix = (camera: number[], translate: [number, number]) => {
 	const matrix = makeMatrix2Translate(translate[0], translate[1]);
-	renderer.view.camera = multiplyMatrices2(renderer.view.camera, matrix);
+	return multiplyMatrices2(camera, matrix);
 };
 
 /**
  *
  */
-export const wheelEventZoomMatrix = ({ point, deltaY }: { point: [number, number], deltaY: number }) => {
+export const wheelEventZoomMatrix = (viewport: Viewport, { point, deltaY }: { point: [number, number], deltaY: number }) => {
 	const scaleOffset = deltaY / 333;
 	const scale = 1 - scaleOffset;
-	const screenPoint = getScreenPoint(point, renderer.view.model);
+	const screenPoint = getScreenPoint(point, viewport.view.model);
 	const origin: [number, number] = screenPoint ? screenPoint : [0, 0];
-	zoomCameraMatrix(scale, origin);
+	viewport.view.camera = zoomCameraMatrix(viewport.view.camera, scale, origin);
 };
 
 /**
  *
  */
-export const wheelPanMatrix = ({ deltaX, deltaY }: { deltaX: number, deltaY: number }) => {
+export const wheelPanMatrix = (viewport: Viewport, { deltaX, deltaY }: { deltaX: number, deltaY: number }) => {
 	const touchScale = -1 / 300;
-	const impliedScale = renderer.view.modelView[0];
+	const impliedScale = viewport.view.modelView[0];
 	const translate: [number, number] = [
 		deltaX * touchScale * impliedScale,
-		deltaY * touchScale * impliedScale * (renderer.view.verticalUp ? -1 : 1),
+		deltaY * touchScale * impliedScale * (viewport.view.verticalUp ? -1 : 1),
 	];
-	panCameraMatrix(translate);
+	viewport.view.camera = panCameraMatrix(viewport.view.camera, translate);
 };

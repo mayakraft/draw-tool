@@ -1,6 +1,6 @@
 <script>
 	import state from "./state.svelte.ts";
-	import { renderer } from "../../stores/renderer.svelte.ts";
+	// import { renderer } from "../../stores/renderer.svelte.ts";
 
 	const highlighted = $derived(state.fixedPoint ? state.fixedPoint.highlighted : false);
 	const className = $derived(highlighted ? "highlighted" : "");
@@ -10,23 +10,29 @@
 	const originCircle1 = $derived({
 		cx: origin[0],
 		cy: origin[1],
-		r: renderer.circleRadius * 1.5,
+		// r: renderer.circleRadius * 2,
+		r: state.fixedPoint?.viewport?.style.circleRadius * 1.5,
 	});
 	const originCircle2 = $derived({
 		cx: origin[0],
 		cy: origin[1],
-		r: renderer.circleRadius * 2,
+		// r: renderer.circleRadius * 2,
+		r: state.fixedPoint?.viewport?.style.circleRadius * 1.5,
 	});
 	const originLine1 = $derived({
 		x1: origin[0],
-		y1: origin[1] - renderer.circleRadius * 3,
+		// y1: origin[1] - renderer.circleRadius * 3,
+		y1: origin[1] - state.fixedPoint?.viewport?.style.circleRadius * 3,
 		x2: origin[0],
-		y2: origin[1] + renderer.circleRadius * 3,
+		// y2: origin[1] + renderer.circleRadius * 3,
+		y2: origin[1] + state.fixedPoint?.viewport?.style.circleRadius * 3,
 	});
 	const originLine2 = $derived({
-		x1: origin[0] - renderer.circleRadius * 3,
+		// x1: origin[0] - renderer.circleRadius * 3,
+		x1: origin[0] - state.fixedPoint?.viewport?.style.circleRadius * 3,
 		y1: origin[1],
-		x2: origin[0] + renderer.circleRadius * 3,
+		// x2: origin[0] + renderer.circleRadius * 3,
+		x2: origin[0] + state.fixedPoint?.viewport?.style.circleRadius * 3,
 		y2: origin[1],
 	});
 </script>

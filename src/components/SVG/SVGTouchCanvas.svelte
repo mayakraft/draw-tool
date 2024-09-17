@@ -17,6 +17,7 @@
 		onmouseleave?: (e: ScaledMouseEvent) => void,
 		onwheel?: (e: ScaledWheelEvent) => void,
 		children?: Snippet,
+		rest: any[],
 	};
 
 	let {

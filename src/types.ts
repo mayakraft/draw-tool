@@ -1,4 +1,5 @@
 import type { Component, ComponentType, SvelteComponentTyped } from "svelte";
+import type { Viewport } from "./stores/viewport.svelte.ts";
 
 export interface StateManagerType {
 	subscribe(): void;
@@ -9,12 +10,14 @@ export interface StateManagerType {
 export type ScaledMouseEvent = MouseEvent & {
 	point: [number, number],
 	id?: string,
+	viewport?: Viewport,
 };
 
 export type ScaledWheelEvent = WheelEvent & {
 	// wheelDelta: number,
 	point: [number, number],
 	id?: string,
+	viewport?: Viewport,
 };
 
 export type Tool = {

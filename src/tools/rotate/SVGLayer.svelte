@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { add2, normalize2, scale2 } from "rabbit-ear/math/vector.js";
-	import { renderer } from "../../stores/renderer.svelte.ts";
+	// import { renderer } from "../../stores/renderer.svelte.ts";
 	import ToolOrigin from "./ToolOrigin.svelte";
 	import state from "./state.svelte.ts";
 	import { clockwiseAngle2, counterClockwiseAngle2 } from "rabbit-ear/math/radial.js";
@@ -53,7 +53,9 @@
 	const wedge = $derived(angle
 		? arcPath(origin[0],
 			origin[1],
-			renderer.view.vmin * 0.05,
+			// todo
+			// renderer.view.vmin * 0.05,
+			0.005,
 			Math.atan2(vectors[0][1], vectors[0][0]),
 			Math.atan2(vectors[0][1], vectors[0][0]) + angle,
 			true)

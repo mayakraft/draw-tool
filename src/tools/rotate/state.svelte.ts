@@ -2,7 +2,7 @@ import { distance2, subtract2 } from "rabbit-ear/math/vector.js";
 import { clockwiseAngle2 } from "rabbit-ear/math/radial.js";
 import type { StateManagerType } from "../../types.ts";
 import { snapPoint } from "../../math/snap.svelte.ts";
-import { UIEpsilon } from "../../stores/epsilon.svelte.ts";
+// import { renderer } from "../../stores/renderer.svelte.ts";
 
 const Effectify = (func: () => void) => ($effect.root(() => {
 	$effect(func);
@@ -10,7 +10,9 @@ const Effectify = (func: () => void) => ($effect.root(() => {
 }));
 
 const equivalent = (point1: [number, number], point2: [number, number]) => (
-	distance2(point1, point2) < UIEpsilon.value * 3
+	// todo
+	// distance2(point1, point2) < renderer.uiEpsilon * 3
+	distance2(point1, point2) < 1e-2
 );
 
 class Touches {
@@ -72,7 +74,7 @@ class FixedPoint {
 	// set this object's "selected" state.
 	// - false: if presses is empty, or, the press was far from the fixed point
 	// - true: if presses is not empty and the press was near to the fixed point
-	updateSelected() {
+	#updateSelected() {
 		if (this.selected) {
 			if (!this.touches.snapDrag) {
 				// console.log("fixed point selected: false");
@@ -88,11 +90,16 @@ class FixedPoint {
 
 	// set this object's "origin" position, only if:
 	// "selected" is true if releases or drag is not undefined
-	updatePosition() {
+	#updatePosition() {
 		if (this.selected && this.touches.snapDrag) {
 			// console.log("setting origin");
 			this.origin = this.touches.snapDrag;
 		}
+	}
+
+	update() {
+		this.#updateSelected();
+		this.#updatePosition();
 	}
 
 	constructor(touches: Touches) {
@@ -104,15 +111,25 @@ class ToolState {
 	touches: Touches;
 	fixedPoint: FixedPoint;
 
+	// startVector: [number, number] | undefined = $derived.by(() =>
+	// 	this.touches.snapPress && !this.fixedPoint.selected
+	// 		? subtract2(this.touches.snapPress, this.fixedPoint.origin)
+	// 		: undefined);
 	startVector: [number, number] | undefined = $derived.by(() =>
-		this.touches.press && !this.fixedPoint.selected
-			? subtract2(this.touches.press, this.fixedPoint.origin)
+		this.touches.snapPress && !this.fixedPoint.selected
+			? subtract2(this.touches.snapPress, this.fixedPoint.origin)
 			: undefined);
 
 	endVector: [number, number] | undefined = $derived.by(() => {
-		if (this.fixedPoint.selected) { return undefined; }
-		if (this.touches.release) { return subtract2(this.touches.release, this.fixedPoint.origin); }
-		if (this.touches.drag) { return subtract2(this.touches.drag, this.fixedPoint.origin); }
+		if (this.fixedPoint.selected) {
+			return undefined;
+		}
+		if (this.touches.snapRelease) {
+			return subtract2(this.touches.snapRelease, this.fixedPoint.origin);
+		}
+		if (this.touches.snapDrag) {
+			return subtract2(this.touches.snapDrag, this.fixedPoint.origin);
+		}
 		return undefined;
 	});
 
@@ -131,8 +148,7 @@ class ToolState {
 
 	update() {
 		const wasSelected = this.fixedPoint.selected;
-		this.fixedPoint.updateSelected();
-		this.fixedPoint.updatePosition();
+		this.fixedPoint.update();
 
 		if (this.touches.snapPress
 			&& this.touches.snapRelease

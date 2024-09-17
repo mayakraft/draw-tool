@@ -5,21 +5,24 @@ import {
 	wheelPanMatrix,
 } from "./matrix.ts";
 
-export const onmousemove = ({ point, buttons, id }: ScaledMouseEvent) => {
+export const onmousemove = ({ point, buttons, id, viewport }: ScaledMouseEvent) => {
 	if (!state.tool) { return; }
+	state.tool.viewport = viewport;
 	state.tool.move = (buttons ? undefined : point);
 	state.tool.drag = (buttons ? point : undefined);
 };
 
-export const onmousedown = ({ point, buttons, id }: ScaledMouseEvent) => {
+export const onmousedown = ({ point, buttons, id, viewport }: ScaledMouseEvent) => {
 	if (!state.tool) { return; }
+	state.tool.viewport = viewport;
 	state.tool.move = (buttons ? undefined : point);
 	state.tool.drag = (buttons ? point : undefined);
 	state.tool.press = point;
 };
 
-export const onmouseup = ({ point, buttons, id }: ScaledMouseEvent) => {
+export const onmouseup = ({ point, buttons, id, viewport }: ScaledMouseEvent) => {
 	if (!state.tool) { return; }
+	state.tool.viewport = viewport;
 	state.tool.move = (buttons ? undefined : point);
 	state.tool.drag = (buttons ? point : undefined);
 	state.tool.release = point;
@@ -29,10 +32,10 @@ export const onmouseup = ({ point, buttons, id }: ScaledMouseEvent) => {
 // 	state.reset();
 // };
 
-export const onwheel = ({ point, deltaX, deltaY, id }: ScaledWheelEvent) => {
+export const onwheel = ({ point, deltaX, deltaY, id, viewport }: ScaledWheelEvent) => {
 	switch (id) {
-		case "right-canvas": return wheelPanMatrix({ deltaX, deltaY });
-		case "left-canvas": return wheelEventZoomMatrix({ point, deltaY });
-		default: return wheelEventZoomMatrix({ point, deltaY });
+		case "right-canvas": return wheelPanMatrix(viewport, { deltaX, deltaY });
+		case "left-canvas": return wheelEventZoomMatrix(viewport, { point, deltaY });
+		default: return wheelEventZoomMatrix(viewport, { point, deltaY });
 	}
 };

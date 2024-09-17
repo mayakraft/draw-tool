@@ -15,7 +15,7 @@ export const onmouseleave = (event: ScaledMouseEvent) => (
 	tool.value?.onmouseleave?.(event));
 
 export const onwheel = (event: ScaledWheelEvent) => {
-	if (tool.value && tool.value.onwheel) {
+	if (tool.value?.onwheel) {
 		tool.value.onwheel(event);
 	}
 	else {
