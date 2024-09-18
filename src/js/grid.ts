@@ -14,6 +14,7 @@ export const makeIntervals = (start: number, size: number, spacing = 1) => {
 	}
 	const count = Math.floor(size / spacing);
 	const offset = Math.ceil(start / spacing) * spacing;
+	// todo: got an "invalid array length" error.
 	return Array.from(Array(count + 1)).map((_, i) => offset + spacing * i);
 };
 

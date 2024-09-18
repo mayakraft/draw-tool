@@ -1,11 +1,10 @@
 import { subtract2 } from "rabbit-ear/math/vector.js";
-import type { StateManagerType } from "../../types.ts";
+import type { SubUnsubReset } from "../../types.ts";
 import type { Viewport } from "../../stores/viewport.svelte.ts";
 import { panCameraMatrix } from "./matrix.ts";
 
-class ToolState {
+export class ToolState {
 	press: [number, number] | undefined = $state();
-	// release: [number, number] | undefined = $state();
 	move: [number, number] | undefined = $state();
 	drag: [number, number] | undefined = $state();
 
@@ -19,7 +18,6 @@ class ToolState {
 		this.move = undefined;
 		this.drag = undefined;
 		this.press = undefined;
-		// this.release = undefined;
 		this.viewport = undefined;
 	}
 
@@ -40,7 +38,7 @@ class ToolState {
 	}
 };
 
-class StateManager implements StateManagerType {
+export class StateManager implements SubUnsubReset {
 	tool: ToolState | undefined;
 	unsub: Function[] = [];
 
@@ -61,5 +59,3 @@ class StateManager implements StateManagerType {
 		this.tool?.reset();
 	};
 };
-
-export default (new StateManager());

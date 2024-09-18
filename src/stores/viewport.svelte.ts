@@ -6,6 +6,7 @@ import {
 	makeMatrix2Translate,
 	makeMatrix2UniformScale,
 } from "rabbit-ear/math/matrix2.js";
+import type { ScaledMouseEvent, ScaledWheelEvent } from "../types.ts";
 
 class ViewportView {
 	verticalUp = $state(localStorage.getItem("VerticalUp") !== null
@@ -96,6 +97,12 @@ class ViewportStyle {
 export class Viewport {
 	view: ViewportView;
   style: ViewportStyle;
+
+  onmousemove: ((e: ScaledMouseEvent) => void) | undefined;
+  onmousedown: ((e: ScaledMouseEvent) => void) | undefined;
+  onmouseup: ((e: ScaledMouseEvent) => void) | undefined;
+  onmouseleave: ((e: ScaledMouseEvent) => void) | undefined;
+  onwheel: ((e: ScaledWheelEvent) => void) | undefined;
 
   constructor() {
     this.view = new ViewportView();

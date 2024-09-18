@@ -1,21 +1,23 @@
 <script>
 	import Tools from "../tools/index.ts";
 	import { tool } from "../stores/tool.svelte.ts";
+  console.log(Tools, Object.values(Tools));
 </script>
 
-	<div class="grid-columns">
-		{#each Object.values(Tools) as t}
-			<button
-				title={t.name}
-				class={t.name}
-				highlighted={tool.value && tool.value.name === t.name}
-				on:click={() => { tool.value = t}}>
-				{#if t.icon}
-					<svelte:component this={t.icon} />
-				{/if}
-			</button>
-		{/each}
-	</div>
+<div class="grid-columns">
+  {#each Object.values(Tools) as t}
+    <button
+      title={t.name}
+      class={t.name}
+      highlighted={tool.value && tool.value.name === t.name}
+      onclick={() => { tool.value = t}}>
+      {#if t.icon}
+        <t.icon></t.icon>
+      {/if}
+    </button>
+  {/each}
+</div>
+
 <style>
 	/* button grid layout */
 	.grid-columns {
