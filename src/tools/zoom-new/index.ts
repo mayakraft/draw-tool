@@ -1,47 +1,37 @@
-import type { ToolNew, ToolViewport, ToolViewportInstance, SubUnsubReset } from "../../types.ts";
-import { type ScaledMouseEvent, type ScaledWheelEvent} from "../../types.ts";
+import type { ToolNew } from "../../types.ts";
 import type { Viewport } from "../../stores/viewport.svelte.ts";
 import icon from "./icon.svelte";
-import { ToolState, StateManager } from "./state.svelte.ts";
-// import * as events from "./events.ts";
 import { SVGViewportEvents } from "./events.ts";
 
-class Tool implements ToolNew, SubUnsubReset {
-	key = "zoom";
-	name = "zoom";
-	icon = icon;
-	state = new StateManager();
+class Tool implements ToolNew {
+	static key = "zoom";
+	static name = "zoom";
+	static icon = icon;
+	// this too has no global state
+	// state = new StateManager();
 	panel = undefined;
 
 	viewportEvents: SVGViewportEvents[] = [];
 	bindTo(viewport: Viewport): Function {
 		// if viewport type is SVG, do A, if WebGL, do B.
-		this.viewportEvents.push(new SVGViewportEvents(viewport, this.state));
-		const unsub = () => { };
-		return unsub;
+		const viewportEvents = new SVGViewportEvents(viewport);
+		this.viewportEvents.push(viewportEvents);
+		// subscribe, return unsubscribe
+		// todo for now, not doing anything with reset
+		viewportEvents.subscribe();
+		return viewportEvents.unsubscribe;
 	}
 
-	// SubUnsubReset
 	subscribe() {
-		this.state.subscribe();
+		// viewportEvents.forEach(e => e.subscribe());
 	}
 	unsubscribe() {
-		this.state.unsubscribe();
+		// viewportEvents.forEach(e => e.unsubscribe());
 	}
 	// not sure we need to expose this to the outside world
 	reset() {
-		this.state.reset();
+		// viewportEvents.forEach(e => e.reset());
 	}
-};
-
-// export default { // <ToolDefinition>{
-// 	key: "zoom",
-// 	name: "zoom",
-// 	icon,
-// 	state,
-// 	SVGLayer: undefined,
-// 	panel: undefined,
-// 	ui: ToolDef,
-// };
+}
 
 export default Tool;

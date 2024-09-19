@@ -2,55 +2,49 @@
 import SVGTouchCanvas from "./SVG/SVGTouchCanvas.svelte";
 import GridLayer from "./SVG/GridLayer.svelte";
 import SVGElements from "./SVG/SVGElements.svelte";
-import { type ScaledMouseEvent, type ScaledWheelEvent } from "../types.ts";
 import type { Viewport } from "../stores/viewport.svelte.ts";
 import { model } from "../stores/model.svelte.ts";
-import { tool } from "../stores/tool.svelte.ts";
-import {
-	onmousemove as move,
-	onmousedown as down,
-	onmouseup as up,
-	onmouseleave as leave,
-	onwheel as wheel,
-} from "../stores/touchEvents.svelte.ts";
 
 type PropsType = {
-	id?: string,
 	viewport: Viewport,
+	rest?: any[]
 };
 
 let {
-  id,
   viewport,
+  ...rest
 }: PropsType = $props();
 
 // https://www.youtube.com/live/nMs4X8-L_yo?feature=shared&t=1667
-const ToolLayer = $derived(tool.value?.SVGLayer);
+// const SVGToolLayer = $derived(app.tool?.SVGLayer);
+// const svgToolLayerProps = $derived(app.tool?.SVGLayerProps || {});
+const SVGToolLayer = $derived(viewport.layer);
+const svgToolLayerProps = $derived(viewport.props || {});
 
-const onmousedown = (e: ScaledMouseEvent) => down(Object.assign(e, { viewport }));
-const onmousemove = (e: ScaledMouseEvent) => move(Object.assign(e, { viewport }));
-const onmouseup = (e: ScaledMouseEvent) => up(Object.assign(e, { viewport }));
-const onmouseleave = (e: ScaledMouseEvent) => leave(Object.assign(e, { viewport }));
-const onwheel = (e: ScaledWheelEvent) => wheel(Object.assign(e, { viewport }));
+// before, the methods were bound like this
+// onmousemove={viewport.onmousemove}
+// i think this will not work because the actual variable changes throughout,
+// UNLESS. oh wait. we can make the functions a $state rune.
+// then maybe we can return the bindings to the above and it will auto-update.
 
 </script>
 
 <SVGTouchCanvas
-  {id}
-	{onmousemove}
-	{onmousedown}
-	{onmouseup}
-	{onmouseleave}
-	{onwheel}
+	onmousemove={(...args) => viewport.onmousemove?.(...args)}
+	onmousedown={(...args) => viewport.onmousedown?.(...args)}
+	onmouseup={(...args) => viewport.onmouseup?.(...args)}
+	onmouseleave={(...args) => viewport.onmouseleave?.(...args)}
+	onwheel={(...args) => viewport.onwheel?.(...args)}
 	viewBox={viewport.view.viewBoxString}
 	fill="none"
 	stroke="white"
-	stroke-width={viewport.style.strokeWidth}>
+	stroke-width={viewport.style.strokeWidth}
+	{...rest}>
 	<GridLayer viewBoxArray={viewport.view.viewBox} />
 	<SVGElements elements={model.elements} />
-	{#if ToolLayer}
+	{#if SVGToolLayer}
 		<g class="tool-layer" style={`--stroke-dash-length: ${viewport.style.strokeDashLength};`}>
-			<ToolLayer />
+			<SVGToolLayer class="hello-tool-layer" {...svgToolLayerProps} />
 		</g>
 	{/if}
 </SVGTouchCanvas>

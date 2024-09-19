@@ -1,17 +1,17 @@
 <script lang="ts">
 	import ViewportSVG from "./ViewportSVG.svelte";
-	import { viewports } from "../stores/viewport.svelte.ts";
+	import { app } from "../stores/app.svelte.ts";
 
-	const ids = ["left-canvas", "right-canvas"];
+	const ids = ["canvas-a", "canvas-b"];
 </script>
 
 <div class="row">
-  {#each viewports as viewport, i}
-    <ViewportSVG {viewport} id={ids[i % 2]} />
-    {#if i < viewports.length - 1}
-	    <div class="gap"></div>
-    {/if}
-  {/each}
+	{#each app.viewports as viewport, i}
+		<ViewportSVG {viewport} id={ids[i % 2]} />
+		{#if i < app.viewports.length - 1}
+			<div class="gap"></div>
+		{/if}
+	{/each}
 </div>
 
 <style>

@@ -11,6 +11,7 @@
 		onmouseleave?: (e: MouseEvent) => void,
 		onwheel?: (e: WheelEvent) => void,
 		children?: Snippet,
+		rest?: any[]
 	};
 
 	let {
@@ -54,5 +55,10 @@
 	svg {
 		width: 100%;
 		height: 100%;
+	}
+
+	/* Chrome (not Firefox) draws a focus border. remove it */
+	svg:focus {
+    outline-width: 0;
 	}
 </style>

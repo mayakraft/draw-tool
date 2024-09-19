@@ -5,23 +5,23 @@ export interface StateManagerType {
 	subscribe(): void;
 	unsubscribe(): void;
 	reset(): void;
-};
+}
 
 export interface SubUnsubReset {
 	subscribe(): void;
 	unsubscribe(): void;
 	reset(): void;
-};
+}
 
 export type ScaledMouseEvent = MouseEvent & {
-	point: [number, number],
+	point: [number, number];
 	// id?: string,
 	// viewport?: Viewport,
 };
 
 export type ScaledWheelEvent = WheelEvent & {
 	// wheelDelta: number,
-	point: [number, number],
+	point: [number, number];
 	// id?: string,
 	// viewport?: Viewport,
 };
@@ -37,10 +37,11 @@ export type Tool = {
 	key: string;
 	name: string;
 	// icon: Component;
-	icon: ComponentType<SvelteComponentTyped>;
+	// icon: ComponentType<SvelteComponentTyped>;
+	icon: any;
 	panel: any;
 	SVGLayer: any;
-	state?: StateManagerType,
+	state?: StateManagerType;
 	// touch events
 	onmousemove?: (event: ScaledMouseEvent) => void;
 	onmousedown?: (event: ScaledMouseEvent) => void;
@@ -55,7 +56,7 @@ export type Tool = {
 // type ToolViewport = { };
 
 export interface ToolViewport {
-	SVGLayer: any;
+	// SVGLayer: any;
 	// touch events
 	onmousemove?: (event: ScaledMouseEvent) => void;
 	onmousedown?: (event: ScaledMouseEvent) => void;
@@ -65,7 +66,7 @@ export interface ToolViewport {
 	// keyboard events
 	onkeydown?: (event: KeyboardEvent) => void;
 	onkeyup?: (event: KeyboardEvent) => void;
-};
+}
 
 // i didn't realize this was going to open a can of worms.
 //
@@ -75,27 +76,44 @@ export interface ToolViewport {
 // where each viewport state can be created and destroyed, and has
 // access to the global state object.
 
-export type ToolDefinition = {
-	key: string;
-	name: string;
-	// icon: Component;
-	icon: ComponentType<SvelteComponentTyped>;
-	panel: any;
- 	state?: SubUnsubReset,
-  viewportInstance: ToolViewport
-};
+// export type ToolDefinition = {
+// 	key: string;
+// 	name: string;
+// 	// icon: Component;
+// 	icon: ComponentType<SvelteComponentTyped>;
+// 	panel: any;
+// 	state?: SubUnsubReset;
+// 	viewportInstance: ToolViewport;
+// };
 
-export interface ToolViewportInstance {
+export interface ToolViewportInstance {}
 
-}
+export abstract class ToolNew implements SubUnsubReset {
+	static key: string;
+	static name: string;
+	// static icon: Component;
+	// static icon: ComponentType<SvelteComponentTyped>;
+	static icon: any;
 
-export interface ToolNew {
-	key: string;
-	name: string;
-	// icon: Component;
-	icon: ComponentType<SvelteComponentTyped>;
-	panel: any;
-	state?: SubUnsubReset;
+	panel?: any;
+	SVGLayer?: any;
+	SVGLayerProps?: any;
+
+	// state?: SubUnsubReset;
 	// viewportInstances: ToolViewportInstance[];
-	bindTo(viewport: Viewport): Function;
+	abstract bindTo(viewport: Viewport): Function;
+	abstract subscribe(): void;
+	abstract unsubscribe(): void;
+	abstract reset(): void;
 }
+
+// export interface ToolNew {
+// 	// key: string;
+// 	// name: string;
+// 	// icon: Component;
+// 	icon: ComponentType<SvelteComponentTyped>;
+// 	panel: any;
+// 	state?: SubUnsubReset;
+// 	// viewportInstances: ToolViewportInstance[];
+// 	bindTo(viewport: Viewport): Function;
+// }

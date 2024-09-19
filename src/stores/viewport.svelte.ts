@@ -9,14 +9,18 @@ import {
 import type { ScaledMouseEvent, ScaledWheelEvent } from "../types.ts";
 
 class ViewportView {
-	verticalUp = $state(localStorage.getItem("VerticalUp") !== null
-		? localStorage.getItem("VerticalUp") === "true"
-		: false);
+	verticalUp = $state(
+		localStorage.getItem("VerticalUp") !== null
+			? localStorage.getItem("VerticalUp") === "true"
+			: false,
+	);
 
 	camera = $state([...identity2x3]);
 
 	#model = $state([...identity2x3]);
-	get model() { return this.#model; }
+	get model() {
+		return this.#model;
+	}
 	set model(matrix) {
 		const old = this.#model;
 		const scale = matrix[0] / old[0];
@@ -26,7 +30,7 @@ class ViewportView {
 		const newCamera = multiplyMatrices2(this.camera, difference);
 		this.camera = newCamera;
 		this.#model = matrix;
-	};
+	}
 
 	view = $derived.by(() => {
 		const inverted = invertMatrix2(this.camera);
@@ -73,41 +77,50 @@ class ViewportView {
 }
 
 class ViewportStyle {
-  view: ViewportView;
-  constructor(view: ViewportView) {
-    this.view = view;
-  }
+	view: ViewportView;
+	constructor(view: ViewportView) {
+		this.view = view;
+	}
 
-  strokeWidthFactor = $state(0.001);
+	strokeWidthFactor = $state(0.001);
 	strokeWidthMin = $state(0.001);
 	vertexRadiusFactor = $state(0.00666);
 
-	circleRadius = $derived.by(() =>
-		Math.min(this.view.viewBox[2], this.view.viewBox[3]) * this.vertexRadiusFactor,
+	circleRadius = $derived.by(
+		() => Math.min(this.view.viewBox[2], this.view.viewBox[3]) * this.vertexRadiusFactor,
 	);
 
-	strokeWidth = $derived.by(() => Math.max(
-		this.strokeWidthMin,
-		Math.min(this.view.viewBox[2], this.view.viewBox[3]) * this.strokeWidthFactor,
-	));
+	strokeWidth = $derived.by(() =>
+		Math.max(
+			this.strokeWidthMin,
+			Math.min(this.view.viewBox[2], this.view.viewBox[3]) * this.strokeWidthFactor,
+		),
+	);
 
 	strokeDashLength = $derived(this.strokeWidth * 8);
 }
 
+// this will be called SVGViewport
 export class Viewport {
 	view: ViewportView;
-  style: ViewportStyle;
+	style: ViewportStyle;
 
-  onmousemove: ((e: ScaledMouseEvent) => void) | undefined;
-  onmousedown: ((e: ScaledMouseEvent) => void) | undefined;
-  onmouseup: ((e: ScaledMouseEvent) => void) | undefined;
-  onmouseleave: ((e: ScaledMouseEvent) => void) | undefined;
-  onwheel: ((e: ScaledWheelEvent) => void) | undefined;
+	onmousemove: ((e: ScaledMouseEvent) => void) | undefined;
+	onmousedown: ((e: ScaledMouseEvent) => void) | undefined;
+	onmouseup: ((e: ScaledMouseEvent) => void) | undefined;
+	onmouseleave: ((e: ScaledMouseEvent) => void) | undefined;
+	onwheel: ((e: ScaledWheelEvent) => void) | undefined;
 
-  constructor() {
-    this.view = new ViewportView();
-    this.style = new ViewportStyle(this.view);
-  }
+	// new.
+	// we can either make it an array, or hard code it to allow only one.
+	// layers: { layer: any; props?: any }[] = [];
+	layer: any = $state();
+	props?: any = $state();
+
+	constructor() {
+		this.view = new ViewportView();
+		this.style = new ViewportStyle(this.view);
+	}
 
 	// epsilon and snapping
 
@@ -125,14 +138,13 @@ export class Viewport {
 	// built-in error correcting (like snapping, for example), and this behavior
 	// is zoom-level dependent. Use this variable to get an appropriate error-
 	// correcting value.
-	uiEpsilon: number = $derived.by(() => Math.max(this.view.viewBox[2], this.view.viewBox[3]) * this.uiEpsilonFactor);
+	uiEpsilon: number = $derived.by(
+		() => Math.max(this.view.viewBox[2], this.view.viewBox[3]) * this.uiEpsilonFactor,
+	);
 
 	// This is the radius of the snapping range to the
 	// nearest snappable point, it is dependent upon the current view zoom.
 	snapRadius: number = $derived.by(() => this.view.vmax * this.snapRadiusFactor);
-};
+}
 
-export const viewports = [
-  new Viewport(),
-  new Viewport(),
-];
+// export const viewports = [new Viewport(), new Viewport()];

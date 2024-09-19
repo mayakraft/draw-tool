@@ -11,7 +11,11 @@ import { getScreenPoint } from "../../js/matrix.ts";
 /**
  *
  */
-export const zoomCameraMatrix = (camera: number[], scale: number, origin: [number, number]) => {
+export const zoomCameraMatrix = (
+	camera: number[],
+	scale: number,
+	origin: [number, number],
+) => {
 	// the input point is in ModelViewMatrix space,
 	// which includes ModelMatrix. But, in the upcoming line we are only
 	// applying a change to the CameraMatrix. So, before we modify the
@@ -45,7 +49,10 @@ export const panCameraMatrix = (camera: number[], translate: [number, number]) =
 /**
  *
  */
-export const wheelEventZoomMatrix = (viewport: Viewport, { point, deltaY }: { point: [number, number], deltaY: number }) => {
+export const wheelEventZoomMatrix = (
+	viewport: Viewport,
+	{ point, deltaY }: { point: [number, number]; deltaY: number },
+) => {
 	const scaleOffset = deltaY / 333;
 	const scale = 1 - scaleOffset;
 	const screenPoint = getScreenPoint(point, viewport.view.model);
@@ -56,7 +63,10 @@ export const wheelEventZoomMatrix = (viewport: Viewport, { point, deltaY }: { po
 /**
  *
  */
-export const wheelPanMatrix = (viewport: Viewport, { deltaX, deltaY }: { deltaX: number, deltaY: number }) => {
+export const wheelPanMatrix = (
+	viewport: Viewport,
+	{ deltaX, deltaY }: { deltaX: number; deltaY: number },
+) => {
 	const touchScale = -1 / 300;
 	const impliedScale = viewport.view.modelView[0];
 	const translate: [number, number] = [

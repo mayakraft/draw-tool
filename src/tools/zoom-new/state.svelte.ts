@@ -8,43 +8,54 @@ export class ToolState {
 	move: [number, number] | undefined = $state();
 	drag: [number, number] | undefined = $state();
 
-	viewport: Viewport | undefined = $state();
+	viewport: Viewport;
 
-	dragVector: [number, number] = $derived(!this.drag || !this.press
-		? [0, 0]
-		: subtract2(this.drag, this.press));
+	dragVector: [number, number] = $derived(
+		!this.drag || !this.press ? [0, 0] : subtract2(this.drag, this.press),
+	);
+
+	constructor(viewport: Viewport) {
+		this.viewport = viewport;
+	}
 
 	reset() {
 		this.move = undefined;
 		this.drag = undefined;
 		this.press = undefined;
-		this.viewport = undefined;
 	}
 
 	doPan() {
 		return $effect.root(() => {
 			$effect(() => {
-				if (!this.dragVector) { return; }
+				if (!this.dragVector) {
+					return;
+				}
 				const translation: [number, number] = [
 					this.dragVector[0],
-					this.dragVector[1] * (this.viewport?.view.verticalUp ? -1 : 1),
+					this.dragVector[1] * (this.viewport.view.verticalUp ? -1 : 1),
 				];
-				if (this.viewport) {
-					this.viewport.view.camera = panCameraMatrix(this.viewport.view.camera, translation);
-				}
+				this.viewport.view.camera = panCameraMatrix(
+					this.viewport.view.camera,
+					translation,
+				);
 			});
-			return () => { };
+			return () => {};
 		});
 	}
-};
+}
 
 export class StateManager implements SubUnsubReset {
 	tool: ToolState | undefined;
 	unsub: Function[] = [];
+	viewport: Viewport;
+
+	constructor(viewport: Viewport) {
+		this.viewport = viewport;
+	}
 
 	subscribe() {
 		this.unsubscribe();
-		this.tool = new ToolState();
+		this.tool = new ToolState(this.viewport);
 		this.unsub.push(this.tool.doPan());
 	}
 
@@ -57,5 +68,5 @@ export class StateManager implements SubUnsubReset {
 
 	reset() {
 		this.tool?.reset();
-	};
-};
+	}
+}

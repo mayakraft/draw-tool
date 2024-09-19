@@ -1,11 +1,6 @@
 import type { Tool, ToolNew, ToolViewport } from "../types.ts";
 import { Viewport } from "./viewport.svelte.ts";
 
-// const Effectify = (func: () => void) => ($effect.root(() => {
-// 	$effect(func);
-// 	return () => { };
-// }));
-
 // potentially move a lot of this stuff into an AppUISettings
 // then link to it from here with a member property .ui
 class AppSettings {
@@ -24,36 +19,42 @@ class AppSettings {
 	// 		return this.tool.bindToViewport(viewport);
 	// 	}));
 
-
 	// toolViewport: ToolViewport[] = $state([]);
-	unsubFuncs: Function[] = [];
+	// unsubFuncs: Function[] = [];
 
-	#tool: ToolNew | undefined;
-	get tool() { return this.#tool; };
+	#tool: ToolNew | undefined = $state();
+	get tool() {
+		return this.#tool;
+	}
 	set tool(newTool: ToolNew | undefined) {
+		console.log("setting new tool", newTool);
 		// unsubscribe from previous tool
-		if (this.#tool?.state?.unsubscribe) {
-			this.#tool.state.unsubscribe();
+		if (this.#tool?.unsubscribe) {
+			this.#tool.unsubscribe();
 		}
 		// subscribe to new tool
 		this.#tool = newTool;
-		if (this.#tool?.state?.subscribe) {
-			this.#tool.state.subscribe();
+		if (this.#tool?.subscribe) {
+			this.#tool.subscribe();
 		}
 		// setup a reactive variable, toolViewport, which is a kind of a
 		// derived state, derived from both the tool and the app's viewports.
 		$effect.root(() => {
+			let unsubFuncs: Function[] = [];
 			$effect(() => {
-				this.unsubFuncs = this.viewports
-					.map(viewport => this.tool?.bindTo(viewport))
-					.filter(a => a !== undefined);
+				console.log("bind to viewports", this.viewports.length);
+				unsubFuncs = this.viewports
+					.map((viewport) => this.tool?.bindTo(viewport))
+					.filter((a) => a !== undefined);
 			});
 			return () => {
 				// unbind to viewport
+				console.log("unbind to viewports", unsubFuncs.length);
+				unsubFuncs.forEach((unsub) => unsub());
 			};
 		});
 	}
-};
+}
 
 export const app = new AppSettings();
 
