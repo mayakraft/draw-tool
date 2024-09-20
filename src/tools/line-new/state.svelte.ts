@@ -14,26 +14,17 @@ export class SVGViewportEvents {
 	viewport: Viewport;
 
 	onmousemove = ({ point, buttons }: ScaledMouseEvent) => {
-		if (!this.touches) {
-			return;
-		}
 		this.touches.move = buttons ? undefined : point;
 		this.touches.drag = buttons ? point : undefined;
 	};
 
 	onmousedown = ({ point, buttons }: ScaledMouseEvent) => {
-		if (!this.touches) {
-			return;
-		}
 		this.touches.move = buttons ? undefined : point;
 		this.touches.drag = buttons ? point : undefined;
 		this.touches.addPress(point);
 	};
 
 	onmouseup = ({ point, buttons }: ScaledMouseEvent) => {
-		if (!this.touches) {
-			return;
-		}
 		this.touches.move = buttons ? undefined : point;
 		this.touches.drag = buttons ? point : undefined;
 		this.touches.addRelease(point);

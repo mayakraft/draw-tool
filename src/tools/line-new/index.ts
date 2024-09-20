@@ -42,6 +42,7 @@ class Tool implements ToolNew {
 		viewportState.subscribe();
 		// return viewportEvents.unsubscribe;
 		return viewportState.unsubscribe;
+		// return () => {};
 	}
 
 	// SubUnsubReset

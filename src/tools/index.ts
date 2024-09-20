@@ -22,10 +22,12 @@
 // 	zoom,
 // };
 
+import empty from "./empty/index.ts";
 import line from "./line-new/index.ts";
 import zoom from "./zoom-new/index.ts";
 
 export default {
+	empty,
 	line,
 	zoom,
 };

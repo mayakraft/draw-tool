@@ -1,43 +1,34 @@
 import { type ScaledMouseEvent, type ScaledWheelEvent } from "../../types.ts";
-import { ToolState, StateManager } from "./state.svelte.ts";
+import { ToolState } from "./state.svelte.ts";
 import type { Viewport } from "../../stores/viewport.svelte.ts";
 import { wheelEventZoomMatrix, wheelPanMatrix } from "./matrix.ts";
 
 // class SVGViewportEvents implements ToolViewportInstance {
 export class SVGViewportEvents {
-	state: StateManager;
+	tool: ToolState;
 	viewport: Viewport;
 
 	onmousemove = ({ point, buttons }: ScaledMouseEvent) => {
-		if (!this.state.tool) {
-			return;
-		}
-		this.state.tool.move = buttons ? undefined : point;
-		this.state.tool.drag = buttons ? point : undefined;
+		this.tool.move = buttons ? undefined : point;
+		this.tool.drag = buttons ? point : undefined;
 	};
 
 	onmousedown = ({ point, buttons }: ScaledMouseEvent) => {
-		if (!this.state.tool) {
-			return;
-		}
-		this.state.tool.move = buttons ? undefined : point;
-		this.state.tool.drag = buttons ? point : undefined;
-		this.state.tool.press = point;
+		this.tool.move = buttons ? undefined : point;
+		this.tool.drag = buttons ? point : undefined;
+		this.tool.press = point;
 	};
 
 	onmouseup = ({ point, buttons }: ScaledMouseEvent) => {
-		if (!this.state.tool) {
-			return;
-		}
-		this.state.tool.move = buttons ? undefined : point;
-		this.state.tool.drag = buttons ? point : undefined;
-		// this.state.tool.release = point;
-		this.state.tool.reset();
+		this.tool.move = buttons ? undefined : point;
+		this.tool.drag = buttons ? point : undefined;
+		// this.tool.release = point;
+		this.tool.reset();
 	};
 
-	onmouseleave = (event: ScaledMouseEvent) => {
-		this.state.reset();
-	};
+	// onmouseleave = (event: ScaledMouseEvent) => {
+	// 	this.tool.reset();
+	// };
 
 	// new plan for onwheel
 	// all tools must implement the "zoomTool.onwheel?.(event);" behavior.
@@ -56,25 +47,22 @@ export class SVGViewportEvents {
 		}
 	};
 
-	constructor(viewport: Viewport) {
+	constructor(viewport: Viewport, tool: ToolState) {
 		this.viewport = viewport;
+		this.tool = tool;
+
 		this.viewport.onmousemove = this.onmousemove;
 		this.viewport.onmousedown = this.onmousedown;
 		this.viewport.onmouseup = this.onmouseup;
-		this.viewport.onmouseleave = this.onmouseleave;
+		// this.viewport.onmouseleave = this.onmouseleave;
 		this.viewport.onwheel = this.onwheel;
-		this.state = new StateManager(this.viewport);
 	}
 
-	// todo
-	// possibly need the same 3 functions. where we unbind the onmouse handlers
-	subscribe() {
-		this.state.subscribe();
-	}
 	unsubscribe() {
-		this.state.unsubscribe();
-	}
-	reset() {
-		this.state.reset();
+		this.viewport.onmousemove = undefined;
+		this.viewport.onmousedown = undefined;
+		this.viewport.onmouseup = undefined;
+		this.viewport.onmouseleave = undefined;
+		this.viewport.onwheel = undefined;
 	}
 }
