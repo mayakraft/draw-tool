@@ -1,6 +1,6 @@
 import { untrack } from "svelte";
 import { subtract2 } from "rabbit-ear/math/vector.js";
-import type { SubUnsubReset } from "../../types.ts";
+import type { Destroyable } from "../../types.ts";
 import type { Viewport } from "../../stores/viewport.svelte.ts";
 import { panCameraMatrix } from "./matrix.ts";
 import { SVGViewportEvents } from "./events.ts";
@@ -48,41 +48,28 @@ export class ToolState {
 	}
 }
 
-export class ViewportState implements SubUnsubReset {
+export class ViewportState implements Destroyable {
 	viewport: Viewport;
-	tool: ToolState | undefined;
-	events: SVGViewportEvents | undefined;
+	tool: ToolState;
+	events: SVGViewportEvents;
 	unsub: Function[] = [];
 
 	constructor(viewport: Viewport) {
 		this.viewport = viewport;
-	}
-
-	// consider moving this into the constructor and removing the concept of
-	// "subscribe" altogether.
-	subscribe() {
-		// this.unsubscribe();
 		this.tool = new ToolState(this.viewport);
 		this.events = new SVGViewportEvents(this.viewport, this.tool);
 		this.unsub.push(this.tool.doPan());
-		this.unsub.push(this.events.unsubscribe);
 	}
 
-	unsubscribe() {
+	deinitialize() {
 		this.unsub.forEach((u) => u());
 		this.unsub = [];
-		this.reset();
-		// this.tool = undefined;
-	}
-
-	reset() {
-		this.tool?.reset();
+		this.tool.reset();
+		this.tool = undefined;
 	}
 }
 
-export class GlobalState implements SubUnsubReset {
+export class GlobalState implements Destroyable {
 	constructor() {}
-	subscribe() {}
-	unsubscribe() {}
-	reset() {}
+	deinitialize() {}
 }

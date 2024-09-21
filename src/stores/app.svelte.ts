@@ -1,5 +1,17 @@
-import type { Tool, ToolNew, ToolViewport } from "../types.ts";
+import type { UITool } from "../types.ts";
 import { Viewport } from "./viewport.svelte.ts";
+
+const resetSVGViewport = (viewport: Viewport) => {
+	viewport.layer = undefined;
+	viewport.props = undefined;
+	viewport.onmousemove = undefined;
+	viewport.onmousedown = undefined;
+	viewport.onmouseup = undefined;
+	viewport.onmouseleave = undefined;
+	viewport.onwheel = undefined;
+};
+
+let counter = 0;
 
 // potentially move a lot of this stuff into an AppUISettings
 // then link to it from here with a member property .ui
@@ -7,53 +19,37 @@ class AppSettings {
 	// viewports: Viewport[] = $state([]);
 	viewports: Viewport[] = $state([new Viewport(), new Viewport()]);
 
-	// constructor() {
-	// 	this.viewports = [new Viewport(), new Viewport()];
-	// }
+	#tool: UITool | undefined = $state();
 
-	// only reason we can't use a $derived here is because we need to "unsub"
-	// from the previous instance. maybe there is a way around this.
-	// toolViewport: ToolViewport[] = $derived(viewports
-	// 	.map(viewport => {
-	// 		if (!this.tool) { return undefined; }
-	// 		return this.tool.bindToViewport(viewport);
-	// 	}));
-
-	// toolViewport: ToolViewport[] = $state([]);
-	// unsubFuncs: Function[] = [];
-
-	#tool: ToolNew | undefined = $state();
 	get tool() {
 		return this.#tool;
 	}
-	set tool(newTool: ToolNew | undefined) {
-		console.log("setting new tool", newTool);
-		// unsubscribe from previous tool
-		if (this.#tool?.unsubscribe) {
-			this.#tool.unsubscribe();
-		}
-		// subscribe to new tool
-		this.#tool = newTool;
-		if (this.#tool?.subscribe) {
-			this.#tool.subscribe();
-		}
-		// setup a reactive variable, toolViewport, which is a kind of a
-		// derived state, derived from both the tool and the app's viewports.
-		$effect.root(() => {
-			let unsubFuncs: Function[] = [];
+
+	set tool(t: UITool | undefined) {
+		console.log("new tool:", t.constructor.name);
+		this.#tool?.deinitialize();
+		this.#tool = t;
+	}
+
+  toolViewportEffect: Function | undefined;
+
+	constructor() {
+		this.toolViewportEffect = $effect.root(() => {
 			$effect(() => {
-				console.log("bind to viewports", this.viewports.length);
-				unsubFuncs = this.viewports
-					.map((viewport) => this.tool?.bindTo(viewport))
-					.filter((a) => a !== undefined);
+				this.viewports.forEach(resetSVGViewport);
+				this.viewports.forEach((viewport) => this.tool?.bindTo(viewport));
 			});
 			return () => {
-				// unbind to viewport
-				console.log("unbind to viewports", unsubFuncs.length);
-				unsubFuncs.forEach((unsub) => unsub());
+				console.log(counter++, "calling the cleanup");
 			};
 		});
 	}
+
+  // this is not really planned, but if ever the app was to completely de-initialize and
+  // re-initialize itself, we would call this method to cleanup the hanging effect.
+  deinit() {
+    if (this.toolViewportEffect) { this.toolViewportEffect(); }
+  }
 }
 
 export const app = new AppSettings();

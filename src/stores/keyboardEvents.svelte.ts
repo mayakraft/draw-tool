@@ -1,5 +1,5 @@
 import { isFormElementActive } from "../js/dom.ts";
-import { tool } from "./tool.svelte.ts";
+//import { tool } from "./tool.svelte.ts";
 
 // this is not a part of this app
 const TerminalTextarea = document.getElementById("element-does-not-yet-exist");
@@ -123,7 +123,7 @@ const onkeyupForm = $state((event: KeyboardEvent) => { });
  *
  */
 const onkeydownWindow = $derived((event: KeyboardEvent) => {
-	if (tool.value?.onkeydown?.(event)) { return; }
+	//if (tool.value?.onkeydown?.(event)) { return; }
 	if (onkeydownApp(event)) { return; }
 });
 
@@ -131,7 +131,7 @@ const onkeydownWindow = $derived((event: KeyboardEvent) => {
  *
  */
 const onkeyupWindow = $derived((event: KeyboardEvent) => {
-	if (tool.value?.onkeyup?.(event)) { return; }
+	//if (tool.value?.onkeyup?.(event)) { return; }
 	if (onkeyupApp(event)) { return; }
 });
 

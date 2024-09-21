@@ -1,4 +1,4 @@
-import { gridType } from "./grid.svelte.ts";
+import grid from "./grid.svelte.ts";
 import {
 	triangleGridSnapFunction,
 	squareGridSnapFunction,
@@ -55,10 +55,11 @@ export const SnapPoints = (() => {
  *
  */
 export const GridSnapFunction = (() => {
-	const value = $derived(gridType.value === "triangle"
+	const value = $derived(grid.pattern === "triangle"
 		? triangleGridSnapFunction
 		: squareGridSnapFunction);
 	return {
 		get value() { return value; },
 	};
 })();
+

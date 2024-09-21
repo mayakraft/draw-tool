@@ -6,7 +6,7 @@ import {
 	makeMatrix2Translate,
 	makeMatrix2UniformScale,
 } from "rabbit-ear/math/matrix2.js";
-import type { ScaledMouseEvent, ScaledWheelEvent } from "../types.ts";
+import type { ViewportMouseEvent, ViewportWheelEvent, ViewportEvents } from "../types.ts";
 
 class ViewportView {
 	verticalUp = $state(
@@ -101,15 +101,15 @@ class ViewportStyle {
 }
 
 // this will be called SVGViewport
-export class Viewport {
+export class Viewport implements ViewportEvents {
 	view: ViewportView;
 	style: ViewportStyle;
 
-	onmousemove: ((e: ScaledMouseEvent) => void) | undefined;
-	onmousedown: ((e: ScaledMouseEvent) => void) | undefined;
-	onmouseup: ((e: ScaledMouseEvent) => void) | undefined;
-	onmouseleave: ((e: ScaledMouseEvent) => void) | undefined;
-	onwheel: ((e: ScaledWheelEvent) => void) | undefined;
+	onmousemove: ((e: ViewportMouseEvent) => void) | undefined;
+	onmousedown: ((e: ViewportMouseEvent) => void) | undefined;
+	onmouseup: ((e: ViewportMouseEvent) => void) | undefined;
+	onmouseleave: ((e: ViewportMouseEvent) => void) | undefined;
+	onwheel: ((e: ViewportWheelEvent) => void) | undefined;
 
 	// new.
 	// we can either make it an array, or hard code it to allow only one.
@@ -147,4 +147,3 @@ export class Viewport {
 	snapRadius: number = $derived.by(() => this.view.vmax * this.snapRadiusFactor);
 }
 
-// export const viewports = [new Viewport(), new Viewport()];

@@ -16,8 +16,6 @@ let {
 }: PropsType = $props();
 
 // https://www.youtube.com/live/nMs4X8-L_yo?feature=shared&t=1667
-// const SVGToolLayer = $derived(app.tool?.SVGLayer);
-// const svgToolLayerProps = $derived(app.tool?.SVGLayerProps || {});
 const SVGToolLayer = $derived(viewport.layer);
 const svgToolLayerProps = $derived(viewport.props || {});
 

@@ -1,54 +1,32 @@
-/**
- *
- */
-export const verticalUp = (() => {
-	let value = $state(localStorage.getItem("verticalUp") !== null
-		? localStorage.getItem("verticalUp") === "true"
-		: true);
-	return {
-		get value() { return value; },
-		set value(v) { value = v; },
-	};
-})();
+class GridSettings {
+  verticalUp: boolean = $state(true);
+  showGrid: boolean = $state(true);
+  showAxes: boolean = $state(true);
+  pattern: string = $state("square"); // square or triangle
 
-/**
- * @description Show/Hide various things across the app.
- */
-export const showGrid = (() => {
-	let value = $state(localStorage.getItem("showGrid") !== null
-		? localStorage.getItem("showGrid") === "true"
-		: true);
-	return {
-		get value() { return value; },
-		set value(v) { value = v; },
-	};
-})();
+  constructor() {
+    this.verticalUp = localStorage.getItem("grid-vertical-up") !== null
+      ? localStorage.getItem("grid-vertical-up") === "true"
+      : true;
+    this.showGrid = localStorage.getItem("grid-show-grid") !== null
+      ? localStorage.getItem("grid-show-grid") === "true"
+      : true;
+    this.showAxes = localStorage.getItem("grid-show-axes") !== null
+      ? localStorage.getItem("grid-show-axes") === "true"
+      : true;
+    this.pattern = localStorage.getItem("grid-pattern") || "square";
 
-/**
- *
- */
-export const showAxes = (() => {
-	let value = $state(localStorage.getItem("showAxes") !== null
-		? localStorage.getItem("showAxes") === "true"
-		: true);
-	return {
-		get value() { return value; },
-		set value(v) { value = v; },
-	};
-})();
+    $effect.root(() => {
+      $effect(() => {
+        localStorage.setItem("grid-vertical-up", String(this.verticalUp));
+        localStorage.setItem("grid-show-grid", String(this.showGrid));
+        localStorage.setItem("grid-show-axes", String(this.showAxes));
+        localStorage.setItem("grid-pattern", this.pattern);
+      });
+      return () => {};
+    });
+  }
+}
 
-/**
- *
- */
-export const gridType = (() => {
-	let value = $state(localStorage.getItem("gridType") || "square");
-	return {
-		get value() { return value; },
-		set value(v) { value = v; },
-	};
-})();
+export default (new GridSettings());
 
-// VerticalUp.subscribe((value) => localStorage.setItem("VerticalUp", String(value)));
-// ShowGrid.subscribe((value) => localStorage.setItem("ShowGrid", String(value)));
-// ShowAxes.subscribe((value) => localStorage.setItem("ShowAxes", String(value)));
-// GridType.subscribe((value) => localStorage.setItem("GridType", value));

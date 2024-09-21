@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { ToolNew } from "../types.ts";
+	import type { UITool } from "../types.ts";
 	import { app } from "../stores/app.svelte.ts";
 
-	const { tool }: { tool: typeof ToolNew } = $props();
+	const { tool }: { tool: typeof UITool } = $props();
 
 	const highlighted = $derived(app.tool?.constructor.name === tool.name
 		? "highlighted"
@@ -16,6 +16,7 @@
 <button
 	title={tool.name}
 	class={className}
+  disabled={false}
 	onclick={() => { app.tool = new tool(); }}>
 	{#if tool.icon}
 		<tool.icon></tool.icon>
@@ -23,7 +24,6 @@
 </button>
 
 <style>
-	/* button grid layout */
 	button {
 		width: 2rem;
 		height: 2rem;
@@ -35,28 +35,33 @@
 		cursor: pointer;
 		background-color: transparent;
 	}
-	/* :global(svg) */
+
 	button {
 		stroke: var(--text);
 		fill: var(--text);
 	}
+
 	button:hover {
 		stroke: var(--bright);
 		fill: var(--bright);
 	}
+
 	button.highlighted {
 		background-color: var(--highlight);
 		stroke: var(--background-1);
 		fill: var(--background-1);
 	}
-	/* button[disabled], button[disabled]:hover {
+
+	button[disabled], button[disabled]:hover {
 		background-color: transparent;
 		stroke: var(--dim);
 		fill: var(--dim);
 		cursor: initial;
-	} */
+  }
+
 	button:focus {
 		outline-offset: -1px;
 		outline: 2px solid var(--uiblue);
 	}
 </style>
+

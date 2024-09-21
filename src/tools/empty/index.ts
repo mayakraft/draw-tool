@@ -1,9 +1,9 @@
-import type { ToolNew } from "../../types.ts";
+import type { UITool } from "../../types.ts";
 import type { Viewport } from "../../stores/viewport.svelte.ts";
-import icon from "./icon.svelte";
 import { GlobalState, ViewportState } from "./state.svelte.ts";
+import icon from "./icon.svelte";
 
-class Tool implements ToolNew {
+class Tool implements UITool {
 	static key = "empty";
 	static name = "empty";
 	static icon = icon;
@@ -16,18 +16,12 @@ class Tool implements ToolNew {
 	bindTo(viewport: Viewport): Function {
 		const viewportState = new ViewportState(viewport);
 		this.viewportStates.push(viewportState);
-		viewportState.subscribe();
-		return viewportState.unsubscribe;
+		return viewportState.deinitialize;
 	}
 
-	subscribe() {
-		this.state.subscribe();
-	}
-	unsubscribe() {
-		this.state.unsubscribe();
-	}
-	reset() {
-		this.state.reset();
+	deinitialize() {
+    this.viewportStates.forEach(state => state.deinitialize());
+		this.state.deinitialize();
 	}
 }
 

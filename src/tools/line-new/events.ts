@@ -1,70 +1,51 @@
-// import { type ScaledMouseEvent, type ScaledWheelEvent } from "../../types.ts";
-// import { ToolState, StateManager } from "./state.svelte.ts";
-// import type { Viewport } from "../../stores/viewport.svelte.ts";
-// import { wheelEventZoomMatrix } from "../zoom-new/matrix.ts";
+import type { ViewportMouseEvent, ViewportWheelEvent, ViewportEvents } from "../../types.ts";
+import { ToolState, Touches } from "./state.svelte.ts";
+import type { Viewport } from "../../stores/viewport.svelte.ts";
+import { wheelEventZoomMatrix } from "../zoom-new/matrix.ts";
 
-// export class SVGViewportEvents {
-// 	state: StateManager;
-// 	viewport: Viewport;
+export class SVGViewportEvents implements ViewportEvents {
+	touches: Touches;
+	viewport: Viewport;
 
-// 	onmousemove = ({ point, buttons }: ScaledMouseEvent) => {
-// 		if (!this.state.touches) {
-// 			return;
-// 		}
-// 		this.state.touches.move = buttons ? undefined : point;
-// 		this.state.touches.drag = buttons ? point : undefined;
-// 	};
+	onmousemove = ({ point, buttons }: ViewportMouseEvent) => {
+		this.touches.move = buttons ? undefined : point;
+		this.touches.drag = buttons ? point : undefined;
+	};
 
-// 	onmousedown = ({ point, buttons }: ScaledMouseEvent) => {
-// 		if (!this.state.touches) {
-// 			return;
-// 		}
-// 		this.state.touches.move = buttons ? undefined : point;
-// 		this.state.touches.drag = buttons ? point : undefined;
-// 		this.state.touches.addPress(point);
-// 	};
+	onmousedown = ({ point, buttons }: ViewportMouseEvent) => {
+		this.touches.move = buttons ? undefined : point;
+		this.touches.drag = buttons ? point : undefined;
+		this.touches.addPress(point);
+	};
 
-// 	onmouseup = ({ point, buttons }: ScaledMouseEvent) => {
-// 		if (!this.state.touches) {
-// 			return;
-// 		}
-// 		this.state.touches.move = buttons ? undefined : point;
-// 		this.state.touches.drag = buttons ? point : undefined;
-// 		this.state.touches.addRelease(point);
-// 	};
+	onmouseup = ({ point, buttons }: ViewportMouseEvent) => {
+		this.touches.move = buttons ? undefined : point;
+		this.touches.drag = buttons ? point : undefined;
+		this.touches.addRelease(point);
+	};
 
-// 	//onmouseleave = (event: ScaledMouseEvent) => {
-// 	//	this.state.reset();
-// 	//};
+	//onmouseleave = (event: ViewportMouseEvent) => {
+	//	this.state.reset();
+	//};
 
-// 	// new plan for onwheel
-// 	// all tools must implement the "zoomTool.onwheel?.(event);" behavior.
-// 	// there is no longer an app-wide fallthrough that executes that method
-// 	// if no tool wheel event exists. the tool must specify the behavior explicitly.
+	// new plan for onwheel
+	// all tools must implement the "zoomTool.onwheel?.(event);" behavior.
+	// there is no longer an app-wide fallthrough that executes that method
+	// if no tool wheel event exists. the tool must specify the behavior explicitly.
 
-// 	onwheel = ({ point, deltaX, deltaY }: ScaledWheelEvent) => {
-// 		wheelEventZoomMatrix(this.viewport, { point, deltaY });
-// 	};
+	onwheel = ({ point, deltaX, deltaY }: ViewportWheelEvent) => {
+		wheelEventZoomMatrix(this.viewport, { point, deltaY });
+	};
 
-// 	constructor(viewport: Viewport) {
-// 		this.viewport = viewport;
-// 		this.viewport.onmousemove = this.onmousemove;
-// 		this.viewport.onmousedown = this.onmousedown;
-// 		this.viewport.onmouseup = this.onmouseup;
-// 		//this.viewport.onmouseleave = this.onmouseleave;
-// 		this.viewport.onwheel = this.onwheel;
-// 		this.state = new StateManager(this.viewport);
-// 	}
+	constructor(viewport: Viewport, touches: Touches) {
+		this.viewport = viewport;
+		this.touches = touches;
 
-// 	// todo
-// 	// possibly need the same 3 functions. where we unbind the onmouse handlers
-// 	subscribe() {
-// 		this.state.subscribe();
-// 	}
-// 	unsubscribe() {
-// 		this.state.unsubscribe();
-// 	}
-// 	reset() {
-// 		this.state.reset();
-// 	}
-// }
+		this.viewport.onmousemove = this.onmousemove;
+		this.viewport.onmousedown = this.onmousedown;
+		this.viewport.onmouseup = this.onmouseup;
+		//this.viewport.onmouseleave = this.onmouseleave;
+		this.viewport.onwheel = this.onwheel;
+	}
+}
+

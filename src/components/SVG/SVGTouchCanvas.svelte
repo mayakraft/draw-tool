@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
 	import SVGCanvas from "./SVGCanvas.svelte";
-	import { type ScaledMouseEvent, type ScaledWheelEvent } from "../../types.ts";
+	import type { ViewportMouseEvent, ViewportWheelEvent } from "../../types.ts";
 	import {
 		convertToViewBox,
 		findInParents,
@@ -11,11 +11,11 @@
 		svg?: SVGSVGElement,
 		viewBox?: string,
 		invertVertical?: boolean,
-		onmousedown?: (e: ScaledMouseEvent) => void,
-		onmousemove?: (e: ScaledMouseEvent) => void,
-		onmouseup?: (e: ScaledMouseEvent) => void,
-		onmouseleave?: (e: ScaledMouseEvent) => void,
-		onwheel?: (e: ScaledWheelEvent) => void,
+		onmousedown?: (e: ViewportMouseEvent) => void,
+		onmousemove?: (e: ViewportMouseEvent) => void,
+		onmouseup?: (e: ViewportMouseEvent) => void,
+		onmouseleave?: (e: ViewportMouseEvent) => void,
+		onwheel?: (e: ViewportWheelEvent) => void,
 		children?: Snippet,
 		rest?: any[],
 	};
@@ -45,14 +45,14 @@
 		(1 / scale) * point[1] * (invertVertical ? -1 : 1),
 	];
 
-	const formatMouseEvent = (e: MouseEvent): ScaledMouseEvent => Object.assign(e, {
-		id: svg?.getAttribute("id") || undefined,
+	const formatMouseEvent = (e: MouseEvent): ViewportMouseEvent => Object.assign(e, {
+		//id: svg?.getAttribute("id") || undefined,
 		// buttons: e.buttons,
 		point: unwrap(convertToViewBox(getSVG(e), [e.x, e.y])),
 	});
 
-	const formatWheelEvent = (e: WheelEvent): ScaledWheelEvent => Object.assign(e, {
-		id: svg?.getAttribute("id") || undefined,
+	const formatWheelEvent = (e: WheelEvent): ViewportWheelEvent => Object.assign(e, {
+		//id: svg?.getAttribute("id") || undefined,
 		// wheelDelta: e.wheelDelta,
 		// wheelDelta: e.deltaMode,
 		// wheelDelta: e.deltaY,

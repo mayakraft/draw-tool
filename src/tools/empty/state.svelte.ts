@@ -1,26 +1,19 @@
-import type { SubUnsubReset } from "../../types.ts";
+import type { Destroyable } from "../../types.ts";
 import { Viewport } from "../../stores/viewport.svelte.ts";
 import SVGLayer from "./SVGLayer.svelte";
 
-export class ViewportState implements SubUnsubReset {
+export class ViewportState implements Destroyable {
 	viewport: Viewport;
 
 	constructor(viewport: Viewport) {
 		this.viewport = viewport;
-	}
-
-	subscribe() {
 		this.viewport.layer = SVGLayer;
 	}
 
-	unsubscribe() {}
-
-	reset() {}
+	deinitialize() {}
 }
 
-export class GlobalState implements SubUnsubReset {
+export class GlobalState implements Destroyable {
 	constructor() {}
-	subscribe() {}
-	unsubscribe() {}
-	reset() {}
+	deinitialize() {}
 }

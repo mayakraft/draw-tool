@@ -1,67 +1,13 @@
 import type { VecLine2 } from "rabbit-ear/types.js";
 import { pointsToLine2 } from "rabbit-ear/math/convert.js";
-import type { StateManagerType, SubUnsubReset } from "../../types.ts";
+import type { Destroyable } from "../../types.ts";
 import { snapToLine } from "../../js/snap.ts";
 import { snapPoint } from "../../math/snap.svelte.ts";
 import { model } from "../../stores/model.svelte.ts";
 import { Viewport } from "../../stores/viewport.svelte.ts";
-import { type ScaledMouseEvent, type ScaledWheelEvent } from "../../types.ts";
 import { wheelEventZoomMatrix } from "../zoom-new/matrix.ts";
+import { SVGViewportEvents } from "./events.ts";
 import SVGLayer from "./SVGLayer.svelte";
-
-export class SVGViewportEvents {
-	touches: Touches;
-	viewport: Viewport;
-
-	onmousemove = ({ point, buttons }: ScaledMouseEvent) => {
-		this.touches.move = buttons ? undefined : point;
-		this.touches.drag = buttons ? point : undefined;
-	};
-
-	onmousedown = ({ point, buttons }: ScaledMouseEvent) => {
-		this.touches.move = buttons ? undefined : point;
-		this.touches.drag = buttons ? point : undefined;
-		this.touches.addPress(point);
-	};
-
-	onmouseup = ({ point, buttons }: ScaledMouseEvent) => {
-		this.touches.move = buttons ? undefined : point;
-		this.touches.drag = buttons ? point : undefined;
-		this.touches.addRelease(point);
-	};
-
-	//onmouseleave = (event: ScaledMouseEvent) => {
-	//	this.state.reset();
-	//};
-
-	// new plan for onwheel
-	// all tools must implement the "zoomTool.onwheel?.(event);" behavior.
-	// there is no longer an app-wide fallthrough that executes that method
-	// if no tool wheel event exists. the tool must specify the behavior explicitly.
-
-	onwheel = ({ point, deltaX, deltaY }: ScaledWheelEvent) => {
-		wheelEventZoomMatrix(this.viewport, { point, deltaY });
-	};
-
-	constructor(viewport: Viewport, touches: Touches) {
-		this.viewport = viewport;
-		this.touches = touches;
-
-		this.viewport.onmousemove = this.onmousemove;
-		this.viewport.onmousedown = this.onmousedown;
-		this.viewport.onmouseup = this.onmouseup;
-		//this.viewport.onmouseleave = this.onmouseleave;
-		this.viewport.onwheel = this.onwheel;
-	}
-
-	unsubscribe() {
-		this.viewport.onmousemove = undefined;
-		this.viewport.onmousedown = undefined;
-		this.viewport.onmouseup = undefined;
-		this.viewport.onmouseleave = undefined;
-		this.viewport.onwheel = undefined;
-	}
-}
 
 export class Touches {
 	move: [number, number] | undefined = $state();
@@ -146,9 +92,19 @@ export class ToolState {
 		this.segmentPoints && this.segmentPoints.length < 2 ? undefined : this.segmentPoints,
 	);
 
-	reset() {
-		this.touches.reset();
-	}
+  preventBadInput() {
+    return $effect.root(() => {
+      $effect(() => {
+        const moreReleases = this.touches.releases.length > this.touches.presses.length;
+        const twoDifference = Math.abs(this.touches.releases.length - this.touches.presses.length) > 1;
+        if (moreReleases || twoDifference) {
+          console.log("line: fixing touches", this.touches.presses.length, this.touches.releases.length);
+          this.touches.reset();
+        }
+      });
+      return () => {};
+    });
+  }
 
 	makeLine() {
 		return $effect.root(() => {
@@ -160,7 +116,7 @@ export class ToolState {
 				) {
 					const [[x1, y1], [x2, y2]] = this.segment;
 					model.addLine(x1, y1, x2, y2);
-					this.reset();
+					this.touches.reset();
 				}
 			});
 			return () => {};
@@ -173,28 +129,23 @@ export class ToolState {
 	}
 }
 
-export class ViewportState implements SubUnsubReset {
+export class ViewportState implements Destroyable {
 	viewport: Viewport;
 	globalState: GlobalState;
-	touches: Touches | undefined;
-	tool: ToolState | undefined;
-	events: SVGViewportEvents | undefined;
+	touches: Touches;
+	tool: ToolState;
+	events: SVGViewportEvents;
 	unsub: Function[] = [];
 
 	constructor(viewport: Viewport, globalState: GlobalState) {
 		this.viewport = viewport;
 		this.globalState = globalState;
-	}
 
-	// consider moving this into the constructor and removing the concept of
-	// "subscribe" altogether.
-	subscribe() {
-		this.unsubscribe();
 		this.touches = new Touches();
 		this.tool = new ToolState(this.viewport, this.touches);
 		this.events = new SVGViewportEvents(this.viewport, this.touches);
 		this.unsub.push(this.tool.makeLine());
-		this.unsub.push(this.events.unsubscribe);
+		this.unsub.push(this.tool.preventBadInput());
 
 		// bind data upwards
 		this.viewport.layer = SVGLayer;
@@ -212,21 +163,17 @@ export class ViewportState implements SubUnsubReset {
 		};
 	}
 
-	unsubscribe() {
+	deinitialize() {
+    console.log("line: viewport deinit");
 		this.unsub.forEach((u) => u());
 		this.unsub = [];
-		this.reset();
+		this.touches.reset();
 		this.tool = undefined;
 	}
-
-	reset() {
-		this.tool?.reset();
-	}
 }
 
-export class GlobalState implements SubUnsubReset {
+export class GlobalState implements Destroyable {
 	constructor() {}
-	subscribe() {}
-	unsubscribe() {}
-	reset() {}
+	deinitialize() {}
 }
+

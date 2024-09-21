@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { gridType } from "../../stores/grid.svelte.ts";
+	import grid from "../../stores/grid.svelte.ts";
 	import { viewBoxOrigin } from "../../js/matrix.ts";
 	import {
 		makeSquareGrid,
@@ -24,7 +24,7 @@
 		viewBoxArray[3],
 	]);
 	const strokeWidth = $derived(Math.max(viewBoxArray[2], viewBoxArray[3]) / 400);
-	const lines = $derived(gridType.value === "triangle"
+	const lines = $derived(grid.pattern === "triangle"
 		? makeTriangleGrid(actualViewport)
 		: makeSquareGrid(actualViewport));
 </script>

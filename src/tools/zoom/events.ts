@@ -1,11 +1,11 @@
 import state from "./state.svelte.ts";
-import { type ScaledMouseEvent, type ScaledWheelEvent} from "../../types.ts";
+import type { ViewportMouseEvent, ViewportWheelEvent } from "../../types.ts";
 import {
 	wheelEventZoomMatrix,
 	wheelPanMatrix,
 } from "./matrix.ts";
 
-export const onmousemove = ({ point, buttons }: ScaledMouseEvent) => {
+export const onmousemove = ({ point, buttons }: ViewportMouseEvent) => {
 	if (!state.tool) { return; }
 	// if (!state.tool.viewport) { state.tool.viewport = viewport; }
 	else if (state.tool.viewport !== undefined && viewport !== state.tool.viewport) { return; }
@@ -14,7 +14,7 @@ export const onmousemove = ({ point, buttons }: ScaledMouseEvent) => {
 	state.tool.drag = (buttons ? point : undefined);
 };
 
-export const onmousedown = ({ point, buttons }: ScaledMouseEvent) => {
+export const onmousedown = ({ point, buttons }: ViewportMouseEvent) => {
 	if (!state.tool) { return; }
 	if (!state.tool.viewport) { state.tool.viewport = viewport; }
 	else if (viewport !== state.tool.viewport) { return; }
@@ -23,7 +23,7 @@ export const onmousedown = ({ point, buttons }: ScaledMouseEvent) => {
 	state.tool.press = point;
 };
 
-export const onmouseup = ({ point, buttons }: ScaledMouseEvent) => {
+export const onmouseup = ({ point, buttons }: ViewportMouseEvent) => {
 	if (!state.tool) { return; }
 	if (!state.tool.viewport) { state.tool.viewport = viewport; }
 	else if (viewport !== state.tool.viewport) { return; }
@@ -33,11 +33,11 @@ export const onmouseup = ({ point, buttons }: ScaledMouseEvent) => {
 	state.tool.reset();
 };
 
-export const onmouseleave = (event: ScaledMouseEvent) => {
+export const onmouseleave = (event: ViewportMouseEvent) => {
 	state.reset();
 };
 
-export const onwheel = ({ point, deltaX, deltaY }: ScaledWheelEvent) => {
+export const onwheel = ({ point, deltaX, deltaY }: ViewportWheelEvent) => {
 	// if (!viewport) { return; }
 	switch (id) {
 		case "right-canvas": return wheelPanMatrix(viewport, { deltaX, deltaY });

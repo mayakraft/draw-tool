@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { VecLine2 } from "rabbit-ear/types.js";
 	import { clipLineInViewBox } from "../../math/clip.svelte.ts";
-	// import { renderer } from "../../stores/renderer.svelte.ts";
 
 	// no longer referencing any tool state data directly
 	// all data is now passed through the props

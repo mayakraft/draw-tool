@@ -10,7 +10,6 @@
 </div>
 
 <style>
-	/* button grid layout */
 	.grid-columns {
 		display: grid;
 		grid-template-columns: 50% 50%;
