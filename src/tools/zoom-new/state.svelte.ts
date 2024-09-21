@@ -1,7 +1,7 @@
 import { untrack } from "svelte";
 import { subtract2 } from "rabbit-ear/math/vector.js";
 import type { Destroyable } from "../../types.ts";
-import type { Viewport } from "../../stores/viewport.svelte.ts";
+import type { SVGViewport, GLViewport } from "../../stores/viewport.svelte.ts";
 import { panCameraMatrix } from "./matrix.ts";
 import { SVGViewportEvents } from "./events.ts";
 
@@ -10,13 +10,13 @@ export class ToolState {
 	move: [number, number] | undefined = $state();
 	drag: [number, number] | undefined = $state();
 
-	viewport: Viewport;
+	viewport: SVGViewport;
 
 	dragVector: [number, number] = $derived(
 		!this.drag || !this.press ? [0, 0] : subtract2(this.drag, this.press),
 	);
 
-	constructor(viewport: Viewport) {
+	constructor(viewport: SVGViewport) {
 		this.viewport = viewport;
 	}
 
@@ -48,13 +48,13 @@ export class ToolState {
 	}
 }
 
-export class ViewportState implements Destroyable {
-	viewport: Viewport;
+export class SVGViewportState implements Destroyable {
+	viewport: SVGViewport;
 	tool: ToolState;
 	events: SVGViewportEvents;
 	unsub: Function[] = [];
 
-	constructor(viewport: Viewport) {
+	constructor(viewport: SVGViewport) {
 		this.viewport = viewport;
 		this.tool = new ToolState(this.viewport);
 		this.events = new SVGViewportEvents(this.viewport, this.tool);
@@ -65,8 +65,17 @@ export class ViewportState implements Destroyable {
 		this.unsub.forEach((u) => u());
 		this.unsub = [];
 		this.tool.reset();
-		this.tool = undefined;
 	}
+}
+
+export class GLViewportState implements Destroyable {
+	viewport: GLViewport;
+
+	constructor(viewport: GLViewport) {
+		this.viewport = viewport;
+	}
+
+	deinitialize() {}
 }
 
 export class GlobalState implements Destroyable {

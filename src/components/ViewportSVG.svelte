@@ -2,11 +2,11 @@
 import SVGTouchCanvas from "./SVG/SVGTouchCanvas.svelte";
 import GridLayer from "./SVG/GridLayer.svelte";
 import SVGElements from "./SVG/SVGElements.svelte";
-import type { Viewport } from "../stores/viewport.svelte.ts";
+import type { SVGViewport } from "../stores/viewport.svelte.ts";
 import { model } from "../stores/model.svelte.ts";
 
 type PropsType = {
-	viewport: Viewport,
+	viewport: SVGViewport,
 	rest?: any[]
 };
 

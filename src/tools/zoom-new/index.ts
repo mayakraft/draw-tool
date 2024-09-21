@@ -1,6 +1,6 @@
 import type { UITool } from "../../types.ts";
-import type { Viewport } from "../../stores/viewport.svelte.ts";
-import { ViewportState } from "./state.svelte.ts";
+import { SVGViewport, GLViewport, type Viewport } from "../../stores/viewport.svelte.ts";
+import { SVGViewportState, GLViewportState } from "./state.svelte.ts";
 import icon from "./icon.svelte";
 
 class Tool implements UITool {
@@ -10,17 +10,24 @@ class Tool implements UITool {
 
 	panel = undefined;
 
-	viewportStates: ViewportState[] = [];
+	viewportStates: (SVGViewportState | GLViewportState)[] = [];
 
 	bindTo(viewport: Viewport): Function {
-		// if viewport type is SVG, do A, if WebGL, do B.
-		const viewportState = new ViewportState(viewport);
-		this.viewportStates.push(viewportState);
-		return viewportState.deinitialize;
+		if (viewport instanceof SVGViewport) {
+			const viewportState = new SVGViewportState(viewport);
+			this.viewportStates.push(viewportState);
+			return viewportState.deinitialize;
+		} else if (viewport instanceof GLViewport) {
+			const viewportState = new GLViewportState(viewport);
+			this.viewportStates.push(viewportState);
+			return viewportState.deinitialize;
+		} else {
+			return () => {};
+		}
 	}
 
 	deinitialize() {
-		this.viewportStates.forEach(state => state.deinitialize());
+		this.viewportStates.forEach((state) => state.deinitialize());
 	}
 }
 

@@ -6,9 +6,14 @@ import {
 	makeMatrix2Translate,
 	makeMatrix2UniformScale,
 } from "rabbit-ear/math/matrix2.js";
-import type { ViewportMouseEvent, ViewportWheelEvent, ViewportEvents } from "../types.ts";
+import type {
+	ViewportMouseEvent,
+	ViewportWheelEvent,
+	ViewportTouchEvent,
+	ViewportEvents,
+} from "../types.ts";
 
-class ViewportView {
+class SVGViewportView {
 	verticalUp = $state(
 		localStorage.getItem("VerticalUp") !== null
 			? localStorage.getItem("VerticalUp") === "true"
@@ -76,9 +81,9 @@ class ViewportView {
 	}
 }
 
-class ViewportStyle {
-	view: ViewportView;
-	constructor(view: ViewportView) {
+class SVGViewportStyle {
+	view: SVGViewportView;
+	constructor(view: SVGViewportView) {
 		this.view = view;
 	}
 
@@ -100,27 +105,16 @@ class ViewportStyle {
 	strokeDashLength = $derived(this.strokeWidth * 8);
 }
 
-// this will be called SVGViewport
-export class Viewport implements ViewportEvents {
-	view: ViewportView;
-	style: ViewportStyle;
-
-	onmousemove: ((e: ViewportMouseEvent) => void) | undefined;
-	onmousedown: ((e: ViewportMouseEvent) => void) | undefined;
-	onmouseup: ((e: ViewportMouseEvent) => void) | undefined;
-	onmouseleave: ((e: ViewportMouseEvent) => void) | undefined;
-	onwheel: ((e: ViewportWheelEvent) => void) | undefined;
-
-	// new.
-	// we can either make it an array, or hard code it to allow only one.
-	// layers: { layer: any; props?: any }[] = [];
-	layer: any = $state();
-	props?: any = $state();
-
-	constructor() {
-		this.view = new ViewportView();
-		this.style = new ViewportStyle(this.view);
-	}
+export interface Viewport {
+	onmousemove?: ((e: ViewportMouseEvent) => void) | undefined;
+	onmousedown?: ((e: ViewportMouseEvent) => void) | undefined;
+	onmouseup?: ((e: ViewportMouseEvent) => void) | undefined;
+	onmouseleave?: ((e: ViewportMouseEvent) => void) | undefined;
+	onwheel?: ((e: ViewportWheelEvent) => void) | undefined;
+	touchstart?: ((e: ViewportTouchEvent) => void) | undefined;
+	touchend?: ((e: ViewportTouchEvent) => void) | undefined;
+	touchmove?: ((e: ViewportTouchEvent) => void) | undefined;
+	touchcancel?: ((e: ViewportTouchEvent) => void) | undefined;
 
 	// epsilon and snapping
 
@@ -128,22 +122,95 @@ export class Viewport implements ViewportEvents {
 	// built-in error correcting (like snapping, for example), and this behavior
 	// is zoom-level dependent. This is the factor out of 1 which is
 	// scaled to the viewbox to get this ui-epsilon floating point error factor.
-	uiEpsilonFactor = 0.01;
+	uiEpsilonFactor: number;
 
 	// Snapping is zoom-level dependent, this is the factor
 	// (out of 1) which is scaled to the viewbox to get the snap radius.
-	snapRadiusFactor = 0.05;
+	snapRadiusFactor: number;
 
 	// a UI touch event, coming from a pointer device, will have some
 	// built-in error correcting (like snapping, for example), and this behavior
 	// is zoom-level dependent. Use this variable to get an appropriate error-
 	// correcting value.
-	uiEpsilon: number = $derived.by(
-		() => Math.max(this.view.viewBox[2], this.view.viewBox[3]) * this.uiEpsilonFactor,
-	);
+	uiEpsilon: number;
 
 	// This is the radius of the snapping range to the
 	// nearest snappable point, it is dependent upon the current view zoom.
-	snapRadius: number = $derived.by(() => this.view.vmax * this.snapRadiusFactor);
+	snapRadius: number;
 }
 
+export class SVGViewport implements Viewport, ViewportEvents {
+	view: SVGViewportView;
+	style: SVGViewportStyle;
+
+	onmousemove?: (event: ViewportMouseEvent) => void;
+	onmousedown?: (event: ViewportMouseEvent) => void;
+	onmouseup?: (event: ViewportMouseEvent) => void;
+	onmouseleave?: (event: ViewportMouseEvent) => void;
+	onwheel?: (event: ViewportWheelEvent) => void;
+	// keyboard events
+	onkeydown?: (event: KeyboardEvent) => void;
+	onkeyup?: (event: KeyboardEvent) => void;
+	// touch screen events
+	touchstart?: (event: ViewportTouchEvent) => void;
+	touchend?: (event: ViewportTouchEvent) => void;
+	touchmove?: (event: ViewportTouchEvent) => void;
+	touchcancel?: (event: ViewportTouchEvent) => void;
+
+	layer?: any = $state();
+	props?: any = $state();
+
+	constructor() {
+		this.view = new SVGViewportView();
+		this.style = new SVGViewportStyle(this.view);
+	}
+
+	uiEpsilonFactor = 0.01;
+	snapRadiusFactor = 0.05;
+	uiEpsilon: number = $derived(this.view.vmax * this.uiEpsilonFactor);
+	snapRadius: number = $derived(this.view.vmax * this.snapRadiusFactor);
+}
+
+class GLViewportView {
+	vmax = 2;
+	vmin = 2;
+}
+
+class GLViewportStyle {
+	view: GLViewportView;
+	constructor(view: GLViewportView) {
+		this.view = view;
+	}
+}
+
+export class GLViewport implements Viewport, ViewportEvents {
+	view: GLViewportView;
+	style: GLViewportStyle;
+
+	onmousemove?: (event: ViewportMouseEvent) => void;
+	onmousedown?: (event: ViewportMouseEvent) => void;
+	onmouseup?: (event: ViewportMouseEvent) => void;
+	onmouseleave?: (event: ViewportMouseEvent) => void;
+	onwheel?: (event: ViewportWheelEvent) => void;
+	// keyboard events
+	onkeydown?: (event: KeyboardEvent) => void;
+	onkeyup?: (event: KeyboardEvent) => void;
+	// touch screen events
+	touchstart?: (event: ViewportTouchEvent) => void;
+	touchend?: (event: ViewportTouchEvent) => void;
+	touchmove?: (event: ViewportTouchEvent) => void;
+	touchcancel?: (event: ViewportTouchEvent) => void;
+
+	layer?: any = $state();
+	props?: any = $state();
+
+	constructor() {
+		this.view = new GLViewportView();
+		this.style = new GLViewportStyle(this.view);
+	}
+
+	uiEpsilonFactor = 0.01;
+	snapRadiusFactor = 0.05;
+	uiEpsilon: number = $derived(this.view.vmax * this.uiEpsilonFactor);
+	snapRadius: number = $derived(this.view.vmax * this.snapRadiusFactor);
+}

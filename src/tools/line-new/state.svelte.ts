@@ -4,8 +4,7 @@ import type { Destroyable } from "../../types.ts";
 import { snapToLine } from "../../js/snap.ts";
 import { snapPoint } from "../../math/snap.svelte.ts";
 import { model } from "../../stores/model.svelte.ts";
-import { Viewport } from "../../stores/viewport.svelte.ts";
-import { wheelEventZoomMatrix } from "../zoom-new/matrix.ts";
+import { SVGViewport, GLViewport } from "../../stores/viewport.svelte.ts";
 import { SVGViewportEvents } from "./events.ts";
 import SVGLayer from "./SVGLayer.svelte";
 
@@ -49,7 +48,7 @@ export class Touches {
 }
 
 export class ToolState {
-	viewport: Viewport;
+	viewport: SVGViewport;
 	touches: Touches;
 
 	line: VecLine2 | undefined = $derived.by(() => {
@@ -92,19 +91,24 @@ export class ToolState {
 		this.segmentPoints && this.segmentPoints.length < 2 ? undefined : this.segmentPoints,
 	);
 
-  preventBadInput() {
-    return $effect.root(() => {
-      $effect(() => {
-        const moreReleases = this.touches.releases.length > this.touches.presses.length;
-        const twoDifference = Math.abs(this.touches.releases.length - this.touches.presses.length) > 1;
-        if (moreReleases || twoDifference) {
-          console.log("line: fixing touches", this.touches.presses.length, this.touches.releases.length);
-          this.touches.reset();
-        }
-      });
-      return () => {};
-    });
-  }
+	preventBadInput() {
+		return $effect.root(() => {
+			$effect(() => {
+				const moreReleases = this.touches.releases.length > this.touches.presses.length;
+				const twoDifference =
+					Math.abs(this.touches.releases.length - this.touches.presses.length) > 1;
+				if (moreReleases || twoDifference) {
+					console.log(
+						"line: fixing touches",
+						this.touches.presses.length,
+						this.touches.releases.length,
+					);
+					this.touches.reset();
+				}
+			});
+			return () => {};
+		});
+	}
 
 	makeLine() {
 		return $effect.root(() => {
@@ -123,21 +127,21 @@ export class ToolState {
 		});
 	}
 
-	constructor(viewport: Viewport, touches: Touches) {
+	constructor(viewport: SVGViewport, touches: Touches) {
 		this.touches = touches;
 		this.viewport = viewport;
 	}
 }
 
-export class ViewportState implements Destroyable {
-	viewport: Viewport;
+export class SVGViewportState implements Destroyable {
+	viewport: SVGViewport;
 	globalState: GlobalState;
 	touches: Touches;
 	tool: ToolState;
 	events: SVGViewportEvents;
 	unsub: Function[] = [];
 
-	constructor(viewport: Viewport, globalState: GlobalState) {
+	constructor(viewport: SVGViewport, globalState: GlobalState) {
 		this.viewport = viewport;
 		this.globalState = globalState;
 
@@ -164,16 +168,22 @@ export class ViewportState implements Destroyable {
 	}
 
 	deinitialize() {
-    console.log("line: viewport deinit");
+		console.log("line: viewport deinit");
 		this.unsub.forEach((u) => u());
 		this.unsub = [];
 		this.touches.reset();
-		this.tool = undefined;
 	}
+}
+
+export class GLViewportState implements Destroyable {
+	viewport: GLViewport;
+	constructor(viewport: GLViewport) {
+		this.viewport = viewport;
+	}
+	deinitialize() {}
 }
 
 export class GlobalState implements Destroyable {
 	constructor() {}
 	deinitialize() {}
 }
-

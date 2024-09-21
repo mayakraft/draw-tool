@@ -1,14 +1,24 @@
 import type { UITool } from "../types.ts";
-import { Viewport } from "./viewport.svelte.ts";
+import type { Viewport } from "./viewport.svelte.ts";
+import { SVGViewport, GLViewport } from "./viewport.svelte.ts";
 
-const resetSVGViewport = (viewport: Viewport) => {
-	viewport.layer = undefined;
-	viewport.props = undefined;
+const resetViewport = (viewport: Viewport) => {
 	viewport.onmousemove = undefined;
 	viewport.onmousedown = undefined;
 	viewport.onmouseup = undefined;
 	viewport.onmouseleave = undefined;
 	viewport.onwheel = undefined;
+	viewport.touchstart = undefined;
+	viewport.touchend = undefined;
+	viewport.touchmove = undefined;
+	viewport.touchcancel = undefined;
+
+	if (viewport instanceof SVGViewport) {
+		viewport.layer = undefined;
+		viewport.props = undefined;
+	} else if (viewport instanceof GLViewport) {
+		// todo
+	}
 };
 
 let counter = 0;
@@ -16,8 +26,8 @@ let counter = 0;
 // potentially move a lot of this stuff into an AppUISettings
 // then link to it from here with a member property .ui
 class AppSettings {
-	// viewports: Viewport[] = $state([]);
-	viewports: Viewport[] = $state([new Viewport(), new Viewport()]);
+	// viewports: SVGViewport[] = $state([]);
+	viewports: Viewport[] = $state([new SVGViewport(), new SVGViewport()]);
 
 	#tool: UITool | undefined = $state();
 
@@ -26,17 +36,17 @@ class AppSettings {
 	}
 
 	set tool(t: UITool | undefined) {
-		console.log("new tool:", t.constructor.name);
+		console.log("new tool:", t?.constructor.name);
 		this.#tool?.deinitialize();
 		this.#tool = t;
 	}
 
-  toolViewportEffect: Function | undefined;
+	toolViewportEffect: Function | undefined;
 
 	constructor() {
 		this.toolViewportEffect = $effect.root(() => {
 			$effect(() => {
-				this.viewports.forEach(resetSVGViewport);
+				this.viewports.forEach(resetViewport);
 				this.viewports.forEach((viewport) => this.tool?.bindTo(viewport));
 			});
 			return () => {
@@ -45,11 +55,13 @@ class AppSettings {
 		});
 	}
 
-  // this is not really planned, but if ever the app was to completely de-initialize and
-  // re-initialize itself, we would call this method to cleanup the hanging effect.
-  deinit() {
-    if (this.toolViewportEffect) { this.toolViewportEffect(); }
-  }
+	// this is not really planned, but if ever the app was to completely de-initialize and
+	// re-initialize itself, we would call this method to cleanup the hanging effect.
+	deinit() {
+		if (this.toolViewportEffect) {
+			this.toolViewportEffect();
+		}
+	}
 }
 
 export const app = new AppSettings();

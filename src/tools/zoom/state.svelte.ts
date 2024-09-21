@@ -1,6 +1,6 @@
 import { subtract2 } from "rabbit-ear/math/vector.js";
 import type { StateManagerType } from "../../types.ts";
-import type { Viewport } from "../../stores/viewport.svelte.ts";
+import type { SVGViewport } from "../../stores/viewport.svelte.ts";
 import { panCameraMatrix } from "./matrix.ts";
 
 class ToolState {
@@ -9,7 +9,7 @@ class ToolState {
 	move: [number, number] | undefined = $state();
 	drag: [number, number] | undefined = $state();
 
-	viewport: Viewport | undefined = $state();
+	viewport: SVGViewport | undefined = $state();
 
 	dragVector: [number, number] = $derived(!this.drag || !this.press
 		? [0, 0]

@@ -1,7 +1,7 @@
 import { distance2, magnitude2, subtract2 } from "rabbit-ear/math/vector.js";
 import type { StateManagerType } from "../../types.ts";
 import { snapPoint } from "../../math/snap.svelte.ts";
-import type { Viewport } from "../../stores/viewport.svelte.ts";
+import type { SVGViewport } from "../../stores/viewport.svelte.ts";
 
 const equivalent = (point1: [number, number], point2: [number, number]) => (
 	// todo
@@ -51,7 +51,7 @@ class Touches {
 
 class FixedPoint {
 	touches: Touches;
-	viewport: Viewport | undefined = $state();
+	viewport: SVGViewport | undefined = $state();
 
 	origin: [number, number] = $state([0, 0]);
 	selected: boolean = $state(false);

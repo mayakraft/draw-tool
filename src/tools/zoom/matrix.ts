@@ -4,7 +4,7 @@ import {
 	determinant2,
 	makeMatrix2Translate,
 } from "rabbit-ear/math/matrix2.js";
-import type { Viewport } from "../../stores/viewport.svelte.ts";
+import type { SVGViewport } from "../../stores/viewport.svelte.ts";
 import { getScreenPoint } from "../../js/matrix.ts";
 // import { renderer } from "../../stores/renderer.svelte.ts";
 
@@ -45,7 +45,7 @@ export const panCameraMatrix = (camera: number[], translate: [number, number]) =
 /**
  *
  */
-export const wheelEventZoomMatrix = (viewport: Viewport, { point, deltaY }: { point: [number, number], deltaY: number }) => {
+export const wheelEventZoomMatrix = (viewport: SVGViewport, { point, deltaY }: { point: [number, number], deltaY: number }) => {
 	const scaleOffset = deltaY / 333;
 	const scale = 1 - scaleOffset;
 	const screenPoint = getScreenPoint(point, viewport.view.model);
@@ -56,7 +56,7 @@ export const wheelEventZoomMatrix = (viewport: Viewport, { point, deltaY }: { po
 /**
  *
  */
-export const wheelPanMatrix = (viewport: Viewport, { deltaX, deltaY }: { deltaX: number, deltaY: number }) => {
+export const wheelPanMatrix = (viewport: SVGViewport, { deltaX, deltaY }: { deltaX: number, deltaY: number }) => {
 	const touchScale = -1 / 300;
 	const impliedScale = viewport.view.modelView[0];
 	const translate: [number, number] = [
