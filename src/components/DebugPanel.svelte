@@ -1,8 +1,11 @@
 <script lang="ts">
-	//import { renderer } from "../stores/renderer.svelte.ts";
+	import { app } from "../stores/app.svelte.ts";
 	import { model } from "../stores/model.svelte.ts";
+  import { SVGViewport, GLViewport } from "../stores/viewport.svelte.ts";
 	const logModel = () => { console.log($state.snapshot(model.elements)); };
-
+  const newSVG = () => { app.viewports.push(new SVGViewport()); };
+  const newWebGL = () => { app.viewports.push(new GLViewport()); };
+  const removeView = () => { app.viewports.pop(); };
 	//<input type="checkbox" id="verticalUp" checked={renderer.view.verticalUp}/>
 </script>
 
@@ -10,8 +13,13 @@
 	<p>debug</p>
 
 	<label for="verticalUp">Y axis</label>
-
 	<button onclick={logModel}>model</button>
+
+  <hr />
+  <p>viewport</p>
+	<button onclick={newSVG}>+ SVG</button>
+	<button onclick={newWebGL}>+ GL</button>
+	<button onclick={removeView}>- view</button>
 
 	<hr />
 

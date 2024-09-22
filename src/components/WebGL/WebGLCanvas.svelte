@@ -13,11 +13,14 @@
 	// import { touchIndicators } from "rabbit-ear/webgl/touches/models.js";
 	import { drawModel, deallocModel } from "rabbit-ear/webgl/general/model.js";
 	import { dark, light } from "rabbit-ear/webgl/general/colors.js";
+  import { worldAxes } from "./WorldAxes/models.js";
 
-	type WebGLRenderProps = {
+	type WebGLCanvasProps = {
 		graph: FOLD,
 		perspective: string,
 		renderStyle: string,
+		canvasSize: [number, number],
+		projectionMatrix: number[],
 		viewMatrix: number[],
 		layerNudge?: number,
 		fov?: number,
@@ -46,6 +49,8 @@
 		graph = {},
 		perspective = "orthographic",
 		renderStyle = "creasePattern",
+		canvasSize: boundCanvasSize = $bindable([0, 0]),
+		projectionMatrix: boundProjectionMatrix = $bindable([...identity4x4]),
 		viewMatrix = [...identity4x4],
 		layerNudge = 0.01,
 		fov = 30.25,
@@ -66,7 +71,7 @@
 		ontouchstart,
 		ontouchend,
 		ontouchcancel,
-	}: WebGLRenderProps = $props();
+	}: WebGLCanvasProps = $props();
 
 	let outlineColor = $derived(darkMode ? "white" : "black");
 	let cpColor = $derived(darkMode ? "#111111" : "white");
@@ -79,16 +84,14 @@
 	let modelMatrix = $derived(makeModelMatrix(graph));
 	let modelViewMatrix = $derived(multiplyMatrices4(viewMatrix, modelMatrix));
 	let projectionMatrix = $derived(makeProjectionMatrix(canvasSize, perspective, fov));
-	let cursorScreen: [number, number] = $state([0, 0]);
-	let cursorWorld: [number, number] = $state([0, 0]);
+
+	$effect(() => { boundProjectionMatrix = [...projectionMatrix]; })
+	$effect(() => { boundCanvasSize = [...canvasSize]; })
 
 	let uniformOptions = $derived({
 		projectionMatrix,
 		modelViewMatrix,
 		canvas,
-		// // these are only used by touchIndicators
-		// cursorWorld,
-		// cursorScreen,
 		frontColor,
 		backColor,
 		outlineColor,
@@ -113,9 +116,11 @@
 			return renderStyle === "creasePattern"
 				? [
 					...creasePattern(gl, version, graph, programOptions),
+          ...worldAxes(gl),
 					// ...touchIndicators(gl, programOptions),
 				] : [
 					...foldedForm(gl, version, graph, programOptions),
+          ...worldAxes(gl),
 					// ...touchIndicators(gl, programOptions),
 				];
 		} catch (error) {
@@ -143,16 +148,13 @@
 	});
 
 	$effect(() => {
-		if (gl) {
-			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-			models.forEach((model, i) => drawModel(gl, version, model, uniforms[i]));
-		}
+		if (!gl) { return; }
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+		models.forEach((model, i) => drawModel(gl, version, model, uniforms[i]));
 	});
 
-	$effect(() => {
-		// return a function to be later called on page deallocation
-		return deallocModels;
-	});
+	// return a function to be called when the page is deallocated- deallocate the models.
+	$effect(() => deallocModels);
 </script>
 
 <svelte:window {onresize} />

@@ -10,6 +10,10 @@
 		onmouseup?: (e: MouseEvent) => void,
 		onmouseleave?: (e: MouseEvent) => void,
 		onwheel?: (e: WheelEvent) => void,
+		ontouchmove?: (e: TouchEvent) => void,
+		ontouchstart?: (e: TouchEvent) => void,
+		ontouchend?: (e: TouchEvent) => void,
+		ontouchcancel?: (e: TouchEvent) => void,
 		children?: Snippet,
 		rest?: any[]
 	};
@@ -23,6 +27,10 @@
 		onmouseup,
 		onmouseleave,
 		onwheel,
+		ontouchmove,
+		ontouchstart,
+		ontouchend,
+		ontouchcancel,
 		children,
 		...rest
 	}: PropsType = $props();
@@ -43,6 +51,10 @@
 	{onmouseup}
 	{onmouseleave}
 	{onwheel}
+	{ontouchstart}
+	{ontouchmove}
+	{ontouchend}
+	{ontouchcancel}
 	{...rest}>
 	<g class="wrapper-layer" style={`transform: matrix(${matrix})`}>
 		{#if children}

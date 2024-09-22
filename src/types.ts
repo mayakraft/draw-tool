@@ -17,9 +17,15 @@ export type ViewportWheelEvent = WheelEvent & {
 	point: [number, number];
 };
 
+// export type GLViewportMouseEvent = (MouseEvent | TouchEvent) & {
+// 	point?: [number, number];
+// 	vector?: [number, number];
+// 	deltaY?: number;
+// };
+
 export interface Destroyable {
 	deinitialize(): void;
-};
+}
 
 export interface ViewportEvents {
 	// touch events
@@ -31,11 +37,11 @@ export interface ViewportEvents {
 	// keyboard events
 	onkeydown?: (event: KeyboardEvent) => void;
 	onkeyup?: (event: KeyboardEvent) => void;
-  // touch screen events
-  touchstart?: (event: ViewportTouchEvent) => void;
-  touchend?: (event: ViewportTouchEvent) => void;
-  touchmove?: (event: ViewportTouchEvent) => void;
-  touchcancel?: (event: ViewportTouchEvent) => void;
+	// touch screen events
+	touchstart?: (event: ViewportTouchEvent) => void;
+	touchend?: (event: ViewportTouchEvent) => void;
+	touchmove?: (event: ViewportTouchEvent) => void;
+	touchcancel?: (event: ViewportTouchEvent) => void;
 }
 
 export abstract class UITool implements Destroyable {
@@ -49,15 +55,15 @@ export abstract class UITool implements Destroyable {
 	SVGLayer?: any;
 	SVGLayerProps?: any;
 
-  // A UI tool is intended for a Viewport, a tool will be instanced once per app,
-  // but may need to subinstance internal state once per viewport (one app can
-  // have many viewports). This is that internal "constructor" for each viewport.
-  // The return function is the deinitializer for everything made in the bindTo().
+	// A UI tool is intended for a Viewport, a tool will be instanced once per app,
+	// but may need to subinstance internal state once per viewport (one app can
+	// have many viewports). This is that internal "constructor" for each viewport.
+	// The return function is the deinitializer for everything made in the bindTo().
 	abstract bindTo(viewport: Viewport): Function;
 
-  // This function should clean up anything that was created/bound in the constructor.
-  // This will be called when this tool is removed (during a switching of tools).
-  abstract deinitialize(): void;
+	// This function should clean up anything that was created/bound in the constructor.
+	// This will be called when this tool is removed (during a switching of tools).
+	abstract deinitialize(): void;
 }
 
 // panel can change a variable like, "snap rotation", this variable must not live inside
@@ -74,4 +80,3 @@ export abstract class UITool implements Destroyable {
 // that one instance should allow you to create multiple viewport states
 // where each viewport state can be created and destroyed, and has
 // access to the global state object.
-

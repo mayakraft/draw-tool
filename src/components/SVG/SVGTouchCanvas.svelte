@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
 	import SVGCanvas from "./SVGCanvas.svelte";
-	import type { ViewportMouseEvent, ViewportWheelEvent } from "../../types.ts";
+	import type { ViewportMouseEvent, ViewportWheelEvent, ViewportTouchEvent } from "../../types.ts";
 	import {
 		convertToViewBox,
 		findInParents,
@@ -16,6 +16,10 @@
 		onmouseup?: (e: ViewportMouseEvent) => void,
 		onmouseleave?: (e: ViewportMouseEvent) => void,
 		onwheel?: (e: ViewportWheelEvent) => void,
+		ontouchmove?: (e: ViewportTouchEvent) => void,
+		ontouchstart?: (e: ViewportTouchEvent) => void,
+		ontouchend?: (e: ViewportTouchEvent) => void,
+		ontouchcancel?: (e: ViewportTouchEvent) => void,
 		children?: Snippet,
 		rest?: any[],
 	};
@@ -24,16 +28,20 @@
 		svg = $bindable(),
 		viewBox = "0 0 1 1",
 		invertVertical = false,
-		onmousedown: down,
-		onmousemove: move,
-		onmouseup: up,
-		onmouseleave: leave,
+		onmousedown: mousedown,
+		onmousemove: mousemove,
+		onmouseup: mouseup,
+		onmouseleave: mouseleave,
 		onwheel: wheel,
+		ontouchmove: touchmove,
+		ontouchstart: touchstart,
+		ontouchend: touchend,
+		ontouchcancel: touchcancel,
 		children,
 		...rest
 	}: PropsType = $props();
 
-	const getSVG = (e: MouseEvent): SVGSVGElement => {
+	const getSVG = (e: MouseEvent | TouchEvent): SVGSVGElement => {
 		if (svg) { return svg; }
 		const foundSVG = findInParents(e.target, "svg") as SVGSVGElement;
 		return foundSVG;
@@ -46,24 +54,26 @@
 	];
 
 	const formatMouseEvent = (e: MouseEvent): ViewportMouseEvent => Object.assign(e, {
-		//id: svg?.getAttribute("id") || undefined,
-		// buttons: e.buttons,
 		point: unwrap(convertToViewBox(getSVG(e), [e.x, e.y])),
 	});
 
+	const formatTouchEvent = (e: TouchEvent): ViewportTouchEvent => Object.assign(e, {
+		point: unwrap(convertToViewBox(getSVG(e), [e.touches[0].clientX, e.touches[0].clientY])),
+	});
+
 	const formatWheelEvent = (e: WheelEvent): ViewportWheelEvent => Object.assign(e, {
-		//id: svg?.getAttribute("id") || undefined,
-		// wheelDelta: e.wheelDelta,
-		// wheelDelta: e.deltaMode,
-		// wheelDelta: e.deltaY,
 		point: convertToViewBox(getSVG(e), [e.x, e.y]),
 	});
 
-	const onmousedown = (e: MouseEvent) => down?.(formatMouseEvent(e));
-	const onmousemove = (e: MouseEvent) => move?.(formatMouseEvent(e));
-	const onmouseup = (e: MouseEvent) => up?.(formatMouseEvent(e));
-	const onmouseleave = (e: MouseEvent) => leave?.(formatMouseEvent(e));
+	const onmousedown = (e: MouseEvent) => mousedown?.(formatMouseEvent(e));
+	const onmousemove = (e: MouseEvent) => mousemove?.(formatMouseEvent(e));
+	const onmouseup = (e: MouseEvent) => mouseup?.(formatMouseEvent(e));
+	const onmouseleave = (e: MouseEvent) => mouseleave?.(formatMouseEvent(e));
 	const onwheel = (e: WheelEvent) => wheel?.(formatWheelEvent(e));
+	const ontouchmove = (e: TouchEvent) => touchmove?.(formatTouchEvent(e));
+	const ontouchstart = (e: TouchEvent) => touchstart?.(formatTouchEvent(e));
+	const ontouchend = (e: TouchEvent) => touchend?.(formatTouchEvent(e));
+	const ontouchcancel = (e: TouchEvent) => touchcancel?.(formatTouchEvent(e));
 </script>
 
 <SVGCanvas
@@ -75,6 +85,10 @@
 	{onmouseup}
 	{onmouseleave}
 	{onwheel}
+	{ontouchstart}
+	{ontouchmove}
+	{ontouchend}
+	{ontouchcancel}
 	{...rest}>
 	{#if children}
 		{@render children()}

@@ -21,13 +21,10 @@ const resetViewport = (viewport: Viewport) => {
 	}
 };
 
-let counter = 0;
-
 // potentially move a lot of this stuff into an AppUISettings
 // then link to it from here with a member property .ui
 class AppSettings {
-	// viewports: SVGViewport[] = $state([]);
-	viewports: Viewport[] = $state([new SVGViewport(), new SVGViewport()]);
+	viewports: Viewport[] = $state([new SVGViewport()]);
 
 	#tool: UITool | undefined = $state();
 
@@ -36,7 +33,7 @@ class AppSettings {
 	}
 
 	set tool(t: UITool | undefined) {
-		console.log("new tool:", t?.constructor.name);
+		//console.log("new tool:", t?.constructor.name);
 		this.#tool?.deinitialize();
 		this.#tool = t;
 	}
@@ -50,7 +47,7 @@ class AppSettings {
 				this.viewports.forEach((viewport) => this.tool?.bindTo(viewport));
 			});
 			return () => {
-				console.log(counter++, "calling the cleanup");
+				this.viewports.forEach(resetViewport);
 			};
 		});
 	}
@@ -76,19 +73,3 @@ export const app = new AppSettings();
  * to each tool.
  */
 
-/**
- * @description This will reset all visual feedback coming from the UI,
- * for example, this is called when switching between UI tools to reset
- * all visual feedback.
- */
-export const resetUI = () => {
-	// Pointer.set(undefined);
-	// SnapPoint.set(undefined);
-	// Highlight.reset();
-	// GhostGraphCP.set({});
-	// GuideLinesCP.set([]);
-	// UILines.set([]);
-	// UIRays.set([]);
-	// UISegment.set([]);
-	// RulersCP.set([]);
-};

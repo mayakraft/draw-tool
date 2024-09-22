@@ -3,7 +3,7 @@ import { subtract2 } from "rabbit-ear/math/vector.js";
 import type { Destroyable } from "../../types.ts";
 import type { SVGViewport, GLViewport } from "../../stores/viewport.svelte.ts";
 import { panCameraMatrix } from "./matrix.ts";
-import { SVGViewportEvents } from "./events.ts";
+import { SVGViewportEvents, WebGLViewportEvents } from "./events.ts";
 
 export class ToolState {
 	press: [number, number] | undefined = $state();
@@ -70,9 +70,11 @@ export class SVGViewportState implements Destroyable {
 
 export class GLViewportState implements Destroyable {
 	viewport: GLViewport;
+	events: WebGLViewportEvents;
 
 	constructor(viewport: GLViewport) {
 		this.viewport = viewport;
+		this.events = new WebGLViewportEvents(this.viewport);
 	}
 
 	deinitialize() {}

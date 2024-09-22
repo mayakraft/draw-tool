@@ -1,6 +1,6 @@
 <script lang="ts">
-// import WebGLTouchCanvas from "./WebGL/WebGLTouchCanvas.svelte";
-import WebGLRender from "./WebGL/WebGLRender.svelte";
+import WebGLTouchCanvas from "./WebGL/WebGLTouchCanvas.svelte";
+// import WebGLCanvas from "./WebGL/WebGLCanvas.svelte";
 // import GLElements from "./WebGL/GLElements.svelte";
 import type { GLViewport } from "../stores/viewport.svelte.ts";
 import { model } from "../stores/model.svelte.ts";
@@ -11,8 +11,8 @@ type PropsType = {
 };
 
 let {
-  viewport,
-  ...rest
+	viewport,
+	...rest
 }: PropsType = $props();
 
 // https://www.youtube.com/live/nMs4X8-L_yo?feature=shared&t=1667
@@ -27,12 +27,12 @@ const webglToolLayerProps = $derived(viewport.props || {});
 
 </script>
 
-<WebGLRender
-	<!-- onmousemove={(...args) => viewport.onmousemove?.(...args)}
+<WebGLTouchCanvas
+	onmousemove={(...args) => viewport.onmousemove?.(...args)}
 	onmousedown={(...args) => viewport.onmousedown?.(...args)}
 	onmouseup={(...args) => viewport.onmouseup?.(...args)}
 	onmouseleave={(...args) => viewport.onmouseleave?.(...args)}
-	onwheel={(...args) => viewport.onwheel?.(...args)} -->
+	onwheel={(...args) => viewport.onwheel?.(...args)}
 	graph={model.fold}
 	perspective={"orthographic"}
 	renderStyle={"creasePattern"}
@@ -54,7 +54,7 @@ const webglToolLayerProps = $derived(viewport.props || {});
 	{#if WebGLToolLayer}
 		<WebGLToolLayer class="hello-tool-layer" {...svgToolLayerProps} />
 	{/if} -->
-</WebGLRender>
+	</WebGLTouchCanvas>
 
 <style>
 </style>
