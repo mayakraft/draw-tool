@@ -1,11 +1,11 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
 	import SVGCanvas from "./SVGCanvas.svelte";
-	import type { ViewportMouseEvent, ViewportWheelEvent, ViewportTouchEvent } from "../../types.ts";
+	import type { ViewportMouseEvent, ViewportWheelEvent, ViewportTouchEvent } from "../../state/viewport/events.ts";
 	import {
 		convertToViewBox,
 		findInParents,
-	} from "../../js/dom.ts";
+	} from "../../general/dom.ts";
 
 	interface PropsType {
 		svg?: SVGSVGElement,

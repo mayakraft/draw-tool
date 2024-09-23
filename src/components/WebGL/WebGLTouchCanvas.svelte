@@ -6,8 +6,8 @@
 		ViewportMouseEvent,
 		ViewportWheelEvent,
 		ViewportTouchEvent,
-	} from "../../types.ts";
-	import { vectorFromScreenLocation } from "../../math/matrix.svelte.ts";
+	} from "../../state/viewport/events.ts";
+	import { vectorFromScreenLocation } from "../../general/matrix.ts";
 
 	type WebGLTouchCanvasProps = {
 		graph: FOLD,

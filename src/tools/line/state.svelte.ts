@@ -2,7 +2,7 @@ import type { VecLine2 } from "rabbit-ear/types.js";
 import { pointsToLine2 } from "rabbit-ear/math/convert.js";
 import type { StateManagerType } from "../../types.ts";
 import { snapToLine } from "../../js/snap.ts";
-import { snapPoint } from "../../math/snap.svelte.ts";
+import { snapPoint } from "../../state/snap.temp.svelte.ts";
 import { model } from "../../stores/model.svelte.ts";
 
 class Touches {
@@ -29,12 +29,20 @@ class Touches {
 	reset() {
 		this.move = undefined;
 		this.drag = undefined;
-		while (this.presses.length) { this.presses.pop(); }
-		while (this.releases.length) { this.releases.pop(); }
-		while (this.snapPresses.length) { this.snapPresses.pop(); }
-		while (this.snapReleases.length) { this.snapReleases.pop(); }
+		while (this.presses.length) {
+			this.presses.pop();
+		}
+		while (this.releases.length) {
+			this.releases.pop();
+		}
+		while (this.snapPresses.length) {
+			this.snapPresses.pop();
+		}
+		while (this.snapReleases.length) {
+			this.snapReleases.pop();
+		}
 	}
-};
+}
 
 class ToolState {
 	touches: Touches;
@@ -50,27 +58,34 @@ class ToolState {
 	});
 
 	segmentPoints: [number, number][] | undefined = $derived.by(() => {
-		if (!this.line) { return undefined; }
+		if (!this.line) {
+			return undefined;
+		}
 		if (!this.touches.snapPresses.length || !this.touches.snapReleases.length) {
 			return undefined;
 		}
 		const snapLines = [{ line: this.line, clamp: (a: any) => a, domain: () => true }];
-		const point1 = this.touches.snapPresses.length >= 2
-			? snapToLine(this.touches.snapPresses[1], snapLines).coords
-			: snapToLine(this.touches.snapMove, snapLines).coords;
-		const point2 = this.touches.snapReleases.length >= 2
-			? snapToLine(this.touches.snapReleases[1], snapLines).coords
-			: snapToLine(this.touches.snapDrag, snapLines).coords;
+		const point1 =
+			this.touches.snapPresses.length >= 2
+				? snapToLine(this.touches.snapPresses[1], snapLines).coords
+				: snapToLine(this.touches.snapMove, snapLines).coords;
+		const point2 =
+			this.touches.snapReleases.length >= 2
+				? snapToLine(this.touches.snapReleases[1], snapLines).coords
+				: snapToLine(this.touches.snapDrag, snapLines).coords;
 		const result = [];
-		if (point1) { result.push(point1); }
-		if (point2) { result.push(point2); }
+		if (point1) {
+			result.push(point1);
+		}
+		if (point2) {
+			result.push(point2);
+		}
 		return result;
 	});
 
 	segment: [number, number][] | undefined = $derived(
-		this.segmentPoints && this.segmentPoints.length < 2
-			? undefined
-			: this.segmentPoints);
+		this.segmentPoints && this.segmentPoints.length < 2 ? undefined : this.segmentPoints,
+	);
 
 	reset() {
 		this.touches.reset();
@@ -79,7 +94,11 @@ class ToolState {
 	makeLine() {
 		return $effect.root(() => {
 			$effect(() => {
-				if (this.touches.snapPresses.length >= 2 && this.touches.snapReleases.length >= 2 && this.segment) {
+				if (
+					this.touches.snapPresses.length >= 2 &&
+					this.touches.snapReleases.length >= 2 &&
+					this.segment
+				) {
 					const [[x1, y1], [x2, y2]] = this.segment;
 					model.addLine(x1, y1, x2, y2);
 					this.reset();
@@ -87,7 +106,7 @@ class ToolState {
 			});
 			return () => {};
 		});
-	};
+	}
 
 	constructor(touches: Touches) {
 		this.touches = touches;
@@ -117,7 +136,7 @@ class StateManager implements StateManagerType {
 
 	reset() {
 		this.tool?.reset();
-	};
-};
+	}
+}
 
-export default (new StateManager());
+export default new StateManager();

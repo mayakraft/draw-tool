@@ -1,49 +1,18 @@
-import type { Component, ComponentType, SvelteComponentTyped } from "svelte";
-import type { Viewport } from "./stores/viewport.svelte.ts";
-
-//export type ViewportUIEvent = UIEvent & {
-//  point: [number, number] | [number, number, number];
-//}
-
-export type ViewportMouseEvent = MouseEvent & {
-	point: [number, number];
-};
-
-export type ViewportTouchEvent = TouchEvent & {
-	point: [number, number];
-};
-
-export type ViewportWheelEvent = WheelEvent & {
-	point: [number, number];
-};
-
-// export type GLViewportMouseEvent = (MouseEvent | TouchEvent) & {
-// 	point?: [number, number];
-// 	vector?: [number, number];
-// 	deltaY?: number;
-// };
+import type { Viewport } from "./viewport/viewport.ts";
 
 export interface Destroyable {
 	deinitialize(): void;
 }
 
-export interface ViewportEvents {
-	// touch events
-	onmousemove?: (event: ViewportMouseEvent) => void;
-	onmousedown?: (event: ViewportMouseEvent) => void;
-	onmouseup?: (event: ViewportMouseEvent) => void;
-	onmouseleave?: (event: ViewportMouseEvent) => void;
-	onwheel?: (event: ViewportWheelEvent) => void;
-	// keyboard events
-	onkeydown?: (event: KeyboardEvent) => void;
-	onkeyup?: (event: KeyboardEvent) => void;
-	// touch screen events
-	touchstart?: (event: ViewportTouchEvent) => void;
-	touchend?: (event: ViewportTouchEvent) => void;
-	touchmove?: (event: ViewportTouchEvent) => void;
-	touchcancel?: (event: ViewportTouchEvent) => void;
-}
-
+/**
+ * @description This is the currently selected UI tool, as seen on the
+ * toolbar (left side of screen). Tool definitions can be found inside
+ * the tools/ folder.
+ * @notes The tool setter will reset the UI between tools and
+ * call any "subscribe" or "unsubscribe" methods, if they exist,
+ * intended to cleanup or initialize Svelte stores which are specific
+ * to each tool.
+ */
 export abstract class UITool implements Destroyable {
 	static key: string;
 	static name: string;

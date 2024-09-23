@@ -1,5 +1,5 @@
-import type { Destroyable } from "../../types.ts";
-import { SVGViewport } from "../../stores/viewport.svelte.ts";
+import type { Destroyable } from "../../state/viewport/viewport.ts";
+import { SVGViewport } from "../../state/viewport/SVGViewport.svelte.ts";
 import SVGLayer from "./SVGLayer.svelte";
 
 export class ViewportState implements Destroyable {

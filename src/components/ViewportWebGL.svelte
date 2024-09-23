@@ -2,11 +2,11 @@
 import WebGLTouchCanvas from "./WebGL/WebGLTouchCanvas.svelte";
 // import WebGLCanvas from "./WebGL/WebGLCanvas.svelte";
 // import GLElements from "./WebGL/GLElements.svelte";
-import type { GLViewport } from "../stores/viewport.svelte.ts";
-import { model } from "../stores/model.svelte.ts";
+import type { WebGLViewport } from "../state/viewport/WebGLViewport.svelte.ts";
+import { model } from "../state/model.svelte.ts";
 
 type PropsType = {
-	viewport: GLViewport,
+	viewport: WebGLViewport,
 	rest?: any[]
 };
 
@@ -34,9 +34,9 @@ const webglToolLayerProps = $derived(viewport.props || {});
 	onmouseleave={(...args) => viewport.onmouseleave?.(...args)}
 	onwheel={(...args) => viewport.onwheel?.(...args)}
 	graph={model.fold}
-	perspective={"orthographic"}
+	perspective={viewport.view.perspective}
 	renderStyle={"creasePattern"}
-	viewMatrix={[1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]}
+	viewMatrix={viewport.view.viewMatrix}
 	layerNudge={0.01}
 	fov={30.25}
 	darkMode={true}
@@ -47,13 +47,7 @@ const webglToolLayerProps = $derived(viewport.props || {});
 	showFoldedFaceOutlines={true}
 	showFoldedCreases={false}
 	showFoldedFaces={true}
-	<!-- {...rest} -->
-	>
-	<!-- <GridLayer viewBoxArray={viewport.view.viewBox} />
-	<SVGElements elements={model.elements} />
-	{#if WebGLToolLayer}
-		<WebGLToolLayer class="hello-tool-layer" {...svgToolLayerProps} />
-	{/if} -->
+	{...rest}>
 	</WebGLTouchCanvas>
 
 <style>

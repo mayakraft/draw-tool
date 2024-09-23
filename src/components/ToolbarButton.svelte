@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { UITool } from "../types.ts";
-	import { app } from "../stores/app.svelte.ts";
+	import type { UITool } from "../state/tool.ts";
+	import { app } from "../state/app.svelte.ts";
 
 	const { tool }: { tool: typeof UITool } = $props();
 
@@ -64,4 +64,3 @@
 		outline: 2px solid var(--uiblue);
 	}
 </style>
-

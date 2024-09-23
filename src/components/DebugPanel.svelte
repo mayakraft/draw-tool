@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { app } from "../stores/app.svelte.ts";
-	import { model } from "../stores/model.svelte.ts";
-  import { SVGViewport, GLViewport } from "../stores/viewport.svelte.ts";
+	import { app } from "../state/app.svelte.ts";
+	import { model } from "../state/model.svelte.ts";
+	import { SVGViewport } from "../state/viewport/SVGViewport.svelte.ts";
+	import { WebGLViewport } from "../state/viewport/WebGLViewport.svelte.ts";
 	const logModel = () => { console.log($state.snapshot(model.elements)); };
   const newSVG = () => { app.viewports.push(new SVGViewport()); };
-  const newWebGL = () => { app.viewports.push(new GLViewport()); };
+  const newWebGL = () => { app.viewports.push(new WebGLViewport()); };
   const removeView = () => { app.viewports.pop(); };
 	//<input type="checkbox" id="verticalUp" checked={renderer.view.verticalUp}/>
 </script>

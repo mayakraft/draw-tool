@@ -1,6 +1,6 @@
 import { subtract2 } from "rabbit-ear/math/vector.js";
 import type { StateManagerType } from "../../types.ts";
-import { snapPoint } from "../../math/snap.svelte.ts";
+import { snapPoint } from "../../state/snap.temp.svelte.ts";
 import execute from "./execute.ts";
 
 class ToolState {
@@ -10,10 +10,18 @@ class ToolState {
 	drag: [number, number] | undefined = $state();
 
 	// the above, but snapped to grid
-	snapPresses = $derived(this.presses.map(snapPoint).map(el => el.coords)
-		.filter(a => a !== undefined));
-	snapReleases = $derived(this.releases.map(snapPoint).map(el => el.coords)
-		.filter(a => a !== undefined));
+	snapPresses = $derived(
+		this.presses
+			.map(snapPoint)
+			.map((el) => el.coords)
+			.filter((a) => a !== undefined),
+	);
+	snapReleases = $derived(
+		this.releases
+			.map(snapPoint)
+			.map((el) => el.coords)
+			.filter((a) => a !== undefined),
+	);
 	snapMove = $derived(snapPoint(this.move).coords);
 	snapDrag = $derived(snapPoint(this.drag).coords);
 
@@ -32,8 +40,12 @@ class ToolState {
 		this.drag = undefined;
 		// this.presses = [];
 		// this.releases = [];
-		while (this.presses.length) { this.presses.pop(); }
-		while (this.releases.length) { this.releases.pop(); }
+		while (this.presses.length) {
+			this.presses.pop();
+		}
+		while (this.releases.length) {
+			this.releases.pop();
+		}
 	}
 
 	doTransform() {
@@ -47,10 +59,10 @@ class ToolState {
 				}
 				this.reset();
 			});
-			return () => { };
+			return () => {};
 		});
 	}
-};
+}
 
 class StateWrapper implements StateManagerType {
 	tool: ToolState | undefined;
@@ -71,7 +83,7 @@ class StateWrapper implements StateManagerType {
 
 	reset() {
 		this.tool?.reset();
-	};
-};
+	}
+}
 
-export default (new StateWrapper());
+export default new StateWrapper();

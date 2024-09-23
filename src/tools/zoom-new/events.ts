@@ -2,92 +2,67 @@ import type {
 	ViewportMouseEvent,
 	ViewportWheelEvent,
 	ViewportEvents,
-} from "../../types.ts";
+} from "../../state/viewport/events.ts";
 import { ToolState } from "./state.svelte.ts";
-import type { SVGViewport, GLViewport } from "../../stores/viewport.svelte.ts";
+import type { SVGViewport } from "../../state/viewport/SVGViewport.svelte.ts";
+import type { WebGLViewport } from "../../state/viewport/WebGLViewport.svelte.ts";
 import { wheelEventZoomMatrix, wheelPanMatrix } from "./matrix.ts";
-// import {
-// 		vectorFromScreenLocation,
-// 		rotateViewMatrix,
-// 		zoomViewMatrix,
-// 	} from "../../math/matrix.svelte.ts";
+import { rotateViewMatrix, zoomViewMatrix } from "../../general/matrix.ts";
 
-// export class WebGLViewportEvents implements ViewportEvents {
-
-// 	prevVector: [number, number] | undefined;
-
-// 	onpress(event: GLCanvasUIEvent) {
-// 		event.preventDefault();
-// 		const { point, vector } = event;
-// 		prevVector = vector;
-// 	};
-
-// 	onmove(event: GLCanvasUIEvent) {
-// 		event.preventDefault();
-// 		const { point, vector } = event;
-// 		const buttons = prevVector ? 1 : 0;
-// 		if (buttons && prevVector && vector) {
-// 			Renderer.ViewMatrix = rotateViewMatrix(perspective, Renderer.ViewMatrix, vector, prevVector);
-// 			prevVector = vector;
-// 		}
-// 	};
-
-// 	onrelease() {
-// 		prevVector = undefined;
-// 	};
-
-// 	onscroll(event: GLCanvasUIEvent) {
-// 		const { deltaY } = event;
-// 		if (deltaY !== undefined) {
-// 			const scrollSensitivity = 1 / 100;
-// 			const delta = -deltaY * scrollSensitivity;
-// 			if (Math.abs(delta) < 1e-3) { return; }
-// 			Renderer.ViewMatrix = zoomViewMatrix(perspective, Renderer.ViewMatrix, delta);
-// 		}
-// 	};
-// }
-// const onmousedown = (e: MouseEvent) => onpress(formatEvent(e));
-// const onmousemove = (e: MouseEvent) => {
-// 	const event = formatEvent(e);
-// 	cursorScreen = [e.offsetX, e.offsetY];
-// 	cursorWorld = event.vector ? event.vector : [0, 0];
-// 	return onmove(event);
-// };
-// const onmouseup = (e: MouseEvent) => onrelease(formatEvent(e));
-// const ontouchstart = (e: TouchEvent) => onpress(formatTouchEvent(e));
-// const ontouchmove = (e: TouchEvent) => onmove(formatTouchEvent(e));
-// const ontouchend = (e: TouchEvent) => onrelease(formatTouchEvent(e));
-// const onwheel = (e: WheelEvent) => onscroll(e);
-// const onscroll = (event: GLCanvasUIEvent) => {
-// 	const { deltaY } = event;
-// 	if (deltaY !== undefined) {
-// 		const scrollSensitivity = 1 / 100;
-// 		const delta = -deltaY * scrollSensitivity;
-// 		if (Math.abs(delta) < 1e-3) { return; }
-// 		Renderer.ViewMatrix = zoomViewMatrix(perspective, Renderer.ViewMatrix, delta);
-// 	}
-// };
 export class WebGLViewportEvents implements ViewportEvents {
-	viewport: GLViewport;
+	viewport: WebGLViewport;
+	previousPoint: [number, number] | undefined;
 
-	onmousemove = ({ point }: ViewportMouseEvent) => {
-		console.log("webgl", point);
+	onmousemove = (event: ViewportMouseEvent) => {
+		// console.log("onmousemove", this, this.viewport);
+		event.preventDefault();
+		const { point } = event;
+		const buttons = this.previousPoint ? 1 : 0;
+		if (buttons && this.previousPoint && point) {
+			this.viewport.view.viewMatrix = rotateViewMatrix(
+				this.viewport.view.perspective,
+				this.viewport.view.viewMatrix,
+				point,
+				this.previousPoint,
+			);
+			this.previousPoint = point;
+		}
 	};
 
-	onmousedown = ({ point }: ViewportMouseEvent) => {
-		console.log("webgl", point);
+	onmousedown = (event: ViewportMouseEvent) => {
+		event.preventDefault();
+		const { point } = event;
+		this.previousPoint = point;
 	};
 
 	onmouseup = ({ point }: ViewportMouseEvent) => {
-		console.log("webgl", point);
+		this.previousPoint = undefined;
 	};
 
-	constructor(viewport: GLViewport) {
+	onwheel = (event: ViewportWheelEvent) => {
+		const { deltaY } = event;
+		if (deltaY !== undefined) {
+			const scrollSensitivity = 1 / 100;
+			const delta = -deltaY * scrollSensitivity;
+			if (Math.abs(delta) < 1e-3) {
+				return;
+			}
+			this.viewport.view.viewMatrix = zoomViewMatrix(
+				this.viewport.view.perspective,
+				this.viewport.view.viewMatrix,
+				delta,
+			);
+		}
+	};
+
+	constructor(viewport: WebGLViewport) {
 		this.viewport = viewport;
+		// console.log("webgl viewport events constructor", this, this.viewport);
 
 		this.viewport.onmousemove = this.onmousemove;
 		this.viewport.onmousedown = this.onmousedown;
 		this.viewport.onmouseup = this.onmouseup;
+		this.viewport.onwheel = this.onwheel;
 	}
 }
 

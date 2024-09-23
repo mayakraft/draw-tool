@@ -1,8 +1,9 @@
 <script lang="ts">
 	import ViewportSVG from "./ViewportSVG.svelte";
-	import ViewportGL from "./ViewportGL.svelte";
-	import { app } from "../stores/app.svelte.ts";
-	import { GLViewport, SVGViewport } from "../stores/viewport.svelte.ts";
+	import ViewportWebGL from "./ViewportWebGL.svelte";
+	import { app } from "../state/app.svelte.ts";
+	import { SVGViewport } from "../state/viewport/SVGViewport.svelte.ts";
+	import { WebGLViewport } from "../state/viewport/WebGLViewport.svelte.ts";
 
 	const ids = ["canvas-a", "canvas-b"];
 </script>
@@ -14,8 +15,8 @@
 			{#if i < app.viewports.length - 1}
 				<div class="gap"></div>
 			{/if}
-		{:else if viewport instanceof GLViewport}
-			<ViewportGL {viewport} />
+		{:else if viewport instanceof WebGLViewport}
+			<ViewportWebGL {viewport} />
 			{#if i < app.viewports.length - 1}
 				<div class="gap"></div>
 			{/if}

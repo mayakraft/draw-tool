@@ -1,5 +1,5 @@
-import type { UITool } from "../../types.ts";
-import type { Viewport } from "../../stores/viewport.svelte.ts";
+import type { UITool } from "../../state/tool.ts";
+import type { Viewport } from "../../state/viewport/viewport.ts";
 import { GlobalState, ViewportState } from "./state.svelte.ts";
 import icon from "./icon.svelte";
 
@@ -20,7 +20,7 @@ class Tool implements UITool {
 	}
 
 	deinitialize() {
-    this.viewportStates.forEach(state => state.deinitialize());
+		this.viewportStates.forEach((state) => state.deinitialize());
 		this.state.deinitialize();
 	}
 }

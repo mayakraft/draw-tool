@@ -1,13 +1,12 @@
 import { distance2, magnitude2, subtract2 } from "rabbit-ear/math/vector.js";
 import type { StateManagerType } from "../../types.ts";
-import { snapPoint } from "../../math/snap.svelte.ts";
+import { snapPoint } from "../../state/snap.temp.svelte.ts";
 import type { SVGViewport } from "../../stores/viewport.svelte.ts";
 
-const equivalent = (point1: [number, number], point2: [number, number]) => (
+const equivalent = (point1: [number, number], point2: [number, number]) =>
 	// todo
 	// distance2(point1, point2) < viewport.uiEpsilon * 3
-	distance2(point1, point2) < 1e-2
-);
+	distance2(point1, point2) < 1e-2;
 
 class Touches {
 	#move: [number, number] | undefined = $state();
@@ -20,10 +19,18 @@ class Touches {
 	snapPress: [number, number] | undefined = $state();
 	snapRelease: [number, number] | undefined = $state();
 
-	get move() { return this.#move; }
-	get drag() { return this.#drag; }
-	get press() { return this.#press; }
-	get release() { return this.#release; }
+	get move() {
+		return this.#move;
+	}
+	get drag() {
+		return this.#drag;
+	}
+	get press() {
+		return this.#press;
+	}
+	get release() {
+		return this.#release;
+	}
 	set move(v: [number, number] | undefined) {
 		this.#move = v;
 		this.snapMove = snapPoint(this.#move).coords;
@@ -47,7 +54,7 @@ class Touches {
 		this.press = undefined;
 		this.release = undefined;
 	}
-};
+}
 
 class FixedPoint {
 	touches: Touches;
@@ -56,8 +63,12 @@ class FixedPoint {
 	origin: [number, number] = $state([0, 0]);
 	selected: boolean = $state(false);
 	highlighted: boolean = $derived.by(() => {
-		if (this.touches.snapDrag) { return equivalent(this.origin, this.touches.snapDrag); }
-		if (this.touches.snapMove) { return equivalent(this.origin, this.touches.snapMove); }
+		if (this.touches.snapDrag) {
+			return equivalent(this.origin, this.touches.snapDrag);
+		}
+		if (this.touches.snapMove) {
+			return equivalent(this.origin, this.touches.snapMove);
+		}
 		return false;
 	});
 
@@ -83,7 +94,7 @@ class FixedPoint {
 					}
 				}
 			});
-			return () => { };
+			return () => {};
 		});
 	}
 
@@ -92,7 +103,9 @@ class FixedPoint {
 	update() {
 		return $effect.root(() => {
 			$effect(() => {
-				if (!this.selected) { return; }
+				if (!this.selected) {
+					return;
+				}
 				if (this.touches.snapPress && this.touches.snapRelease) {
 					this.origin = this.touches.snapRelease;
 					// console.log("fixed point: set origin position, reset()");
@@ -104,14 +117,14 @@ class FixedPoint {
 					return;
 				}
 			});
-			return () => { };
+			return () => {};
 		});
 	}
 
 	constructor(touches: Touches) {
 		this.touches = touches;
 	}
-};
+}
 
 class ToolState {
 	touches: Touches;
@@ -139,9 +152,11 @@ class ToolState {
 		return undefined;
 	});
 
-	scale: number = $derived(this.startVector && this.endVector
-		? magnitude2(this.endVector) / magnitude2(this.startVector)
-		: 1);
+	scale: number = $derived(
+		this.startVector && this.endVector
+			? magnitude2(this.endVector) / magnitude2(this.startVector)
+			: 1,
+	);
 
 	reset() {
 		this.fixedPoint.reset();
@@ -152,13 +167,19 @@ class ToolState {
 		return $effect.root(() => {
 			$effect(() => {
 				// console.log("tool.update()", this.touches.snapPress, this.touches.snapRelease);
-				if (this.fixedPoint.selected) { return; }
-				if (!this.touches.snapPress || !this.touches.snapRelease) { return; }
-				if (Math.abs(this.scale) < 1e-6) { return; }
+				if (this.fixedPoint.selected) {
+					return;
+				}
+				if (!this.touches.snapPress || !this.touches.snapRelease) {
+					return;
+				}
+				if (Math.abs(this.scale) < 1e-6) {
+					return;
+				}
 				console.log("scale model by", this.scale);
 				this.reset();
 			});
-			return () => { };
+			return () => {};
 		});
 	}
 
@@ -166,7 +187,7 @@ class ToolState {
 		this.touches = touches;
 		this.fixedPoint = fixedPoint;
 	}
-};
+}
 
 class StateWrapper implements StateManagerType {
 	touches: Touches | undefined;
@@ -195,7 +216,7 @@ class StateWrapper implements StateManagerType {
 
 	reset() {
 		this.tool?.reset();
-	};
-};
+	}
+}
 
-export default (new StateWrapper());
+export default new StateWrapper();

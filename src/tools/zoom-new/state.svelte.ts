@@ -1,7 +1,8 @@
 import { untrack } from "svelte";
 import { subtract2 } from "rabbit-ear/math/vector.js";
-import type { Destroyable } from "../../types.ts";
-import type { SVGViewport, GLViewport } from "../../stores/viewport.svelte.ts";
+import type { Destroyable } from "../../state/viewport/viewport.ts";
+import type { SVGViewport } from "../../state/viewport/SVGViewport.svelte.ts";
+import type { WebGLViewport } from "../../state/viewport/WebGLViewport.svelte.ts";
 import { panCameraMatrix } from "./matrix.ts";
 import { SVGViewportEvents, WebGLViewportEvents } from "./events.ts";
 
@@ -69,10 +70,10 @@ export class SVGViewportState implements Destroyable {
 }
 
 export class GLViewportState implements Destroyable {
-	viewport: GLViewport;
+	viewport: WebGLViewport;
 	events: WebGLViewportEvents;
 
-	constructor(viewport: GLViewport) {
+	constructor(viewport: WebGLViewport) {
 		this.viewport = viewport;
 		this.events = new WebGLViewportEvents(this.viewport);
 	}

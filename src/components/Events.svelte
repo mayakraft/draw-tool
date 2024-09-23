@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onkeydown, onkeyup } from "../stores/keyboardEvents.svelte";
+	import { onkeydown, onkeyup } from "../state/keyboardEvents.svelte";
 </script>
 
 <svelte:window {onkeyup} {onkeydown} />

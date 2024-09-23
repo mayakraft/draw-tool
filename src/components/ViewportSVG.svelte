@@ -2,8 +2,8 @@
 import SVGTouchCanvas from "./SVG/SVGTouchCanvas.svelte";
 import GridLayer from "./SVG/GridLayer.svelte";
 import SVGElements from "./SVG/SVGElements.svelte";
-import type { SVGViewport } from "../stores/viewport.svelte.ts";
-import { model } from "../stores/model.svelte.ts";
+import type { SVGViewport } from "../state/viewport/SVGViewport.svelte.ts";
+import { model } from "../state/model.svelte.ts";
 
 type PropsType = {
 	viewport: SVGViewport,
@@ -38,7 +38,7 @@ const svgToolLayerProps = $derived(viewport.props || {});
 	stroke="white"
 	stroke-width={viewport.style.strokeWidth}
 	{...rest}>
-	<GridLayer viewBoxArray={viewport.view.viewBox} />
+	<GridLayer {viewport} />
 	<SVGElements elements={model.elements} />
 	{#if SVGToolLayer}
 		<g class="tool-layer" style={`--stroke-dash-length: ${viewport.style.strokeDashLength};`}>

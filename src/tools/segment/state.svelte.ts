@@ -1,5 +1,5 @@
 import type { StateManagerType } from "../../types.ts";
-import { snapPoint } from "../../math/snap.svelte.ts";
+import { snapPoint } from "../../state/snap.temp.svelte.ts";
 import { model } from "../../stores/model.svelte.ts";
 
 class Touches {
@@ -13,10 +13,18 @@ class Touches {
 	snapPress: [number, number] | undefined = $state();
 	snapRelease: [number, number] | undefined = $state();
 
-	get move() { return this.#move; }
-	get drag() { return this.#drag; }
-	get press() { return this.#press; }
-	get release() { return this.#release; }
+	get move() {
+		return this.#move;
+	}
+	get drag() {
+		return this.#drag;
+	}
+	get press() {
+		return this.#press;
+	}
+	get release() {
+		return this.#release;
+	}
 	set move(v: [number, number] | undefined) {
 		this.#move = v;
 		this.snapMove = snapPoint(this.#move).coords;
@@ -40,7 +48,7 @@ class Touches {
 		this.press = undefined;
 		this.release = undefined;
 	}
-};
+}
 
 class ToolState {
 	touches: Touches;
@@ -55,15 +63,16 @@ class ToolState {
 		return undefined;
 	});
 
-	svgSegment: { x1: number, y1: number, x2: number, y2: number, } | undefined = $derived(
+	svgSegment: { x1: number; y1: number; x2: number; y2: number } | undefined = $derived(
 		!this.segment
 			? undefined
 			: {
-				x1: this.segment[0][0],
-				y1: this.segment[0][1],
-				x2: this.segment[1][0],
-				y2: this.segment[1][1],
-			});
+					x1: this.segment[0][0],
+					y1: this.segment[0][1],
+					x2: this.segment[1][0],
+					y2: this.segment[1][1],
+				},
+	);
 
 	reset() {
 		this.touches.reset();
@@ -79,14 +88,14 @@ class ToolState {
 				model.addLine(x1, y1, x2, y2);
 				this.reset();
 			});
-			return () => { };
+			return () => {};
 		});
 	}
 
 	constructor(touches: Touches) {
 		this.touches = touches;
 	}
-};
+}
 
 class StateWrapper implements StateManagerType {
 	touches: Touches | undefined;
@@ -110,7 +119,7 @@ class StateWrapper implements StateManagerType {
 
 	reset() {
 		this.tool?.reset();
-	};
-};
+	}
+}
 
-export default (new StateWrapper());
+export default new StateWrapper();

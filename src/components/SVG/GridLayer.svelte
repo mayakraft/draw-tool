@@ -1,36 +1,10 @@
 <script lang="ts">
-	import grid from "../../stores/grid.svelte.ts";
-	import { viewBoxOrigin } from "../../js/matrix.ts";
-	import {
-		makeSquareGrid,
-		makeTriangleGrid,
-	} from "../../js/grid.ts";
-
-	interface PropsType {
-		viewBoxArray: [number, number, number, number],
-	};
-
-	let {
-		viewBoxArray = [0, 0, 1, 1],
-	}: PropsType = $props();
-
-	//const origin = $derived(viewBoxOrigin(viewBoxArray, renderer.view.verticalUp));
-	const origin = $derived(viewBoxOrigin(viewBoxArray, true));
-
-	const actualViewport: [number, number, number, number] = $derived([
-		origin[0],
-		origin[1],
-		viewBoxArray[2],
-		viewBoxArray[3],
-	]);
-	const strokeWidth = $derived(Math.max(viewBoxArray[2], viewBoxArray[3]) / 400);
-	const lines = $derived(grid.pattern === "triangle"
-		? makeTriangleGrid(actualViewport)
-		: makeSquareGrid(actualViewport));
+	import { SVGViewport } from "../../state/viewport/SVGViewport.svelte.ts";
+	let { viewport }: { viewport: SVGViewport } = $props();
 </script>
 
-<g class="grid" stroke-width={strokeWidth}>
-	{#each lines as line}
+<g class="grid" stroke-width={viewport.grid.strokeWidth}>
+	{#each viewport.grid.lines as line}
 		<line {...line} />
 	{/each}
 

@@ -1,9 +1,12 @@
 import { distance2 } from "rabbit-ear/math/vector.js";
 import type { StateManagerType } from "../../types.ts";
-import { snapPoint } from "../../math/snap.svelte.ts";
+import { snapPoint } from "../../state/snap.temp.svelte.ts";
 import { model } from "../../stores/model.svelte.ts";
 
-const makeCircle = (p0: [number, number], p1: [number, number]): { cx: number, cy: number, r: number } => {
+const makeCircle = (
+	p0: [number, number],
+	p1: [number, number],
+): { cx: number; cy: number; r: number } => {
 	const [cx, cy] = p0;
 	const r = distance2(p0, p1);
 	return { cx, cy, r };
@@ -18,12 +21,20 @@ class ToolState {
 	// the above, but snapped to grid
 	snapMove = $derived(snapPoint(this.move).coords);
 	snapDrag = $derived(snapPoint(this.drag).coords);
-	snapPresses = $derived(this.presses.map(snapPoint).map(el => el.coords)
-		.filter(a => a !== undefined));
-	snapReleases = $derived(this.releases.map(snapPoint).map(el => el.coords)
-		.filter(a => a !== undefined));
+	snapPresses = $derived(
+		this.presses
+			.map(snapPoint)
+			.map((el) => el.coords)
+			.filter((a) => a !== undefined),
+	);
+	snapReleases = $derived(
+		this.releases
+			.map(snapPoint)
+			.map((el) => el.coords)
+			.filter((a) => a !== undefined),
+	);
 
-	circle: { cx: number, cy: number, r: number } | undefined = $derived.by(() => {
+	circle: { cx: number; cy: number; r: number } | undefined = $derived.by(() => {
 		if (this.snapPresses.length && this.snapReleases.length) {
 			return makeCircle(this.snapPresses[0], this.snapReleases[0]);
 		}
@@ -39,8 +50,12 @@ class ToolState {
 		this.drag = undefined;
 		// this.presses = [];
 		// this.releases = [];
-		while (this.presses.length) { this.presses.pop(); }
-		while (this.releases.length) { this.releases.pop(); }
+		while (this.presses.length) {
+			this.presses.pop();
+		}
+		while (this.releases.length) {
+			this.releases.pop();
+		}
 	}
 
 	makeCircle() {
@@ -57,7 +72,7 @@ class ToolState {
 			return () => {};
 		});
 	}
-};
+}
 
 class StateManager implements StateManagerType {
 	tool: ToolState | undefined;
@@ -78,7 +93,7 @@ class StateManager implements StateManagerType {
 
 	reset() {
 		this.tool?.reset();
-	};
-};
+	}
+}
 
-export default (new StateManager());
+export default new StateManager();

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { shapeToElement, type Shape } from "../../stores/model.svelte.ts";
+	import { shapeToElement, type Shape } from "../../state/model.svelte.ts";
 
 	type PropsType = {
 		// elements: SVGElement[],

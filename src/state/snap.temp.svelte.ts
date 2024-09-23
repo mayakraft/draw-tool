@@ -1,6 +1,9 @@
-import { snapToPoint } from "../js/snap.ts";
-import { app } from "../stores/app.svelte.ts";
-import { SnapPoints, GridSnapFunction } from "../stores/snap.svelte.ts";
+import {
+	snapToPoint,
+	triangleGridSnapFunction,
+	squareGridSnapFunction,
+} from "../general/snap.ts";
+import { app } from "./app.svelte.ts";
 
 // there should be two levels of functions:
 // - core level, like snapToPoint.
@@ -8,4 +11,9 @@ import { SnapPoints, GridSnapFunction } from "../stores/snap.svelte.ts";
 // like SnapRadius, GridSnapfunction etc..
 export const snapPoint = (p: [number, number] | undefined) =>
 	// todo: remove viewport hard coded
-	snapToPoint(p, SnapPoints.value, app.viewports[0].snapRadius, GridSnapFunction.value);
+	snapToPoint(
+		p,
+		app.snap.snapPoints,
+		app.viewports[0].snapRadius,
+		app.snap.gridSnapFunction,
+	);

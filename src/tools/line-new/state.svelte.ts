@@ -1,10 +1,11 @@
 import type { VecLine2 } from "rabbit-ear/types.js";
 import { pointsToLine2 } from "rabbit-ear/math/convert.js";
-import type { Destroyable } from "../../types.ts";
-import { snapToLine } from "../../js/snap.ts";
-import { snapPoint } from "../../math/snap.svelte.ts";
-import { model } from "../../stores/model.svelte.ts";
-import { SVGViewport, GLViewport } from "../../stores/viewport.svelte.ts";
+import type { Destroyable } from "../../state/viewport/viewport.ts";
+import type { SVGViewport } from "../../state/viewport/SVGViewport.svelte.ts";
+import type { WebGLViewport } from "../../state/viewport/WebGLViewport.svelte.ts";
+import { snapToLine } from "../../general/snap.ts";
+import { snapPoint } from "../../state/snap.temp.svelte.ts";
+import { model } from "../../state/model.svelte.ts";
 import { SVGViewportEvents } from "./events.ts";
 import SVGLayer from "./SVGLayer.svelte";
 
@@ -176,8 +177,8 @@ export class SVGViewportState implements Destroyable {
 }
 
 export class GLViewportState implements Destroyable {
-	viewport: GLViewport;
-	constructor(viewport: GLViewport) {
+	viewport: WebGLViewport;
+	constructor(viewport: WebGLViewport) {
 		this.viewport = viewport;
 	}
 	deinitialize() {}

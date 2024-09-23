@@ -1,4 +1,4 @@
-import { normalize2, scale2, dot2, add2 } from "rabbit-ear/math/vector.js";
+import { scale2, dot2, add2 } from "rabbit-ear/math/vector.js";
 
 const _0_866 = Math.sqrt(3) / 2;
 
@@ -40,20 +40,26 @@ export const makeSquareGrid = (viewBoxArray: [number, number, number, number]) =
 		spacing *= 2;
 	}
 	return [
-		makeIntervals(viewBoxArray[0] - viewBoxArray[2] * 1, viewBoxArray[2] * 3, spacing)
-			.map((x) => ({
-				x1: x,
-				y1: viewBoxArray[1] - viewBoxArray[3],
-				x2: x,
-				y2: viewBoxArray[1] + viewBoxArray[3] * 3,
-			})),
-		makeIntervals(viewBoxArray[1] - viewBoxArray[3] * 1, viewBoxArray[3] * 4, spacing)
-			.map((y) => ({
-				x1: viewBoxArray[0] - viewBoxArray[2],
-				y1: y,
-				x2: viewBoxArray[0] + viewBoxArray[2] * 2,
-				y2: y,
-			})),
+		makeIntervals(
+			viewBoxArray[0] - viewBoxArray[2] * 1,
+			viewBoxArray[2] * 3,
+			spacing,
+		).map((x) => ({
+			x1: x,
+			y1: viewBoxArray[1] - viewBoxArray[3],
+			x2: x,
+			y2: viewBoxArray[1] + viewBoxArray[3] * 3,
+		})),
+		makeIntervals(
+			viewBoxArray[1] - viewBoxArray[3] * 1,
+			viewBoxArray[3] * 4,
+			spacing,
+		).map((y) => ({
+			x1: viewBoxArray[0] - viewBoxArray[2],
+			y1: y,
+			x2: viewBoxArray[0] + viewBoxArray[2] * 2,
+			y2: y,
+		})),
 	].flat();
 };
 
@@ -83,18 +89,10 @@ export const makeTriangleGrid = (viewport: [number, number, number, number]) => 
 	// sort them so the smaller is first, this will normalize any y-axis inversion.
 	// do this with both the diagonal line vectors, and their normals.
 	// this gives us the drawing space on screen that needs to be covered.
-	const aVecProject = corners
-		.map((p) => dot2(p, aVector))
-		.sort((a, b) => a - b);
-	const bVecProject = corners
-		.map((p) => dot2(p, bVector))
-		.sort((a, b) => a - b);
-	const aNormProject = corners
-		.map((p) => dot2(p, aNormal))
-		.sort((a, b) => a - b);
-	const bNormProject = corners
-		.map((p) => dot2(p, bNormal))
-		.sort((a, b) => a - b);
+	const aVecProject = corners.map((p) => dot2(p, aVector)).sort((a, b) => a - b);
+	const bVecProject = corners.map((p) => dot2(p, bVector)).sort((a, b) => a - b);
+	const aNormProject = corners.map((p) => dot2(p, aNormal)).sort((a, b) => a - b);
+	const bNormProject = corners.map((p) => dot2(p, bNormal)).sort((a, b) => a - b);
 	const aVecLength = aVecProject[aVecProject.length - 1] - aVecProject[0];
 	const bVecLength = bVecProject[bVecProject.length - 1] - bVecProject[0];
 	// create three interval arrays, one for each axis, each number is the

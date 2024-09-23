@@ -4,8 +4,8 @@ import {
 	determinant2,
 	makeMatrix2Translate,
 } from "rabbit-ear/math/matrix2.js";
-import type { SVGViewport } from "../../stores/viewport.svelte.ts";
-import { getScreenPoint } from "../../js/matrix.ts";
+import type { SVGViewport } from "../../state/viewport/SVGViewport.svelte.ts";
+import { getScreenPoint } from "../../general/matrix.ts";
 // import { renderer } from "../../stores/renderer.svelte.ts";
 
 /**

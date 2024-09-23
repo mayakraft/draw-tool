@@ -1,19 +1,19 @@
 import { distance2, subtract2 } from "rabbit-ear/math/vector.js";
 import { clockwiseAngle2 } from "rabbit-ear/math/radial.js";
 import type { StateManagerType } from "../../types.ts";
-import { snapPoint } from "../../math/snap.svelte.ts";
+import { snapPoint } from "../../state/snap.temp.svelte.ts";
 // import { renderer } from "../../stores/renderer.svelte.ts";
 
-const Effectify = (func: () => void) => ($effect.root(() => {
-	$effect(func);
-	return () => { };
-}));
+const Effectify = (func: () => void) =>
+	$effect.root(() => {
+		$effect(func);
+		return () => {};
+	});
 
-const equivalent = (point1: [number, number], point2: [number, number]) => (
+const equivalent = (point1: [number, number], point2: [number, number]) =>
 	// todo
 	// distance2(point1, point2) < renderer.uiEpsilon * 3
-	distance2(point1, point2) < 1e-2
-);
+	distance2(point1, point2) < 1e-2;
 
 class Touches {
 	#move: [number, number] | undefined = $state();
@@ -26,10 +26,18 @@ class Touches {
 	snapPress: [number, number] | undefined = $state();
 	snapRelease: [number, number] | undefined = $state();
 
-	get move() { return this.#move; }
-	get drag() { return this.#drag; }
-	get press() { return this.#press; }
-	get release() { return this.#release; }
+	get move() {
+		return this.#move;
+	}
+	get drag() {
+		return this.#drag;
+	}
+	get press() {
+		return this.#press;
+	}
+	get release() {
+		return this.#release;
+	}
 	set move(v: [number, number] | undefined) {
 		this.#move = v;
 		this.snapMove = snapPoint(this.#move).coords;
@@ -53,7 +61,7 @@ class Touches {
 		this.press = undefined;
 		this.release = undefined;
 	}
-};
+}
 
 class FixedPoint {
 	touches: Touches;
@@ -61,8 +69,12 @@ class FixedPoint {
 	origin: [number, number] = $state([0, 0]);
 	selected: boolean = $state(false);
 	highlighted: boolean = $derived.by(() => {
-		if (this.touches.snapDrag) { return equivalent(this.origin, this.touches.snapDrag); }
-		if (this.touches.snapMove) { return equivalent(this.origin, this.touches.snapMove); }
+		if (this.touches.snapDrag) {
+			return equivalent(this.origin, this.touches.snapDrag);
+		}
+		if (this.touches.snapMove) {
+			return equivalent(this.origin, this.touches.snapMove);
+		}
 		return false;
 	});
 
@@ -105,7 +117,7 @@ class FixedPoint {
 	constructor(touches: Touches) {
 		this.touches = touches;
 	}
-};
+}
 
 class ToolState {
 	touches: Touches;
@@ -118,7 +130,8 @@ class ToolState {
 	startVector: [number, number] | undefined = $derived.by(() =>
 		this.touches.snapPress && !this.fixedPoint.selected
 			? subtract2(this.touches.snapPress, this.fixedPoint.origin)
-			: undefined);
+			: undefined,
+	);
 
 	endVector: [number, number] | undefined = $derived.by(() => {
 		if (this.fixedPoint.selected) {
@@ -133,13 +146,15 @@ class ToolState {
 		return undefined;
 	});
 
-	angle: number = $derived(this.startVector && this.endVector
-		? clockwiseAngle2(this.startVector, this.endVector)
-		: 0);
+	angle: number = $derived(
+		this.startVector && this.endVector
+			? clockwiseAngle2(this.startVector, this.endVector)
+			: 0,
+	);
 
-	showAngleIndicator: boolean = $derived.by(() => (
-		this.touches.snapPress !== undefined &&
-		this.touches.snapRelease === undefined));
+	showAngleIndicator: boolean = $derived.by(
+		() => this.touches.snapPress !== undefined && this.touches.snapRelease === undefined,
+	);
 
 	reset() {
 		this.fixedPoint.reset();
@@ -150,10 +165,12 @@ class ToolState {
 		const wasSelected = this.fixedPoint.selected;
 		this.fixedPoint.update();
 
-		if (this.touches.snapPress
-			&& this.touches.snapRelease
-			&& !wasSelected
-			&& !this.fixedPoint.selected) {
+		if (
+			this.touches.snapPress &&
+			this.touches.snapRelease &&
+			!wasSelected &&
+			!this.fixedPoint.selected
+		) {
 			console.log("rotate model by", this.angle);
 			this.reset();
 		}
@@ -163,7 +180,7 @@ class ToolState {
 		this.touches = touches;
 		this.fixedPoint = fixedPoint;
 	}
-};
+}
 
 class StateWrapper implements StateManagerType {
 	touches: Touches | undefined;
@@ -190,7 +207,7 @@ class StateWrapper implements StateManagerType {
 
 	reset() {
 		this.tool?.reset();
-	};
-};
+	}
+}
 
-export default (new StateWrapper());
+export default new StateWrapper();

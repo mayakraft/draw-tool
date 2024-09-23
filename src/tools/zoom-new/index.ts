@@ -1,5 +1,7 @@
-import type { UITool } from "../../types.ts";
-import { SVGViewport, GLViewport, type Viewport } from "../../stores/viewport.svelte.ts";
+import type { UITool } from "../../state/tool.ts";
+import { SVGViewport } from "../../state/viewport/SVGViewport.svelte.ts";
+import { WebGLViewport } from "../../state/viewport/WebGLViewport.svelte.ts";
+import type { Viewport } from "../../state/viewport/viewport.ts";
 import { SVGViewportState, GLViewportState } from "./state.svelte.ts";
 import icon from "./icon.svelte";
 
@@ -17,7 +19,7 @@ class Tool implements UITool {
 			const viewportState = new SVGViewportState(viewport);
 			this.viewportStates.push(viewportState);
 			return viewportState.deinitialize;
-		} else if (viewport instanceof GLViewport) {
+		} else if (viewport instanceof WebGLViewport) {
 			const viewportState = new GLViewportState(viewport);
 			this.viewportStates.push(viewportState);
 			return viewportState.deinitialize;
