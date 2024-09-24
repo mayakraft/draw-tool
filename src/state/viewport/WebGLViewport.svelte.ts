@@ -49,7 +49,7 @@ export class WebGLViewport implements Viewport, ViewportEvents {
 		this.style = new WebGLViewportStyle(this.view);
 	}
 
-	deinitialize() {
+	dealloc() {
 		unsetViewportEvents(this);
 		// todo
 	}

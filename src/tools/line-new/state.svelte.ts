@@ -3,31 +3,46 @@ import { pointsToLine2 } from "rabbit-ear/math/convert.js";
 import type { Destroyable } from "../../state/viewport/viewport.ts";
 import type { SVGViewport } from "../../state/viewport/SVGViewport.svelte.ts";
 import type { WebGLViewport } from "../../state/viewport/WebGLViewport.svelte.ts";
-import { snapToLine } from "../../general/snap.ts";
-import { snapPoint } from "../../state/snap.temp.svelte.ts";
 import { model } from "../../state/model.svelte.ts";
 import { SVGViewportEvents } from "./events.ts";
 import SVGLayer from "./SVGLayer.svelte";
+import snap from "../../state/snap.svelte.ts";
 
 export class Touches {
+	viewport: SVGViewport;
+
 	move: [number, number] | undefined = $state();
 	drag: [number, number] | undefined = $state();
-	snapMove = $derived(snapPoint(this.move).coords);
-	snapDrag = $derived(snapPoint(this.drag).coords);
+	snapMove: [number, number] | undefined = $derived.by(() =>
+		this.move ? snap.snapToPoint(this.move, this.viewport.snapRadius).coords : undefined,
+	);
+	snapDrag: [number, number] | undefined = $derived.by(() =>
+		this.drag ? snap.snapToPoint(this.drag, this.viewport.snapRadius).coords : undefined,
+	);
+	//snapMove = $derived(this.viewport.snapPoint(this.move).coords);
+	//snapDrag = $derived(this.viewport.snapPoint(this.drag).coords);
 
 	presses: [number, number][] = $state([]);
 	releases: [number, number][] = $state([]);
 	snapPresses: [number, number][] = $state([]);
 	snapReleases: [number, number][] = $state([]);
 
+	constructor(viewport: SVGViewport) {
+		this.viewport = viewport;
+	}
+
 	addPress(point: [number, number]) {
+		const snapPoint = snap.snapToPoint(point, this.viewport.snapRadius).coords;
 		this.presses.push(point);
-		this.snapPresses.push(snapPoint(point).coords);
+		// if point is not undefined, result is not undefined
+		this.snapPresses.push(snapPoint as [number, number]);
 	}
 
 	addRelease(point: [number, number]) {
+		const snapPoint = snap.snapToPoint(point, this.viewport.snapRadius).coords;
 		this.releases.push(point);
-		this.snapReleases.push(snapPoint(point).coords);
+		// if point is not undefined, result is not undefined
+		this.snapReleases.push(snapPoint as [number, number]);
 	}
 
 	reset() {
@@ -72,12 +87,14 @@ export class ToolState {
 		const snapLines = [{ line: this.line, clamp: (a: any) => a, domain: () => true }];
 		const point1 =
 			this.touches.snapPresses.length >= 2
-				? snapToLine(this.touches.snapPresses[1], snapLines).coords
-				: snapToLine(this.touches.snapMove, snapLines).coords;
+				? snap.snapToLine(this.touches.presses[1], this.viewport.snapRadius, snapLines)
+						.coords
+				: snap.snapToLine(this.touches.move, this.viewport.snapRadius, snapLines).coords;
 		const point2 =
 			this.touches.snapReleases.length >= 2
-				? snapToLine(this.touches.snapReleases[1], snapLines).coords
-				: snapToLine(this.touches.snapDrag, snapLines).coords;
+				? snap.snapToLine(this.touches.releases[1], this.viewport.snapRadius, snapLines)
+						.coords
+				: snap.snapToLine(this.touches.drag, this.viewport.snapRadius, snapLines).coords;
 		const result = [];
 		if (point1) {
 			result.push(point1);
@@ -146,7 +163,7 @@ export class SVGViewportState implements Destroyable {
 		this.viewport = viewport;
 		this.globalState = globalState;
 
-		this.touches = new Touches();
+		this.touches = new Touches(this.viewport);
 		this.tool = new ToolState(this.viewport, this.touches);
 		this.events = new SVGViewportEvents(this.viewport, this.touches);
 		this.unsub.push(this.tool.makeLine());
@@ -168,7 +185,7 @@ export class SVGViewportState implements Destroyable {
 		};
 	}
 
-	deinitialize() {
+	dealloc() {
 		console.log("line: viewport deinit");
 		this.unsub.forEach((u) => u());
 		this.unsub = [];
@@ -181,10 +198,10 @@ export class GLViewportState implements Destroyable {
 	constructor(viewport: WebGLViewport) {
 		this.viewport = viewport;
 	}
-	deinitialize() {}
+	dealloc() {}
 }
 
 export class GlobalState implements Destroyable {
 	constructor() {}
-	deinitialize() {}
+	dealloc() {}
 }

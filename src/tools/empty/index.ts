@@ -16,12 +16,12 @@ class Tool implements UITool {
 	bindTo(viewport: Viewport): Function {
 		const viewportState = new ViewportState(viewport);
 		this.viewportStates.push(viewportState);
-		return viewportState.deinitialize;
+		return viewportState.dealloc;
 	}
 
-	deinitialize() {
-		this.viewportStates.forEach((state) => state.deinitialize());
-		this.state.deinitialize();
+	dealloc() {
+		this.viewportStates.forEach((state) => state.dealloc());
+		this.state.dealloc();
 	}
 }
 

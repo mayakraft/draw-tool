@@ -5,7 +5,7 @@ import type {
 } from "./events.ts";
 
 export interface Destroyable {
-	deinitialize(): void;
+	dealloc(): void;
 }
 
 export interface Viewport {
@@ -23,7 +23,7 @@ export interface Viewport {
 	onkeyup?: ((event: KeyboardEvent) => void) | undefined;
 
 	// this method will unbind all of the above events (set them to undefined)
-	deinitialize: () => void;
+	dealloc: () => void;
 
 	// epsilon and snapping
 

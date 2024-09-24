@@ -1,17 +1,25 @@
 import type { VecLine2 } from "rabbit-ear/types.js";
-import { distance2, subtract2 } from "rabbit-ear/math/vector.js";
-import { clampSegment } from "rabbit-ear/math/line.js";
+import { distance2 } from "rabbit-ear/math/vector.js";
 import { nearestPointOnLine } from "rabbit-ear/math/nearest.js";
 import { overlapLinePoint } from "rabbit-ear/math/overlap.js";
 
-type SnapResult = {
-	coords: [number, number] | undefined,
-	snap: boolean,
+export type SnapResult = {
+	coords: [number, number] | undefined;
+	snap: boolean;
+};
+
+export type LineType = {
+	line: VecLine2;
+	clamp: Function;
+	domain: (_: number, __?: number) => boolean;
 };
 
 const _0_866 = Math.sqrt(3) / 2;
 
-export const triangleGridSnapFunction = (point: [number, number], snapRadius: number): [number, number] | undefined => {
+export const triangleGridSnapFunction = (
+	point: [number, number],
+	snapRadius: number,
+): [number, number] | undefined => {
 	if (!point) {
 		return undefined;
 	}
@@ -26,7 +34,10 @@ export const triangleGridSnapFunction = (point: [number, number], snapRadius: nu
 		: undefined;
 };
 
-export const squareGridSnapFunction = (point: [number, number], snapRadius: number): [number, number] | undefined => {
+export const squareGridSnapFunction = (
+	point: [number, number],
+	snapRadius: number,
+): [number, number] | undefined => {
 	if (!point) {
 		return undefined;
 	}
@@ -49,11 +60,11 @@ export const squareGridSnapFunction = (point: [number, number], snapRadius: numb
  * this will be ignored.
  * @returns {object} object with coords {number[]} and snap {boolean}
  */
-export const snapToPoint = (
+export const snapToPointOrGrid = (
 	point: [number, number],
-	points: [number, number][],
 	snapRadius: number,
-	gridSnapFunction: Function = squareGridSnapFunction,
+	points: [number, number][],
+	gridSnapFunction: Function,
 ): SnapResult => {
 	// console.log("snapToPoint", point, points, snapRadius);
 	if (!point) {
@@ -65,6 +76,7 @@ export const snapToPoint = (
 			? { coords: grid, snap: true }
 			: { coords: point, snap: false };
 	}
+
 	// these points take priority over grid points.
 	const pointsDistance = points.map((p) => distance2(p, point));
 	const nearestPointIndex = pointsDistance
@@ -72,10 +84,12 @@ export const snapToPoint = (
 		.filter((a) => a !== undefined)
 		.sort((a, b) => pointsDistance[a] - pointsDistance[b])
 		.shift();
+
 	// if a point exists within our snap radius, use that
 	if (nearestPointIndex !== undefined) {
 		return { coords: [...points[nearestPointIndex]], snap: true };
 	}
+
 	// fallback, use a grid point if it exists.
 	// we only need the nearest of the grid coordinates.
 	const grid = gridSnapFunction(point, snapRadius);
@@ -87,33 +101,32 @@ export const snapToPoint = (
 };
 
 /**
- * @param {[number, number]} point
- * @param {[number, number][]} points
- * @param {{ line: VecLine2, clamp: Function, domain: Function }[]} rulers
- * @param {number} snapRadius
+ *
  */
-export const snapToLine = (
+export const snapToLineOrPointOrGrid = (
 	point: [number, number],
-	rulers: { line: VecLine2, clamp: Function, domain: Function }[],
-	points: [number, number][] = [],
-	snapRadius: number = 0): SnapResult => {
+	snapRadius: number,
+	lines: LineType[],
+	points: [number, number][],
+	gridSnapFunction: Function,
+): SnapResult => {
 	// for a line:
 	// clamp: a => a,
 	// domain: () => true,
 
-	// console.log("snapToRulerLine", point, points, rulers, snapRadius);
 	if (!point) {
 		return { coords: undefined, snap: false };
 	}
-	if (!rulers || !rulers.length) {
+	if (!lines || !lines.length) {
 		return { coords: point, snap: false };
 	}
+
 	// for each ruler, a point that is the nearest point on the line
-	const rulersPoint = rulers.map((el) =>
-		nearestPointOnLine(el.line, point, el.clamp),
+	const rulersPoints = lines.map(
+		(el) => nearestPointOnLine(el.line, point, el.clamp) as [number, number],
 	);
 	// for each ruler point, the distance to our input point
-	const distances = rulersPoint.map((p) => distance2(point, p));
+	const distances = rulersPoints.map((p) => distance2(point, p));
 	// find the nearest point
 	let index = 0;
 	for (let i = 1; i < distances.length; i += 1) {
@@ -121,8 +134,9 @@ export const snapToLine = (
 			index = i;
 		}
 	}
-	const ruler = rulers[index];
-	const rulerPoint = rulersPoint[index];
+
+	const ruler = lines[index];
+	const rulerPoint = rulersPoints[index];
 	// even if our goal is simply to snap to a ruler line, there may be a
 	// snap point that lies along the nearest snapping ruler.
 	// it's a snap within a snap behavior which, once you see, UX-wise,
@@ -132,6 +146,15 @@ export const snapToLine = (
 	const collinearSnapPoints = points.filter((p) =>
 		overlapLinePoint(ruler.line, p, ruler.domain),
 	);
-	const snapPoint = snapToPoint(rulerPoint, collinearSnapPoints, snapRadius);
-	return snapPoint.snap ? snapPoint : { coords: rulerPoint, snap: true };
+	const snapPoint = snapToPointOrGrid(
+		rulerPoint,
+		snapRadius,
+		collinearSnapPoints,
+		gridSnapFunction,
+	);
+	const snapPointOverlaps =
+		snapPoint.coords && overlapLinePoint(ruler.line, snapPoint.coords, ruler.domain);
+	return snapPoint.snap && snapPointOverlaps
+		? snapPoint
+		: { coords: rulerPoint, snap: true };
 };

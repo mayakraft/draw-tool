@@ -10,10 +10,10 @@ export class ViewportState implements Destroyable {
 		this.viewport.layer = SVGLayer;
 	}
 
-	deinitialize() {}
+	dealloc() {}
 }
 
 export class GlobalState implements Destroyable {
 	constructor() {}
-	deinitialize() {}
+	dealloc() {}
 }

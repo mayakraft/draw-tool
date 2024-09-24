@@ -18,18 +18,18 @@ class Tool implements UITool {
 		if (viewport instanceof SVGViewport) {
 			const viewportState = new SVGViewportState(viewport);
 			this.viewportStates.push(viewportState);
-			return viewportState.deinitialize;
+			return viewportState.dealloc;
 		} else if (viewport instanceof WebGLViewport) {
 			const viewportState = new GLViewportState(viewport);
 			this.viewportStates.push(viewportState);
-			return viewportState.deinitialize;
+			return viewportState.dealloc;
 		} else {
 			return () => {};
 		}
 	}
 
-	deinitialize() {
-		this.viewportStates.forEach((state) => state.deinitialize());
+	dealloc() {
+		this.viewportStates.forEach((state) => state.dealloc());
 	}
 }
 

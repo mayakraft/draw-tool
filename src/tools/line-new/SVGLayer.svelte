@@ -1,22 +1,21 @@
 <script lang="ts">
 	import type { VecLine2 } from "rabbit-ear/types.js";
-	import { clipLineInViewBox } from "../../general/clip.ts";
-
-	// no longer referencing any tool state data directly
-	// all data is now passed through the props
+	import type { SVGViewport } from "../../state/viewport/SVGViewport.svelte.ts";
 
 	type PropsType = {
+		viewport: SVGViewport,
 		line: VecLine2 | undefined,
 		segmentPoints: [number, number][] | undefined,
 		segment: [number, number][] | undefined,
 	}
 	let {
+		viewport,
 		line,
 		segment,
 		segmentPoints,
 	}: PropsType = $props();
 
-	const lineClipped = $derived(clipLineInViewBox(line));
+	const lineClipped = $derived(line ? viewport.clipLine(line) : undefined);
 
 	const svgLine = $derived.by(() => {
 		if (!lineClipped) { return undefined; }
@@ -33,8 +32,7 @@
 	const svgCircles = $derived(!segmentPoints
 		? []
 		: segmentPoints
-			// .map(([cx, cy]) => ({ cx, cy, r: renderer.circleRadius })));
-			.map(([cx, cy]) => ({ cx, cy, r: 0.02 })));
+			.map(([cx, cy]) => ({ cx, cy, r: viewport.style.circleRadius })));
 </script>
 
 {#if svgLine}

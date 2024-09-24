@@ -62,7 +62,7 @@ export class SVGViewportState implements Destroyable {
 		this.unsub.push(this.tool.doPan());
 	}
 
-	deinitialize() {
+	dealloc() {
 		this.unsub.forEach((u) => u());
 		this.unsub = [];
 		this.tool.reset();
@@ -78,10 +78,10 @@ export class GLViewportState implements Destroyable {
 		this.events = new WebGLViewportEvents(this.viewport);
 	}
 
-	deinitialize() {}
+	dealloc() {}
 }
 
 export class GlobalState implements Destroyable {
 	constructor() {}
-	deinitialize() {}
+	dealloc() {}
 }

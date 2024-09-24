@@ -42,7 +42,7 @@ const svgToolLayerProps = $derived(viewport.props || {});
 	<SVGElements elements={model.elements} />
 	{#if SVGToolLayer}
 		<g class="tool-layer" style={`--stroke-dash-length: ${viewport.style.strokeDashLength};`}>
-			<SVGToolLayer class="hello-tool-layer" {...svgToolLayerProps} />
+			<SVGToolLayer class="hello-tool-layer" {viewport} {...svgToolLayerProps} />
 		</g>
 	{/if}
 </SVGTouchCanvas>

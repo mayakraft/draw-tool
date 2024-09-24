@@ -1,5 +1,7 @@
 import type { AppSettings } from "./app.svelte.ts";
 
+// consider joining this with Preferences
+
 export class LocalStorage {
 	constructor(app: AppSettings) {
 		// app.viewSettings.verticalUp =

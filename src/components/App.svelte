@@ -13,6 +13,7 @@
 	$effect(() => { // on mount
 		const resizeObserver = new ResizeObserver(entries => {
 			setTimeout(() => {
+        console.log("toolbar size observer");
 				const width = divToolbar.offsetWidth - divToolbar.clientWidth;
 				document.documentElement.style.setProperty(
 					"--toolbar-scrollbar-width", `${width}px`)
