@@ -6,8 +6,6 @@ import { Snap } from "./snap.svelte.ts";
 //import { Preferences } from "./preferences.svelte.ts";
 //import { LocalStorage } from "./localStorage.svelte.ts";
 
-// potentially move a lot of this stuff into an AppUISettings
-// then link to it from here with a member property .ui
 export class AppSettings {
 	// todo: when a new viewport is added we need to trigger a re-draw on all
 	// existing viewports (WebGL specifically), as the aspect ratio will change.
