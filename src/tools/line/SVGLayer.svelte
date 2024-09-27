@@ -1,9 +1,21 @@
-<script>
-	import state from "./state.svelte.ts";
-	import { clipLineInViewBox } from "../../math/clip.svelte.ts";
-	// import { renderer } from "../../stores/renderer.svelte.ts";
+<script lang="ts">
+	import type { VecLine2 } from "rabbit-ear/types.js";
+	import type { SVGViewport } from "../../viewport/SVGViewport.svelte.ts";
 
-	const lineClipped = $derived(clipLineInViewBox(state.tool?.line));
+	type PropsType = {
+		viewport: SVGViewport,
+		line: VecLine2 | undefined,
+		segmentPoints: [number, number][] | undefined,
+		segment: [number, number][] | undefined,
+	}
+	let {
+		viewport,
+		line,
+		segment,
+		segmentPoints,
+	}: PropsType = $props();
+
+	const lineClipped = $derived(line ? viewport.clipLine(line) : undefined);
 
 	const svgLine = $derived.by(() => {
 		if (!lineClipped) { return undefined; }
@@ -12,16 +24,15 @@
 	});
 
 	const svgSegment = $derived.by(() => {
-		if (!state.tool?.segment) { return undefined; }
-		const [[x1, y1], [x2, y2]] = state.tool?.segment;
+		if (!segment) { return undefined; }
+		const [[x1, y1], [x2, y2]] = segment;
 		return { x1, y1, x2, y2 };
 	});
 
-	const svgCircles = $derived(!state.tool?.segmentPoints
+	const svgCircles = $derived(!segmentPoints
 		? []
-		: state.tool?.segmentPoints
-			// .map(([cx, cy]) => ({ cx, cy, r: renderer.circleRadius })));
-			.map(([cx, cy]) => ({ cx, cy, r: 0.02 })));
+		: segmentPoints
+			.map(([cx, cy]) => ({ cx, cy, r: viewport.style.circleRadius })));
 </script>
 
 {#if svgLine}

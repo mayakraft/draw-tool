@@ -1,19 +1,16 @@
-import type { Destroyable } from "../../state/viewport/viewport.ts";
-import { SVGViewport } from "../../state/viewport/SVGViewport.svelte.ts";
-import SVGLayer from "./SVGLayer.svelte";
+import type { Deallocable, Viewport } from "../../viewport/viewport.ts";
 
-export class ViewportState implements Destroyable {
-	viewport: SVGViewport;
+export class ViewportState implements Deallocable {
+  viewport: Viewport;
 
-	constructor(viewport: SVGViewport) {
-		this.viewport = viewport;
-		this.viewport.layer = SVGLayer;
-	}
+  constructor(viewport: Viewport) {
+    this.viewport = viewport;
+  }
 
-	dealloc() {}
+  dealloc() { }
 }
 
-export class GlobalState implements Destroyable {
-	constructor() {}
-	dealloc() {}
+export class GlobalState implements Deallocable {
+  constructor() { }
+  dealloc() { }
 }

@@ -1,14 +1,36 @@
-import { type Tool } from "../../types.ts";
+import type { UITool } from "../../state/tool.ts";
+import { SVGViewport } from "../../viewport/SVGViewport.svelte.ts";
+import { WebGLViewport } from "../../viewport/WebGLViewport.svelte.ts";
+import type { Viewport } from "../../viewport/viewport.ts";
+import { SVGViewportState, GLViewportState } from "./state.svelte.ts";
 import icon from "./icon.svelte";
-import state from "./state.svelte.ts";
-import * as events from "./events.ts";
 
-export default <Tool>{
-	key: "zoom",
-	name: "zoom",
-	icon,
-	state,
-	SVGLayer: undefined,
-	panel: undefined,
-	...events,
-};
+class Tool implements UITool {
+  static key = "zoom";
+  static name = "zoom";
+  static icon = icon;
+
+  panel = undefined;
+
+  viewportStates: (SVGViewportState | GLViewportState)[] = [];
+
+  bindTo(viewport: Viewport): Function {
+    if (viewport instanceof SVGViewport) {
+      const viewportState = new SVGViewportState(viewport);
+      this.viewportStates.push(viewportState);
+      return viewportState.dealloc;
+    } else if (viewport instanceof WebGLViewport) {
+      const viewportState = new GLViewportState(viewport);
+      this.viewportStates.push(viewportState);
+      return viewportState.dealloc;
+    } else {
+      return () => { };
+    }
+  }
+
+  dealloc() {
+    this.viewportStates.forEach((state) => state.dealloc());
+  }
+}
+
+export default Tool;

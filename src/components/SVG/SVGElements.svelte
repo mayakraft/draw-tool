@@ -2,7 +2,6 @@
 	import { shapeToElement, type Shape } from "../../state/model.svelte.ts";
 
 	type PropsType = {
-		// elements: SVGElement[],
 		elements: Shape[],
 	};
 
@@ -28,3 +27,4 @@
 </script>
 
 <g bind:this={g} {...rest} />
+

@@ -1,43 +1,43 @@
 import type { SnapResult, LineType } from "../general/snap.ts";
 import {
-	snapToPointOrGrid,
-	snapToLineOrPointOrGrid,
-	triangleGridSnapFunction,
-	squareGridSnapFunction,
+  snapToPointOrGrid,
+  snapToLineOrPointOrGrid,
+  triangleGridSnapFunction,
+  squareGridSnapFunction,
 } from "../general/snap.ts";
 import preferences from "./preferences.svelte.ts";
 
 export class Snap {
-	radialSnapDegrees: number = $state(22.5);
-	radialSnapOffset: number = $state(0);
-	points: [number, number][] = [];
+  radialSnapDegrees: number = $state(22.5);
+  radialSnapOffset: number = $state(0);
+  points: [number, number][] = [];
 
-	gridSnapFunction = $derived.by(() => {
-		switch (preferences.tiling) {
-			case "triangle":
-				return triangleGridSnapFunction;
-			case "square":
-				return squareGridSnapFunction;
-			default:
-				return () => undefined;
-		}
-	});
+  gridSnapFunction = $derived.by(() => {
+    switch (preferences.tiling) {
+      case "triangle":
+        return triangleGridSnapFunction;
+      case "square":
+        return squareGridSnapFunction;
+      default:
+        return () => undefined;
+    }
+  });
 
-	snapToPoint(point: [number, number], snapRadius: number): SnapResult {
-		return snapToPointOrGrid(point, snapRadius, this.points, this.gridSnapFunction);
-	}
+  snapToPoint(point: [number, number], snapRadius: number): SnapResult {
+    return snapToPointOrGrid(point, snapRadius, this.points, this.gridSnapFunction);
+  }
 
-	snapToLine(point: [number, number], snapRadius: number, lines: LineType[]): SnapResult {
-		return snapToLineOrPointOrGrid(
-			point,
-			snapRadius,
-			lines,
-			this.points,
-			this.gridSnapFunction,
-		);
-	}
+  snapToLine(point: [number, number], snapRadius: number, lines: LineType[]): SnapResult {
+    return snapToLineOrPointOrGrid(
+      point,
+      snapRadius,
+      lines,
+      this.points,
+      this.gridSnapFunction,
+    );
+  }
 
-	constructor() {}
+  constructor() { }
 }
 
 export default new Snap();

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { SVGViewport } from "../../state/viewport/SVGViewport.svelte.ts";
+	import { SVGViewport } from "../../viewport/SVGViewport.svelte.ts";
 	let { viewport }: { viewport: SVGViewport } = $props();
 </script>
 

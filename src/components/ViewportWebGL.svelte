@@ -2,7 +2,7 @@
 import WebGLTouchCanvas from "./WebGL/WebGLTouchCanvas.svelte";
 // import WebGLCanvas from "./WebGL/WebGLCanvas.svelte";
 // import GLElements from "./WebGL/GLElements.svelte";
-import type { WebGLViewport } from "../state/viewport/WebGLViewport.svelte.ts";
+import type { WebGLViewport } from "../viewport/WebGLViewport.svelte.ts";
 import { model } from "../state/model.svelte.ts";
 
 type PropsType = {

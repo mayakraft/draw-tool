@@ -1,5 +1,16 @@
-<script>
+<script lang="ts">
 	import ToolOrigin from "./ToolOrigin.svelte";
+	import type { SVGViewport } from "../../viewport/SVGViewport.svelte.ts";
+	import type { FixedPoint } from "./SVGViewportState.svelte.ts";
+
+	type PropsType = {
+		viewport: SVGViewport,
+		fixedPoint: FixedPoint,
+	}
+	let {
+		viewport,
+		fixedPoint,
+	}: PropsType = $props();
 </script>
 
-<ToolOrigin />
+<ToolOrigin {viewport} {fixedPoint} />

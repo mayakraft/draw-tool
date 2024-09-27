@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { app } from "../state/app.svelte.ts";
 	import { model } from "../state/model.svelte.ts";
-	import { SVGViewport } from "../state/viewport/SVGViewport.svelte.ts";
-	import { WebGLViewport } from "../state/viewport/WebGLViewport.svelte.ts";
-	const logModel = () => { console.log($state.snapshot(model.elements)); };
+	import { SVGViewport } from "../viewport/SVGViewport.svelte.ts";
+	import { WebGLViewport } from "../viewport/WebGLViewport.svelte.ts";
+	const logModel = () => { console.log($state.snapshot(model.shapes)); };
   const newSVG = () => { app.viewports.push(new SVGViewport()); };
   const newWebGL = () => { app.viewports.push(new WebGLViewport()); };
   const removeView = () => { app.viewports.pop(); };

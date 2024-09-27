@@ -2,8 +2,8 @@
 	import ViewportSVG from "./ViewportSVG.svelte";
 	import ViewportWebGL from "./ViewportWebGL.svelte";
 	import { app } from "../state/app.svelte.ts";
-	import { SVGViewport } from "../state/viewport/SVGViewport.svelte.ts";
-	import { WebGLViewport } from "../state/viewport/WebGLViewport.svelte.ts";
+	import { SVGViewport } from "../viewport/SVGViewport.svelte.ts";
+	import { WebGLViewport } from "../viewport/WebGLViewport.svelte.ts";
 
 	const ids = ["canvas-a", "canvas-b"];
 </script>

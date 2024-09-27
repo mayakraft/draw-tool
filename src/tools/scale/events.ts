@@ -1,28 +1,45 @@
-import state from "./state.svelte.ts";
-import type { ViewportMouseEvent, ViewportWheelEvent } from "../../types.ts";
+import type {
+  ViewportMouseEvent,
+  ViewportWheelEvent,
+  ViewportEvents,
+} from "../../viewport/events.ts";
+import type { SVGViewport } from "../../viewport/SVGViewport.svelte.ts";
+import { wheelEventZoomMatrix } from "../zoom/matrix.ts";
+import { SVGTouches } from "./SVGTouches.svelte.ts";
 
-export const onmousemove = ({ point, buttons }: ViewportMouseEvent) => {
-	if (!state.touches) { return; }
-	// state.fixedPoint.viewport = viewport;
-	state.touches.move = (buttons ? undefined : point);
-	state.touches.drag = (buttons ? point : undefined);
-};
+export class SVGViewportEvents implements ViewportEvents {
+  touches: SVGTouches;
+  viewport: SVGViewport;
 
-export const onmousedown = ({ point, buttons }: ViewportMouseEvent) => {
-	if (!state.touches) { return; }
-	state.touches.move = (buttons ? undefined : point);
-	state.touches.drag = (buttons ? point : undefined);
-	state.touches.press = point;
-	state.touches.release = undefined;
-};
+  onmousemove = ({ point, buttons }: ViewportMouseEvent) => {
+    this.touches.move = buttons ? undefined : point;
+    this.touches.drag = buttons ? point : undefined;
+  };
 
-export const onmouseup = ({ point, buttons }: ViewportMouseEvent) => {
-	if (!state.touches) { return; }
-	state.touches.move = (buttons ? undefined : point);
-	state.touches.drag = (buttons ? point : undefined);
-	state.touches.release = point;
-};
+  onmousedown = ({ point, buttons }: ViewportMouseEvent) => {
+    this.touches.move = buttons ? undefined : point;
+    this.touches.drag = buttons ? point : undefined;
+    this.touches.press = point;
+    this.touches.release = undefined;
+  };
 
-// export const onmouseleave = (event: ViewportMouseEvent) => {
-// 	state.reset();
-// };
+  onmouseup = ({ point, buttons }: ViewportMouseEvent) => {
+    this.touches.move = buttons ? undefined : point;
+    this.touches.drag = buttons ? point : undefined;
+    this.touches.release = point;
+  };
+
+  onwheel = ({ point, deltaX, deltaY }: ViewportWheelEvent) => {
+    wheelEventZoomMatrix(this.viewport, { point, deltaY });
+  };
+
+  constructor(viewport: SVGViewport, touches: SVGTouches) {
+    this.viewport = viewport;
+    this.touches = touches;
+
+    this.viewport.onmousemove = this.onmousemove;
+    this.viewport.onmousedown = this.onmousedown;
+    this.viewport.onmouseup = this.onmouseup;
+    this.viewport.onwheel = this.onwheel;
+  }
+}

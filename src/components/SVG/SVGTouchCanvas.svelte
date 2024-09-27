@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
 	import SVGCanvas from "./SVGCanvas.svelte";
-	import type { ViewportMouseEvent, ViewportWheelEvent, ViewportTouchEvent } from "../../state/viewport/events.ts";
+	import type { ViewportMouseEvent, ViewportWheelEvent, ViewportTouchEvent } from "../../viewport/events.ts";
 	import {
 		convertToViewBox,
 		findInParents,

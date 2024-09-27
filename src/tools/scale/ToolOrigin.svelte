@@ -1,38 +1,41 @@
-<script>
-	import state from "./state.svelte.ts";
-	// import { renderer } from "../../stores/renderer.svelte.ts";
+<script lang="ts">
+	import type { SVGViewport } from "../../viewport/SVGViewport.svelte.ts";
+	import type { FixedPoint } from "./SVGViewportState.svelte.ts";
 
-	const highlighted = $derived(state.fixedPoint ? state.fixedPoint.highlighted : false);
+	type PropsType = {
+		viewport: SVGViewport,
+		fixedPoint: FixedPoint,
+	}
+	let {
+		viewport,
+		fixedPoint,
+	}: PropsType = $props();
+
+	const highlighted = $derived(fixedPoint.highlighted);
 	const className = $derived(highlighted ? "highlighted" : "");
-	const origin = $derived(state.fixedPoint ? state.fixedPoint.origin : [0, 0]);
+	const origin = $derived(fixedPoint.origin);
 
 	// svg elements
 	const originCircle1 = $derived({
 		cx: origin[0],
 		cy: origin[1],
-		// r: renderer.circleRadius * 2,
-		r: state.fixedPoint?.viewport?.style.circleRadius * 1.5,
+		r: viewport.style.circleRadius * 1.5,
 	});
 	const originCircle2 = $derived({
 		cx: origin[0],
 		cy: origin[1],
-		// r: renderer.circleRadius * 2,
-		r: state.fixedPoint?.viewport?.style.circleRadius * 1.5,
+		r: viewport.style.circleRadius * 1.5,
 	});
 	const originLine1 = $derived({
 		x1: origin[0],
-		// y1: origin[1] - renderer.circleRadius * 3,
-		y1: origin[1] - state.fixedPoint?.viewport?.style.circleRadius * 3,
+		y1: origin[1] - viewport.style.circleRadius * 3,
 		x2: origin[0],
-		// y2: origin[1] + renderer.circleRadius * 3,
-		y2: origin[1] + state.fixedPoint?.viewport?.style.circleRadius * 3,
+		y2: origin[1] + viewport.style.circleRadius * 3,
 	});
 	const originLine2 = $derived({
-		// x1: origin[0] - renderer.circleRadius * 3,
-		x1: origin[0] - state.fixedPoint?.viewport?.style.circleRadius * 3,
+		x1: origin[0] - viewport.style.circleRadius * 3,
 		y1: origin[1],
-		// x2: origin[0] + renderer.circleRadius * 3,
-		x2: origin[0] + state.fixedPoint?.viewport?.style.circleRadius * 3,
+		x2: origin[0] + viewport.style.circleRadius * 3,
 		y2: origin[1],
 	});
 </script>

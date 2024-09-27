@@ -1,7 +1,8 @@
-import type { Viewport } from "./viewport/viewport.ts";
+import type { Component } from "svelte";
+import type { Viewport } from "../viewport/viewport.ts";
 
-export interface Destroyable {
-	dealloc(): void;
+export interface Deallocable {
+  dealloc(): void;
 }
 
 /**
@@ -13,26 +14,29 @@ export interface Destroyable {
  * intended to cleanup or initialize Svelte stores which are specific
  * to each tool.
  */
-export abstract class UITool implements Destroyable {
-	static key: string;
-	static name: string;
-	static icon: any;
-	// static icon: Component;
-	// static icon: ComponentType<SvelteComponentTyped>;
+export abstract class UITool implements Deallocable {
+  // unique UUID for this tool
+  static key: string;
 
-	panel?: any;
-	SVGLayer?: any;
-	SVGLayerProps?: any;
+  // human readable display name for this tool
+  static name: string;
 
-	// A UI tool is intended for a Viewport, a tool will be instanced once per app,
-	// but may need to subinstance internal state once per viewport (one app can
-	// have many viewports). This is that internal "constructor" for each viewport.
-	// The return function is the deallocr for everything made in the bindTo().
-	abstract bindTo(viewport: Viewport): Function;
+  // an SVG image. an XML formatted file with a single top level <svg> element,
+  // but the file has a .svelte extension (no <script> or <style> sections)
+  static icon: Component;
 
-	// This function should clean up anything that was created/bound in the constructor.
-	// This will be called when this tool is removed (during a switching of tools).
-	abstract dealloc(): void;
+  // an optional .svelte component, intended to contain settings for the tool
+  panel?: any;
+
+  // A UI tool is intended for a Viewport, a tool will be instanced once per app,
+  // but may need to subinstance internal state once per viewport (one app can
+  // have many viewports). This is that internal "constructor" for each viewport.
+  // The return function is the deallocr for everything made in the bindTo().
+  abstract bindTo(viewport: Viewport): Function;
+
+  // This function should clean up anything that was created/bound in the constructor.
+  // This will be called when this tool is removed (during a switching of tools).
+  abstract dealloc(): void;
 }
 
 // panel can change a variable like, "snap rotation", this variable must not live inside

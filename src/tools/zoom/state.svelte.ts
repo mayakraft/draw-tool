@@ -1,65 +1,87 @@
+import { untrack } from "svelte";
 import { subtract2 } from "rabbit-ear/math/vector.js";
-import type { StateManagerType } from "../../types.ts";
-import type { SVGViewport } from "../../stores/viewport.svelte.ts";
+import type { Deallocable } from "../../viewport/viewport.ts";
+import type { SVGViewport } from "../../viewport/SVGViewport.svelte.ts";
+import type { WebGLViewport } from "../../viewport/WebGLViewport.svelte.ts";
 import { panCameraMatrix } from "./matrix.ts";
+import { SVGViewportEvents, WebGLViewportEvents } from "./events.ts";
 
-class ToolState {
-	press: [number, number] | undefined = $state();
-	// release: [number, number] | undefined = $state();
-	move: [number, number] | undefined = $state();
-	drag: [number, number] | undefined = $state();
+export class ToolState {
+  press: [number, number] | undefined = $state();
+  move: [number, number] | undefined = $state();
+  drag: [number, number] | undefined = $state();
 
-	viewport: SVGViewport | undefined = $state();
+  viewport: SVGViewport;
 
-	dragVector: [number, number] = $derived(!this.drag || !this.press
-		? [0, 0]
-		: subtract2(this.drag, this.press));
+  dragVector: [number, number] = $derived(
+    !this.drag || !this.press ? [0, 0] : subtract2(this.drag, this.press),
+  );
 
-	reset() {
-		this.move = undefined;
-		this.drag = undefined;
-		this.press = undefined;
-		// this.release = undefined;
-		this.viewport = undefined;
-	}
+  constructor(viewport: SVGViewport) {
+    this.viewport = viewport;
+  }
 
-	doPan() {
-		return $effect.root(() => {
-			$effect(() => {
-				if (!this.dragVector) { return; }
-				const translation: [number, number] = [
-					this.dragVector[0],
-					this.dragVector[1] * (this.viewport?.view.verticalUp ? -1 : 1),
-				];
-				if (this.viewport) {
-					this.viewport.view.camera = panCameraMatrix(this.viewport.view.camera, translation);
-				}
-			});
-			return () => { };
-		});
-	}
-};
+  reset() {
+    this.move = undefined;
+    this.drag = undefined;
+    this.press = undefined;
+  }
 
-class StateManager implements StateManagerType {
-	tool: ToolState | undefined;
-	unsub: Function[] = [];
+  doPan() {
+    return $effect.root(() => {
+      $effect(() => {
+        if (!this.dragVector) {
+          return;
+        }
+        const translation: [number, number] = [
+          this.dragVector[0],
+          this.dragVector[1] * (this.viewport.view.verticalUp ? -1 : 1),
+        ];
+        untrack(() => {
+          this.viewport.view.camera = panCameraMatrix(
+            this.viewport.view.camera,
+            translation,
+          );
+        });
+      });
+      return () => { };
+    });
+  }
+}
 
-	subscribe() {
-		this.unsubscribe();
-		this.tool = new ToolState();
-		this.unsub.push(this.tool.doPan());
-	}
+export class SVGViewportState implements Deallocable {
+  viewport: SVGViewport;
+  tool: ToolState;
+  events: SVGViewportEvents;
+  unsub: Function[] = [];
 
-	unsubscribe() {
-		this.unsub.forEach((u) => u());
-		this.unsub = [];
-		this.reset();
-		this.tool = undefined;
-	}
+  constructor(viewport: SVGViewport) {
+    this.viewport = viewport;
+    this.tool = new ToolState(this.viewport);
+    this.events = new SVGViewportEvents(this.viewport, this.tool);
+    this.unsub.push(this.tool.doPan());
+  }
 
-	reset() {
-		this.tool?.reset();
-	};
-};
+  dealloc() {
+    this.unsub.forEach((u) => u());
+    this.unsub = [];
+    this.tool.reset();
+  }
+}
 
-export default (new StateManager());
+export class GLViewportState implements Deallocable {
+  viewport: WebGLViewport;
+  events: WebGLViewportEvents;
+
+  constructor(viewport: WebGLViewport) {
+    this.viewport = viewport;
+    this.events = new WebGLViewportEvents(this.viewport);
+  }
+
+  dealloc() { }
+}
+
+export class GlobalState implements Deallocable {
+  constructor() { }
+  dealloc() { }
+}

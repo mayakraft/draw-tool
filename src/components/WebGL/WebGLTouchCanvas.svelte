@@ -6,7 +6,7 @@
 		ViewportMouseEvent,
 		ViewportWheelEvent,
 		ViewportTouchEvent,
-	} from "../../state/viewport/events.ts";
+	} from "../../viewport/events.ts";
 	import { vectorFromScreenLocation } from "../../general/matrix.ts";
 
 	type WebGLTouchCanvasProps = {
