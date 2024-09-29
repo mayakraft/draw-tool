@@ -43,7 +43,7 @@ const getShapesInRect = (shapes: Shape[], rect): number[] => {
     .filter((a) => a !== undefined);
 };
 
-class Model {
+export class Model {
   shapes: Shape[] = $state([]);
   selected: number[] = $state([]);
   fold: FOLD = $state({});
@@ -108,7 +108,7 @@ class Model {
   }
 }
 
-export const model = new Model();
+//export const model = new Model();
 
 // export const Reset = () => {
 // 	RecalculateModelMatrix();
@@ -119,9 +119,4 @@ export const model = new Model();
 // 	CameraMatrix.reset();
 // };
 
-model.shapes.push({ name: "circle", params: { cx: 0, cy: 0, r: 1 } });
-model.shapes.push({ name: "circle", params: { cx: 0, cy: 0, r: Math.SQRT2 } });
-model.shapes.push({ name: "rect", params: { x: 0, y: 0, width: 1, height: 1 } });
-model.shapes.push({ name: "line", params: { x1: 0, y1: 0, x2: 1, y2: 1 } });
-model.shapes.push({ name: "line", params: { x1: 1, y1: 0, x2: 0, y2: 1 } });
 

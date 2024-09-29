@@ -5,15 +5,13 @@ import {
   triangleGridSnapFunction,
   squareGridSnapFunction,
 } from "./snap.ts";
-import preferences from "../../../app/Preferences.svelte.ts";
+import settings from "./Settings.svelte.ts";
 
 export class Snap {
-  radialSnapDegrees: number = $state(22.5);
-  radialSnapOffset: number = $state(0);
   points: [number, number][] = [];
 
   gridSnapFunction = $derived.by(() => {
-    switch (preferences.tiling) {
+    switch (settings.tiling) {
       case "triangle":
         return triangleGridSnapFunction;
       case "square":

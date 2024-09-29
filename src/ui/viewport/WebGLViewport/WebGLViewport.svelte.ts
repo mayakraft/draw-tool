@@ -1,7 +1,7 @@
 import type { Component } from "svelte";
 import { identity4x4 } from "rabbit-ear/math/matrix4.js";
 import { unsetViewportEvents, type Viewport } from "../viewport.ts";
-import ViewportWebGL from "./ViewportWebGL.svelte";
+import ViewportComponent from "./Viewport.svelte";
 import type {
   ViewportEvents,
   ViewportMouseEvent,
@@ -48,7 +48,7 @@ export class WebGLViewport implements Viewport, ViewportEvents {
   // props?: any = $state();
 
   constructor() {
-    this.component = ViewportWebGL;
+    this.component = ViewportComponent;
     this.view = new WebGLViewportView();
     this.style = new WebGLViewportStyle(this.view);
   }

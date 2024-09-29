@@ -2,7 +2,7 @@ import type { VecLine2 } from "rabbit-ear/types.js";
 import { pointsToLine2 } from "rabbit-ear/math/convert.js";
 import type { Deallocable } from "../../viewport/viewport.ts";
 import type { SVGViewport } from "../../viewport/SVGViewport/SVGViewport.svelte.ts";
-import { model } from "../../../model/model.svelte.ts";
+import app from "../../../app/App.svelte.ts";
 import snap from "../../viewport/SVGViewport/Snap.svelte.ts";
 import { SVGViewportEvents } from "./events.ts";
 import { GlobalState } from "./GlobalState.svelte.ts";

@@ -11,7 +11,7 @@ import { unsetViewportEvents } from "../viewport.ts";
 import { SVGViewportView } from "./SVGViewportView.svelte.ts";
 import { SVGViewportStyle } from "./SVGViewportStyle.svelte.ts";
 import { SVGGrid } from "./SVGGrid.svelte.ts";
-import ViewportSVG from "./ViewportSVG.svelte";
+import ViewportComponent from "./Viewport.svelte";
 //import snap from "../snap.svelte.ts";
 import { clipLineInPolygon } from "./clip.ts";
 
@@ -42,7 +42,7 @@ export class SVGViewport implements Viewport, ViewportEvents {
   snapRadius: number = $derived.by(() => this.view.vmax * this.snapRadiusFactor);
 
   constructor() {
-    this.component = ViewportSVG;
+    this.component = ViewportComponent;
     this.view = new SVGViewportView();
     this.style = new SVGViewportStyle(this.view);
     this.grid = new SVGGrid(this.view);
@@ -55,7 +55,7 @@ export class SVGViewport implements Viewport, ViewportEvents {
   }
 
   //snapPoint(point: [number, number]) {
-  //  //return snapToPoint(point, snap.snapPoints, this.snapRadius, snap.gridSnapFunction);
+  //  return snapToPoint(point, snap.snapPoints, this.snapRadius, snap.gridSnapFunction);
   //  return snap.snapPoint(point, this.snapRadius);
   //}
   clipLine(line: VecLine2) {

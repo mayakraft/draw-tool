@@ -4,9 +4,9 @@
 </script>
 
 <div class="grid-columns">
-  {#each Object.values(Tools) as tool}
-    <ToolbarButton {tool} />
-  {/each}
+	{#each Object.values(Tools) as tool}
+		<ToolbarButton name={tool.name} Icon={tool.icon} />
+	{/each}
 </div>
 
 <style>

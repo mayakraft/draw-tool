@@ -1,9 +1,10 @@
 import type { UITool } from "./tool.ts";
 import type { Viewport } from "./viewport/viewport.ts";
-import { SVGViewport } from "./viewport/SVGViewport/SVGViewport.svelte.ts";
-import { WebGLViewport } from "./viewport/WebGLViewport/WebGLViewport.svelte.ts";
 //import { Snap } from "./snap/Snap.svelte.ts";
+import Tools from "./tools/index.ts";
 
+// consider somehow binding the Settings object from inside of SVGViewport (and webgl)
+// and making it accessible through this ui instance (for example: app.ui.SVGViewport.settings)
 export class UI {
   viewports: Viewport[] = $state([]);
   //snap: Snap;
@@ -13,9 +14,13 @@ export class UI {
   get tool() {
     return this.#tool;
   }
-  set tool(t: UITool | undefined) {
+  // no need to set the tool directly. use a string ("line", "zoom"), the tool's name.
+  // if no tool matches the string, the tool will become unset (undefined).
+  setToolName(name: string) {
     this.#tool?.dealloc();
-    this.#tool = t;
+    const NewTool: typeof UITool | undefined = Tools[name];
+    // @ts-ignore - UITool is abstract, but none of these are UITools, ignore warning.
+    this.#tool = NewTool === undefined ? undefined : new NewTool();
   }
 
   #makeToolViewportEffect = () => $effect.root(() => {
@@ -30,7 +35,6 @@ export class UI {
 
   constructor() {
     //this.snap = new Snap();
-    this.viewports = [new SVGViewport(), new WebGLViewport()];
     this.#effects = [this.#makeToolViewportEffect()];
   }
 

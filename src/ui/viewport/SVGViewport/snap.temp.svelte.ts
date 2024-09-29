@@ -3,7 +3,7 @@ import {
   triangleGridSnapFunction,
   squareGridSnapFunction,
 } from "./snap.ts";
-import app from "../../../app/App.ts";
+import app from "../../../app/App.svelte.ts";
 
 // there should be two levels of functions:
 // - core level, like snapToPoint.

@@ -1,6 +1,6 @@
 //import type { AppSettings } from "./app.svelte.ts";
 
-// consider joining this with Preferences
+// consider joining this with Settings
 
 //export class LocalStorage {
 //	constructor(app: Application) {

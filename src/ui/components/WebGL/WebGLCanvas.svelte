@@ -13,36 +13,36 @@
 	// import { touchIndicators } from "rabbit-ear/webgl/touches/models.js";
 	import { drawModel, deallocModel } from "rabbit-ear/webgl/general/model.js";
 	import { dark, light } from "rabbit-ear/webgl/general/colors.js";
-  import { worldAxes } from "./WorldAxes/models.js";
+	import { worldAxes } from "./WorldAxes/models.js";
 
 	type WebGLCanvasProps = {
-		graph: FOLD,
-		perspective: string,
-		renderStyle: string,
-		canvasSize: [number, number],
-		projectionMatrix: number[],
-		viewMatrix: number[],
-		layerNudge?: number,
-		fov?: number,
-		darkMode?: boolean,
-		frontColor?: string,
-		backColor?: string,
-		outlineColor?: string,
-		cpColor?: string,
-		strokeWidth?: number,
-		opacity?: number,
-		showFoldedFaceOutlines?: boolean,
-		showFoldedCreases?: boolean,
-		showFoldedFaces?: boolean,
-		onmousemove?: (e: MouseEvent) => void,
-		onmousedown?: (e: MouseEvent) => void,
-		onmouseup?: (e: MouseEvent) => void,
-		onmouseleave?: (e: MouseEvent) => void,
-		onwheel?: (e: WheelEvent) => void,
-		ontouchmove?: (e: TouchEvent) => void,
-		ontouchstart?: (e: TouchEvent) => void,
-		ontouchend?: (e: TouchEvent) => void,
-		ontouchcancel?: (e: TouchEvent) => void,
+		graph: FOLD;
+		perspective: string;
+		renderStyle: string;
+		canvasSize: [number, number];
+		projectionMatrix: number[];
+		viewMatrix: number[];
+		layerNudge?: number;
+		fov?: number;
+		darkMode?: boolean;
+		frontColor?: string;
+		backColor?: string;
+		outlineColor?: string;
+		cpColor?: string;
+		strokeWidth?: number;
+		opacity?: number;
+		showFoldedFaceOutlines?: boolean;
+		showFoldedCreases?: boolean;
+		showFoldedFaces?: boolean;
+		onmousemove?: (e: MouseEvent) => void;
+		onmousedown?: (e: MouseEvent) => void;
+		onmouseup?: (e: MouseEvent) => void;
+		onmouseleave?: (e: MouseEvent) => void;
+		onwheel?: (e: WheelEvent) => void;
+		ontouchmove?: (e: TouchEvent) => void;
+		ontouchstart?: (e: TouchEvent) => void;
+		ontouchend?: (e: TouchEvent) => void;
+		ontouchcancel?: (e: TouchEvent) => void;
 	};
 
 	let {
@@ -77,16 +77,20 @@
 	let cpColor = $derived(darkMode ? "#111111" : "white");
 
 	let canvas: HTMLCanvasElement | undefined = $state(undefined);
-	let { gl, version } = $derived(canvas
-		? initializeWebGL(canvas)
-		: ({ gl: undefined, version: 0 }));
+	let { gl, version } = $derived(
+		canvas ? initializeWebGL(canvas) : { gl: undefined, version: 0 },
+	);
 	let canvasSize: [number, number] = $state([1, 1]);
 	let modelMatrix = $derived(makeModelMatrix(graph));
 	let modelViewMatrix = $derived(multiplyMatrices4(viewMatrix, modelMatrix));
 	let projectionMatrix = $derived(makeProjectionMatrix(canvasSize, perspective, fov));
 
-	$effect(() => { boundProjectionMatrix = [...projectionMatrix]; })
-	$effect(() => { boundCanvasSize = [...canvasSize]; })
+	$effect(() => {
+		boundProjectionMatrix = [...projectionMatrix];
+	});
+	$effect(() => {
+		boundCanvasSize = [...canvasSize];
+	});
 
 	let uniformOptions = $derived({
 		projectionMatrix,
@@ -111,36 +115,43 @@
 
 	let models: WebGLModel[] = $derived.by(() => {
 		try {
-			if (!gl) { return []; }
+			if (!gl) {
+				return [];
+			}
 			// deallocModels();
 			return renderStyle === "creasePattern"
 				? [
-					...creasePattern(gl, version, graph, programOptions),
-          ...worldAxes(gl),
-					// ...touchIndicators(gl, programOptions),
-				] : [
-					...foldedForm(gl, version, graph, programOptions),
-          ...worldAxes(gl),
-					// ...touchIndicators(gl, programOptions),
-				];
+						...creasePattern(gl, version, graph, programOptions),
+						...worldAxes(gl),
+						// ...touchIndicators(gl, programOptions),
+					]
+				: [
+						...foldedForm(gl, version, graph, programOptions),
+						...worldAxes(gl),
+						// ...touchIndicators(gl, programOptions),
+					];
 		} catch (error) {
 			console.error(error);
 			return [];
 		}
 	});
 
-	let uniforms = $derived(models.map(model => model.makeUniforms(uniformOptions)));
+	let uniforms = $derived(models.map((model) => model.makeUniforms(uniformOptions)));
 
-	const deallocModels = () => models.forEach(model => deallocModel(gl, model));
+	const deallocModels = () => models.forEach((model) => deallocModel(gl, model));
 
 	const onresize = () => {
-		if (!gl || !canvas) { return; }
+		if (!gl || !canvas) {
+			return;
+		}
 		rebuildViewport(gl, canvas);
 		canvasSize = [canvas.clientWidth, canvas.clientHeight];
 	};
 
 	$effect(() => {
-		if (!gl || !canvas) { return; }
+		if (!gl || !canvas) {
+			return;
+		}
 		gl.enable(gl.BLEND);
 		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 		rebuildViewport(gl, canvas);
@@ -148,7 +159,9 @@
 	});
 
 	$effect(() => {
-		if (!gl) { return; }
+		if (!gl) {
+			return;
+		}
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		models.forEach((model, i) => drawModel(gl, version, model, uniforms[i]));
 	});

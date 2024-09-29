@@ -1,7 +1,7 @@
 import { viewBoxOrigin } from "../../../general/matrix.ts";
 import { makeSquareGrid, makeTriangleGrid } from "./grid.ts";
 import { SVGViewportView } from "./SVGViewportView.svelte.ts";
-import preferences from "../../../app/Preferences.svelte.ts";
+import settings from "./Settings.svelte.ts";
 
 export class SVGGrid {
   view: SVGViewportView;
@@ -17,7 +17,7 @@ export class SVGGrid {
   strokeWidth = $derived.by(() => this.view.vmax / 400);
 
   lines = $derived.by(() => {
-    switch (preferences.tiling) {
+    switch (settings.tiling) {
       case "triangle":
         return makeTriangleGrid(this.#cameraViewport);
       case "square":

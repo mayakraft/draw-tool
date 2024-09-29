@@ -10,32 +10,32 @@
 	import { vectorFromScreenLocation } from "../../../general/matrix.ts";
 
 	type WebGLTouchCanvasProps = {
-		graph: FOLD,
-		perspective: string,
-		renderStyle: string,
+		graph: FOLD;
+		perspective: string;
+		renderStyle: string;
 		// projectionMatrix: number[],
-		viewMatrix: number[],
-		layerNudge?: number,
-		fov?: number,
-		darkMode?: boolean,
-		frontColor?: string,
-		backColor?: string,
-		outlineColor?: string,
-		cpColor?: string,
-		strokeWidth?: number,
-		opacity?: number,
-		showFoldedFaceOutlines?: boolean,
-		showFoldedCreases?: boolean,
-		showFoldedFaces?: boolean,
-		onmousedown?: (e: ViewportMouseEvent) => void,
-		onmousemove?: (e: ViewportMouseEvent) => void,
-		onmouseup?: (e: ViewportMouseEvent) => void,
-		onmouseleave?: (e: ViewportMouseEvent) => void,
-		onwheel?: (e: ViewportWheelEvent) => void,
-		ontouchmove?: (e: ViewportTouchEvent) => void,
-		ontouchstart?: (e: ViewportTouchEvent) => void,
-		ontouchend?: (e: ViewportTouchEvent) => void,
-		ontouchcancel?: (e: ViewportTouchEvent) => void,
+		viewMatrix: number[];
+		layerNudge?: number;
+		fov?: number;
+		darkMode?: boolean;
+		frontColor?: string;
+		backColor?: string;
+		outlineColor?: string;
+		cpColor?: string;
+		strokeWidth?: number;
+		opacity?: number;
+		showFoldedFaceOutlines?: boolean;
+		showFoldedCreases?: boolean;
+		showFoldedFaces?: boolean;
+		onmousedown?: (e: ViewportMouseEvent) => void;
+		onmousemove?: (e: ViewportMouseEvent) => void;
+		onmouseup?: (e: ViewportMouseEvent) => void;
+		onmouseleave?: (e: ViewportMouseEvent) => void;
+		onwheel?: (e: ViewportWheelEvent) => void;
+		ontouchmove?: (e: ViewportTouchEvent) => void;
+		ontouchstart?: (e: ViewportTouchEvent) => void;
+		ontouchend?: (e: ViewportTouchEvent) => void;
+		ontouchcancel?: (e: ViewportTouchEvent) => void;
 	};
 
 	let {
@@ -68,26 +68,32 @@
 	let projectionMatrix: number[] = $state([...identity4x4]);
 	let canvasSize: [number, number] = $state([0, 0]);
 
-	const formatMouseEvent = (e: MouseEvent): ViewportMouseEvent => Object.assign(e, {
-		point: vectorFromScreenLocation(
-			[e.offsetX, e.offsetY],
-			canvasSize,
-			projectionMatrix,
-		)});
+	const formatMouseEvent = (e: MouseEvent): ViewportMouseEvent =>
+		Object.assign(e, {
+			point: vectorFromScreenLocation(
+				[e.offsetX, e.offsetY],
+				canvasSize,
+				projectionMatrix,
+			),
+		});
 
-	const formatTouchEvent = (e: TouchEvent): ViewportTouchEvent => Object.assign(e, {
-		point: vectorFromScreenLocation(
-			[e.touches[0]?.clientX || 0, e.touches[0]?.clientY || 0],
-			canvasSize,
-			projectionMatrix,
-		)});
+	const formatTouchEvent = (e: TouchEvent): ViewportTouchEvent =>
+		Object.assign(e, {
+			point: vectorFromScreenLocation(
+				[e.touches[0]?.clientX || 0, e.touches[0]?.clientY || 0],
+				canvasSize,
+				projectionMatrix,
+			),
+		});
 
-	const formatWheelEvent = (e: WheelEvent): ViewportWheelEvent => Object.assign(e, {
-		point: vectorFromScreenLocation(
-			[e.offsetX, e.offsetY],
-			canvasSize,
-			projectionMatrix,
-		)});
+	const formatWheelEvent = (e: WheelEvent): ViewportWheelEvent =>
+		Object.assign(e, {
+			point: vectorFromScreenLocation(
+				[e.offsetX, e.offsetY],
+				canvasSize,
+				projectionMatrix,
+			),
+		});
 
 	const onmousedown = (e: MouseEvent) => mousedown?.(formatMouseEvent(e));
 	const onmousemove = (e: MouseEvent) => mousemove?.(formatMouseEvent(e));
@@ -106,8 +112,8 @@
 	{graph}
 	{perspective}
 	{renderStyle}
-	bind:canvasSize={canvasSize}
-	bind:projectionMatrix={projectionMatrix}
+	bind:canvasSize
+	bind:projectionMatrix
 	{viewMatrix}
 	{layerNudge}
 	{fov}
@@ -127,5 +133,4 @@
 	{ontouchstart}
 	{ontouchmove}
 	{ontouchend}
-	{ontouchcancel}
-></WebGLCanvas>
+	{ontouchcancel}></WebGLCanvas>

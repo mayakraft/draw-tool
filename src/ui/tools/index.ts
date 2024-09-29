@@ -1,3 +1,4 @@
+import type { UITool } from "../tool.ts";
 //import circle from "./circle/index.ts";
 import line from "./line/index.ts";
 //import rect from "./rect/index.ts";
@@ -9,7 +10,7 @@ import line from "./line/index.ts";
 //import translate from "./translate/index.ts";
 import zoom from "./zoom/index.ts";
 
-export default {
+const Tools: { [key: string]: typeof UITool } = {
   //circle,
   line,
   //rect,
@@ -21,3 +22,6 @@ export default {
   //translate,
   zoom,
 };
+
+export default Tools;
+

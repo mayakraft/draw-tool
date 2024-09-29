@@ -6,11 +6,7 @@
 // all viewports or all tools.
 // for example "show grid" is a setting
 
-class Preferences {
-  showGrid: boolean = $state(true);
-  showAxes: boolean = $state(true);
-  tiling: string = $state("square"); // square or triangle
-
+class Settings {
   //radialSnapDegrees: number = $state(22.5);
   //radialSnapOffset: number = $state(0);
   //gridSnapFunction = $derived.by(() => {
@@ -25,5 +21,5 @@ class Preferences {
   // });
 }
 
-export default (new Preferences());
+export default (new Settings());
 
