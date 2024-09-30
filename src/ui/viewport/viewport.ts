@@ -10,8 +10,12 @@ export interface Deallocable {
   dealloc(): void;
 }
 
+//export abstract class Viewport implements ViewportEvents, Deallocable {
 export interface Viewport extends ViewportEvents, Deallocable {
   component: Component;
+
+  // to be implemented by each component
+  //static settings: any;
 
   onmousemove?: ((e: ViewportMouseEvent) => void) | undefined;
   onmousedown?: ((e: ViewportMouseEvent) => void) | undefined;

@@ -31,5 +31,10 @@ class Application {
 // which watches for changes and writes settings to local storage.
 //new LocalStorage(app);
 
-export default new Application();
+//export default new Application();
+
+const app = new Application;
+// @ts-ignore
+window.app = app;
+export default app;
 

@@ -8,18 +8,19 @@ import type {
   ViewportTouchEvent,
 } from "../events.ts";
 import { unsetViewportEvents } from "../viewport.ts";
-import { SVGViewportView } from "./SVGViewportView.svelte.ts";
-import { SVGViewportStyle } from "./SVGViewportStyle.svelte.ts";
-import { SVGGrid } from "./SVGGrid.svelte.ts";
+import { View } from "./View.svelte.ts";
+import { Style } from "./Style.svelte.ts";
+import { Grid } from "./Grid.svelte.ts";
 import ViewportComponent from "./Viewport.svelte";
 //import snap from "../snap.svelte.ts";
 import { clipLineInPolygon } from "./clip.ts";
+import settings from "./Settings.svelte.ts";
 
 export class SVGViewport implements Viewport, ViewportEvents {
   component: Component;
-  view: SVGViewportView;
-  style: SVGViewportStyle;
-  grid: SVGGrid;
+  view: View;
+  style: Style;
+  grid: Grid;
 
   onmousemove?: (event: ViewportMouseEvent) => void;
   onmousedown?: (event: ViewportMouseEvent) => void;
@@ -33,6 +34,8 @@ export class SVGViewport implements Viewport, ViewportEvents {
   onkeydown?: (event: KeyboardEvent) => void;
   onkeyup?: (event: KeyboardEvent) => void;
 
+  static settings: typeof settings = settings;
+
   layer?: any = $state();
   props?: any = $state();
 
@@ -43,9 +46,9 @@ export class SVGViewport implements Viewport, ViewportEvents {
 
   constructor() {
     this.component = ViewportComponent;
-    this.view = new SVGViewportView();
-    this.style = new SVGViewportStyle(this.view);
-    this.grid = new SVGGrid(this.view);
+    this.view = new View();
+    this.style = new Style(this.view);
+    this.grid = new Grid(this.view);
   }
 
   dealloc() {

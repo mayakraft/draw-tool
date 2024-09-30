@@ -113,7 +113,7 @@ export class SVGViewportState implements Deallocable {
           this.segment
         ) {
           const [[x1, y1], [x2, y2]] = this.segment;
-          model.addLine(x1, y1, x2, y2);
+          app.model.addLine(x1, y1, x2, y2);
           this.touches.reset();
         }
       });

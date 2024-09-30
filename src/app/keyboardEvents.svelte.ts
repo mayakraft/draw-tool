@@ -1,4 +1,6 @@
 import { isFormElementActive } from "../general/dom.ts";
+//import { keyboard } from "./keyboard.svelte.ts";
+import keyboard from "./Keyboard.svelte.ts";
 //import { tool } from "./tool.svelte.ts";
 
 // this is not a part of this app
@@ -11,14 +13,6 @@ const encodeModifier = (event: KeyboardEvent): number =>
   (Number(event.shiftKey) << 0) |
   ((Number(event.ctrlKey) || Number(event.metaKey)) << 1) |
   (Number(event.altKey) << 2);
-
-/**
- * @description a hash lookup of every keyboard key currently being pressed
- * where the dictionary's keys are numbers, the numbers being event.code.
- * and the value will be "true" if the key is pressed. If the key is not
- * pressed, the key will not exist.
- */
-const keyboard: { [key: string]: boolean } = $state({});
 
 /**
  *
@@ -147,7 +141,8 @@ const onkeyupWindow = $derived((event: KeyboardEvent) => {
  *
  */
 export const onkeydown = (event: KeyboardEvent) => {
-  keyboard[event.code] = true;
+  console.log(event.code);
+  keyboard.keys[event.code] = true;
   return isFormElementActive() ? onkeydownForm(event) : onkeydownWindow(event);
 };
 
@@ -155,7 +150,7 @@ export const onkeydown = (event: KeyboardEvent) => {
  *
  */
 export const onkeyup = (event: KeyboardEvent) => {
-  delete keyboard[event.code];
+  delete keyboard.keys[event.code];
   return isFormElementActive() ? onkeyupForm(event) : onkeyupWindow(event);
 };
 

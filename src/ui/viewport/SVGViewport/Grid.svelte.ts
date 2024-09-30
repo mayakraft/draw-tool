@@ -1,10 +1,10 @@
 import { viewBoxOrigin } from "../../../general/matrix.ts";
 import { makeSquareGrid, makeTriangleGrid } from "./grid.ts";
-import { SVGViewportView } from "./SVGViewportView.svelte.ts";
+import { View } from "./View.svelte.ts";
 import settings from "./Settings.svelte.ts";
 
-export class SVGGrid {
-  view: SVGViewportView;
+export class Grid {
+  view: View;
   #cameraOrigin = $derived.by(() => viewBoxOrigin(this.view.viewBox, true));
 
   #cameraViewport: [number, number, number, number] = $derived.by(() => [
@@ -28,7 +28,7 @@ export class SVGGrid {
   });
 
   verticalUp: boolean = $state(true);
-  constructor(view: SVGViewportView) {
+  constructor(view: View) {
     this.view = view;
   }
 }

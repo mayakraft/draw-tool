@@ -19,5 +19,7 @@
 </g>
 
 <style>
-	line { stroke: var(--background-3); }
+	line {
+		stroke: var(--background-3);
+	}
 </style>

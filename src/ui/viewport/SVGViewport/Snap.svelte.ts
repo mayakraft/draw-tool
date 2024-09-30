@@ -6,9 +6,15 @@ import {
   squareGridSnapFunction,
 } from "./snap.ts";
 import settings from "./Settings.svelte.ts";
+import app from "../../../app/App.svelte.ts";
 
 export class Snap {
+
   points: [number, number][] = [];
+
+  #snapPoints: [number, number][] = $derived(([] as [number, number][])
+    .concat(this.points)
+    .concat(app.model.snapPoints));
 
   gridSnapFunction = $derived.by(() => {
     switch (settings.tiling) {
@@ -22,7 +28,7 @@ export class Snap {
   });
 
   snapToPoint(point: [number, number], snapRadius: number): SnapResult {
-    return snapToPointOrGrid(point, snapRadius, this.points, this.gridSnapFunction);
+    return snapToPointOrGrid(point, snapRadius, this.#snapPoints, this.gridSnapFunction);
   }
 
   snapToLine(point: [number, number], snapRadius: number, lines: LineType[]): SnapResult {
@@ -30,7 +36,7 @@ export class Snap {
       point,
       snapRadius,
       lines,
-      this.points,
+      this.#snapPoints,
       this.gridSnapFunction,
     );
   }

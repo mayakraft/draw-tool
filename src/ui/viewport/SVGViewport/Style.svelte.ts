@@ -1,8 +1,8 @@
-import { SVGViewportView } from "./SVGViewportView.svelte.ts";
+import { View } from "./View.svelte.ts";
 
-export class SVGViewportStyle {
-  view: SVGViewportView;
-  constructor(view: SVGViewportView) {
+export class Style {
+  view: View;
+  constructor(view: View) {
     this.view = view;
   }
 
