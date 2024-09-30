@@ -1,15 +1,12 @@
 <script lang="ts">
-	import type { SVGViewport } from "../../viewport/SVGViewport.svelte.ts";
+	import type { SVGViewport } from "../../viewport/SVGViewport/SVGViewport.svelte.ts";
 	import type { FixedPoint } from "./SVGViewportState.svelte.ts";
 
 	type PropsType = {
-		viewport: SVGViewport,
-		fixedPoint: FixedPoint,
-	}
-	let {
-		viewport,
-		fixedPoint,
-	}: PropsType = $props();
+		viewport: SVGViewport;
+		fixedPoint: FixedPoint;
+	};
+	let { viewport, fixedPoint }: PropsType = $props();
 
 	const highlighted = $derived(fixedPoint.highlighted);
 	const className = $derived(highlighted ? "highlighted" : "");

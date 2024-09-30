@@ -10,13 +10,16 @@ export interface Deallocable {
   dealloc(): void;
 }
 
+// an abstract class would allow us to describe the "settings" static property.
 //export abstract class Viewport implements ViewportEvents, Deallocable {
 export interface Viewport extends ViewportEvents, Deallocable {
+  // the Svelte component to be instanced as one of the App's display canvases
   component: Component;
 
-  // to be implemented by each component
-  //static settings: any;
+  // to be implemented by each component:
+  // static settings: any;
 
+  // all events are optional
   onmousemove?: ((e: ViewportMouseEvent) => void) | undefined;
   onmousedown?: ((e: ViewportMouseEvent) => void) | undefined;
   onmouseup?: ((e: ViewportMouseEvent) => void) | undefined;
@@ -32,27 +35,17 @@ export interface Viewport extends ViewportEvents, Deallocable {
   // this method will unbind all of the above events (set them to undefined)
   dealloc: () => void;
 
-  // epsilon and snapping
-
   // a UI touch event, coming from a pointer device, will have some
   // built-in error correcting (like snapping, for example), and this behavior
   // is zoom-level dependent. This is the factor out of 1 which is
   // scaled to the viewbox to get this ui-epsilon floating point error factor.
   uiEpsilonFactor: number;
 
-  // Snapping is zoom-level dependent, this is the factor
-  // (out of 1) which is scaled to the viewbox to get the snap radius.
-  snapRadiusFactor: number;
-
   // a UI touch event, coming from a pointer device, will have some
   // built-in error correcting (like snapping, for example), and this behavior
   // is zoom-level dependent. Use this variable to get an appropriate error-
   // correcting value.
   uiEpsilon: number;
-
-  // This is the radius of the snapping range to the
-  // nearest snappable point, it is dependent upon the current view zoom.
-  snapRadius: number;
 }
 
 export const unsetViewportEvents = (viewport: Viewport) => {
@@ -68,3 +61,4 @@ export const unsetViewportEvents = (viewport: Viewport) => {
   viewport.onkeydown = undefined;
   viewport.onkeyup = undefined;
 };
+

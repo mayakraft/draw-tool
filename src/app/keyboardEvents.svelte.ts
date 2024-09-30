@@ -1,7 +1,5 @@
 import { isFormElementActive } from "../general/dom.ts";
-//import { keyboard } from "./keyboard.svelte.ts";
-import keyboard from "./Keyboard.svelte.ts";
-//import { tool } from "./tool.svelte.ts";
+import keyboard from "./keyboard.svelte.ts";
 
 // this is not a part of this app
 const TerminalTextarea = document.getElementById("element-does-not-yet-exist");

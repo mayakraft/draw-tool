@@ -1,6 +1,4 @@
-//import keyboard from "../../../app/Keyboard.svelte.ts";
-import keyboard from "../../../app/Keyboard.svelte.ts";
-//import app from "../../../app/App.svelte.ts";
+import keyboard from "../../../app/keyboard.svelte.ts";
 
 // these are global view settings
 // one instance per app, these settings apply to any
@@ -11,13 +9,19 @@ import keyboard from "../../../app/Keyboard.svelte.ts";
 //
 
 class Settings {
+  // is the Y axis on top (true) or on bottom (false)?
+  rightHanded: boolean = $state(true);
+
+  // the unit grid that contributes to snap points ("square" or "triangle")
+  tiling: string = $state("square");
+
   showGrid: boolean = $state(true);
   showAxes: boolean = $state(true);
-  tiling: string = $state("square"); // square or triangle
 
-  radialSnap = $derived(keyboard.shift);
+  radialSnap: boolean = $derived(keyboard.shift);
   radialSnapDegrees: number = $state(22.5);
   radialSnapOffset: number = $state(0);
 }
 
 export default new Settings();
+

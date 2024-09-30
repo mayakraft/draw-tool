@@ -1,4 +1,5 @@
 import type { SnapResult, LineType } from "./snap.ts";
+import type { View } from "./View.svelte.ts";
 import {
   snapToPointOrGrid,
   snapToLineOrPointOrGrid,
@@ -9,8 +10,17 @@ import settings from "./Settings.svelte.ts";
 import app from "../../../app/App.svelte.ts";
 
 export class Snap {
+  view: View;
 
-  points: [number, number][] = [];
+  // Snapping is zoom-level dependent, this is the factor
+  // (out of 1) which is scaled to the viewbox to get the snap radius.
+  snapRadiusFactor = 0.05;
+
+  // This is the radius of the snapping range to the
+  // nearest snappable point, it is dependent upon the current view zoom.
+  snapRadius: number = $derived.by(() => this.view.vmax * this.snapRadiusFactor);
+
+  points: [number, number][] = $state([]);
 
   #snapPoints: [number, number][] = $derived(([] as [number, number][])
     .concat(this.points)
@@ -27,31 +37,22 @@ export class Snap {
     }
   });
 
-  snapToPoint(point: [number, number], snapRadius: number): SnapResult {
-    return snapToPointOrGrid(point, snapRadius, this.#snapPoints, this.gridSnapFunction);
+  snapToPoint(point: [number, number]): SnapResult {
+    return snapToPointOrGrid(point, this.snapRadius, this.#snapPoints, this.gridSnapFunction);
   }
 
-  snapToLine(point: [number, number], snapRadius: number, lines: LineType[]): SnapResult {
+  snapToLine(point: [number, number], lines: LineType[]): SnapResult {
     return snapToLineOrPointOrGrid(
       point,
-      snapRadius,
+      this.snapRadius,
       lines,
       this.#snapPoints,
       this.gridSnapFunction,
     );
   }
 
-  constructor() { }
+  constructor(view: View) {
+    this.view = view;
+  }
 }
 
-export default new Snap();
-
-// SnapPoints contains a list of 2D points in the plane which the UI
-// should be able to snap to. This list notably does not contain a list of
-// grid-points (snap to grid) because that list is infinite and calculated
-// in the snap-point-finding method. The list of points here includes:
-// - graph vertices
-// - intersections between ruler lines and graph edges
-// Currently, it does not include:
-// - intersections between ruler lines and ruler lines
-// - intersections between ruler lines and the background grid

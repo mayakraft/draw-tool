@@ -2,12 +2,11 @@ import type { VecLine2 } from "rabbit-ear/types.js";
 import { pointsToLine2 } from "rabbit-ear/math/convert.js";
 import type { Deallocable } from "../../viewport/viewport.ts";
 import type { SVGViewport } from "../../viewport/SVGViewport/SVGViewport.svelte.ts";
-import app from "../../../app/App.svelte.ts";
-import snap from "../../viewport/SVGViewport/Snap.svelte.ts";
 import { SVGViewportEvents } from "./events.ts";
 import { GlobalState } from "./GlobalState.svelte.ts";
 import { SVGTouches } from "./SVGTouches.svelte.ts";
 import SVGLayer from "./SVGLayer.svelte";
+import app from "../../../app/App.svelte.ts";
 
 export class SVGViewportState implements Deallocable {
   viewport: SVGViewport;
@@ -68,14 +67,14 @@ export class SVGViewportState implements Deallocable {
     const snapLines = [{ line: this.line, clamp: (a: any) => a, domain: () => true }];
     const point1 =
       this.touches.snapPresses.length >= 2
-        ? snap.snapToLine(this.touches.presses[1], this.viewport.snapRadius, snapLines)
+        ? this.viewport.snap.snapToLine(this.touches.presses[1], snapLines)
           .coords
-        : snap.snapToLine(this.touches.move, this.viewport.snapRadius, snapLines).coords;
+        : this.viewport.snap.snapToLine(this.touches.move, snapLines).coords;
     const point2 =
       this.touches.snapReleases.length >= 2
-        ? snap.snapToLine(this.touches.releases[1], this.viewport.snapRadius, snapLines)
+        ? this.viewport.snap.snapToLine(this.touches.releases[1], snapLines)
           .coords
-        : snap.snapToLine(this.touches.drag, this.viewport.snapRadius, snapLines).coords;
+        : this.viewport.snap.snapToLine(this.touches.drag, snapLines).coords;
     const result = [];
     if (point1) {
       result.push(point1);

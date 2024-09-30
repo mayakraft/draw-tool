@@ -6,13 +6,13 @@ import {
   makeMatrix2Translate,
   makeMatrix2UniformScale,
 } from "rabbit-ear/math/matrix2.js";
+import { viewBoxOrigin } from "../../../general/matrix.ts";
+import settings from "./Settings.svelte.ts";
 
 export class View {
-  verticalUp = $state(
-    localStorage.getItem("VerticalUp") !== null
-      ? localStorage.getItem("VerticalUp") === "true"
-      : false,
-  );
+  rightHanded = $derived(settings.rightHanded);
+
+  canvasSize: [number, number] | undefined = $state(undefined);
 
   camera = $state([...identity2x3]);
 
@@ -54,11 +54,39 @@ export class View {
 
   viewBoxString = $derived(this.viewBox.join(" "));
 
+  #cameraOrigin = $derived.by(() => viewBoxOrigin(this.viewBox, this.rightHanded));
+
+  cameraViewBox: [number, number, number, number] = $derived.by(() => [
+    this.#cameraOrigin[0],
+    this.#cameraOrigin[1],
+    this.viewBox[2],
+    this.viewBox[3],
+  ]);
+
+  aspectFitViewBox = $derived.by(() => {
+    if (!this.canvasSize) { return this.cameraViewBox; }
+    const box = [...this.cameraViewBox];
+    const canvasAspect = this.canvasSize[0] / this.canvasSize[1];
+    const viewBoxAspect = this.viewBox[2] / this.viewBox[3];
+    if (canvasAspect < viewBoxAspect) {
+      // canvas is taller than view box
+      const newHeight = box[3] / canvasAspect;
+      box[1] -= (newHeight - box[3]) / 2;
+      box[3] = newHeight;
+    } else if (canvasAspect > viewBoxAspect) {
+      // canvas is wider than view box
+      const width = box[2] * canvasAspect;
+      box[0] -= (width - box[2]) / 2;
+      box[2] = width;
+    }
+    return box;
+  });
+
   viewBoxPolygon: [number, number][] = $derived([
-    [this.viewBox[0] - this.viewBox[2] * 10, this.viewBox[1] - this.viewBox[3] * 10],
-    [this.viewBox[0] + this.viewBox[2] * 11, this.viewBox[1] - this.viewBox[3] * 10],
-    [this.viewBox[0] + this.viewBox[2] * 11, this.viewBox[1] + this.viewBox[3] * 11],
-    [this.viewBox[0] - this.viewBox[2] * 10, this.viewBox[1] + this.viewBox[3] * 11],
+    [this.aspectFitViewBox[0], this.aspectFitViewBox[1]],
+    [this.aspectFitViewBox[0] + this.aspectFitViewBox[2], this.aspectFitViewBox[1]],
+    [this.aspectFitViewBox[0] + this.aspectFitViewBox[2], this.aspectFitViewBox[1] + this.aspectFitViewBox[3]],
+    [this.aspectFitViewBox[0], this.aspectFitViewBox[1] + this.aspectFitViewBox[3]],
   ]);
 
   resetCamera() {

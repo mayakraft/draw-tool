@@ -1,4 +1,4 @@
-import type { UI } from "../ui/ui.svelte.ts";
+import type { UI } from "../ui/UI.svelte.ts";
 import { Model } from "../model/model.svelte.ts";
 //import { Settings } from "./Settings.svelte.ts";
 //import { LocalStorage } from "./localStorage.svelte.ts";
@@ -6,15 +6,16 @@ import { Model } from "../model/model.svelte.ts";
 class Application {
   // todo: when a new viewport is added we need to trigger a re-draw on all
   // existing viewports (WebGL specifically), as the aspect ratio will change.
+
+  // app should be able to run without a UI. UI is added inside UI.svelte component.
   ui: UI | undefined;
   model: Model;
 
   constructor() {
-    //this.ui = new UI();
     this.model = new Model();
 
     this.model.shapes.push({ name: "circle", params: { cx: 0, cy: 0, r: 1 } });
-    this.model.shapes.push({ name: "circle", params: { cx: 0, cy: 0, r: Math.SQRT2 } });
+    this.model.shapes.push({ name: "circle", params: { cx: 0.5, cy: 0.5, r: Math.SQRT1_2 } });
     this.model.shapes.push({ name: "rect", params: { x: 0, y: 0, width: 1, height: 1 } });
     this.model.shapes.push({ name: "line", params: { x1: 0, y1: 0, x2: 1, y2: 1 } });
     this.model.shapes.push({ name: "line", params: { x1: 1, y1: 0, x2: 0, y2: 1 } });
@@ -32,7 +33,6 @@ class Application {
 //new LocalStorage(app);
 
 //export default new Application();
-
 const app = new Application;
 // @ts-ignore
 window.app = app;

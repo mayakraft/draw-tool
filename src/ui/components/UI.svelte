@@ -3,7 +3,7 @@
 	import DebugPanel from "./DebugPanel.svelte";
 	import Canvases from "./Canvases.svelte";
 	import app from "../../app/App.svelte.ts";
-	import { UI as UIClass } from "../ui.svelte.ts";
+	import { UI as UIClass } from "../UI.svelte.ts";
 	import { SVGViewport } from "../viewport/SVGViewport/SVGViewport.svelte.ts";
 	import { WebGLViewport } from "../viewport/WebGLViewport/WebGLViewport.svelte.ts";
 	// the toolbar's scrollbar will cover up the buttons, flexbox doesn't
@@ -56,10 +56,12 @@
 		overflow: hidden;
 		position: fixed;
 	}
+
 	.vertical {
 		display: flex;
 		flex-direction: column;
 	}
+
 	.horizontal {
 		display: flex;
 		flex-direction: row;

@@ -1,5 +1,4 @@
-import { SVGViewport } from "../../viewport/SVGViewport.svelte.ts";
-import snap from "../../state/snap.svelte.ts";
+import type { SVGViewport } from "../../viewport/SVGViewport/SVGViewport.svelte.ts";
 
 export class SVGTouches {
   viewport: SVGViewport;
@@ -26,28 +25,32 @@ export class SVGTouches {
   get release() {
     return this.#release;
   }
+
   set move(v: [number, number] | undefined) {
     this.#move = v;
     this.snapMove = this.#move
-      ? snap.snapToPoint(this.#move, this.viewport.snapRadius).coords
+      ? this.viewport.snap.snapToPoint(this.#move).coords
       : undefined;
   }
+
   set drag(v: [number, number] | undefined) {
     this.#drag = v;
     this.snapDrag = this.#drag
-      ? snap.snapToPoint(this.#drag, this.viewport.snapRadius).coords
+      ? this.viewport.snap.snapToPoint(this.#drag).coords
       : undefined;
   }
+
   set press(v: [number, number] | undefined) {
     this.#press = v;
     this.snapPress = this.#press
-      ? snap.snapToPoint(this.#press, this.viewport.snapRadius).coords
+      ? this.viewport.snap.snapToPoint(this.#press).coords
       : undefined;
   }
+
   set release(v: [number, number] | undefined) {
     this.#release = v;
     this.snapRelease = this.#release
-      ? snap.snapToPoint(this.#release, this.viewport.snapRadius).coords
+      ? this.viewport.snap.snapToPoint(this.#release).coords
       : undefined;
   }
 
@@ -66,3 +69,4 @@ export class SVGTouches {
     this.snapRelease = undefined;
   }
 }
+

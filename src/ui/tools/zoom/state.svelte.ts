@@ -35,7 +35,7 @@ export class ToolState {
         }
         const translation: [number, number] = [
           this.dragVector[0],
-          this.dragVector[1] * (this.viewport.view.verticalUp ? -1 : 1),
+          this.dragVector[1] * (this.viewport.view.rightHanded ? -1 : 1),
         ];
         untrack(() => {
           this.viewport.view.camera = panCameraMatrix(

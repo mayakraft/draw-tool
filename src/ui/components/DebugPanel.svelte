@@ -15,6 +15,10 @@
 	const removeView = () => {
 		app.ui?.viewports.pop();
 	};
+
+	const toggleSVGHandedness = () => {
+		SVGViewport.settings.rightHanded = !SVGViewport.settings.rightHanded;
+	};
 	//<input type="checkbox" id="verticalUp" checked={renderer.view.verticalUp}/>
 </script>
 
@@ -31,6 +35,8 @@
 <button onclick={removeView}>- view</button>
 
 <hr />
+
+<button onclick={toggleSVGHandedness}>y flip</button>
 
 <style>
 	button {

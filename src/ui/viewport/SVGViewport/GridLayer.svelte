@@ -3,19 +3,19 @@
 	let { viewport }: { viewport: SVGViewport } = $props();
 </script>
 
-<g class="grid" stroke-width={viewport.grid.strokeWidth}>
+<g class="grid-layer" stroke-width={viewport.grid.strokeWidth}>
 	{#each viewport.grid.lines as line}
 		<line {...line} />
 	{/each}
 
-	<!-- <rect
-		x={actualViewport[0]}
-		y={actualViewport[1]}
-		width={actualViewport[2]}
-		height={actualViewport[3]}
+	<rect
+		x={viewport.view.aspectFitViewBox[0]}
+		y={viewport.view.aspectFitViewBox[1]}
+		width={viewport.view.aspectFitViewBox[2]}
+		height={viewport.view.aspectFitViewBox[3]}
+		stroke-width={viewport.grid.strokeWidth * 4}
 		fill="none"
-		stroke="red"
-	/> -->
+		stroke="red" />
 </g>
 
 <style>

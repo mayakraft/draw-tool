@@ -2,26 +2,24 @@
 	import type { Snippet } from "svelte";
 
 	interface PropsType {
-		svg?: SVGSVGElement,
-		viewBox?: string,
-		invertVertical?: boolean,
-		onmousedown?: (e: MouseEvent) => void,
-		onmousemove?: (e: MouseEvent) => void,
-		onmouseup?: (e: MouseEvent) => void,
-		onmouseleave?: (e: MouseEvent) => void,
-		onwheel?: (e: WheelEvent) => void,
-		ontouchmove?: (e: TouchEvent) => void,
-		ontouchstart?: (e: TouchEvent) => void,
-		ontouchend?: (e: TouchEvent) => void,
-		ontouchcancel?: (e: TouchEvent) => void,
-		children?: Snippet,
-		rest?: any[]
-	};
+		svg?: SVGSVGElement;
+		viewBox?: string;
+		onmousedown?: (e: MouseEvent) => void;
+		onmousemove?: (e: MouseEvent) => void;
+		onmouseup?: (e: MouseEvent) => void;
+		onmouseleave?: (e: MouseEvent) => void;
+		onwheel?: (e: WheelEvent) => void;
+		ontouchmove?: (e: TouchEvent) => void;
+		ontouchstart?: (e: TouchEvent) => void;
+		ontouchend?: (e: TouchEvent) => void;
+		ontouchcancel?: (e: TouchEvent) => void;
+		children?: Snippet;
+		rest?: any[];
+	}
 
 	let {
 		svg = $bindable(),
 		viewBox = "0 0 1 1",
-		invertVertical = false,
 		onmousedown,
 		onmousemove,
 		onmouseup,
@@ -34,9 +32,6 @@
 		children,
 		...rest
 	}: PropsType = $props();
-
-	let scale = 1;
-	const matrix = $state([scale, 0, 0, invertVertical ? -scale : scale, 0, 0].join(", "));
 </script>
 
 <svg
@@ -56,11 +51,9 @@
 	{ontouchend}
 	{ontouchcancel}
 	{...rest}>
-	<g class="wrapper-layer" style={`transform: matrix(${matrix})`}>
-		{#if children}
-			{@render children()}
-		{/if}
-	</g>
+	{#if children}
+		{@render children()}
+	{/if}
 </svg>
 
 <style>
@@ -71,6 +64,6 @@
 
 	/* Chrome (not Firefox) draws a focus border. remove it */
 	svg:focus {
-    outline-width: 0;
+		outline-width: 0;
 	}
 </style>

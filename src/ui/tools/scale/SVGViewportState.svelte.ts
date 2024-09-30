@@ -1,12 +1,11 @@
 import { distance2, magnitude2, subtract2 } from "rabbit-ear/math/vector.js";
 import type { Deallocable } from "../../viewport/viewport.ts";
-import type { SVGViewport } from "../../viewport/SVGViewport.svelte.ts";
-import { model } from "../../state/model.svelte.ts";
-import snap from "../../state/snap.svelte.ts";
+import type { SVGViewport } from "../../viewport/SVGViewport/SVGViewport.svelte.ts";
 import { SVGViewportEvents } from "./events.ts";
 import { GlobalState } from "./GlobalState.svelte.ts";
 import { SVGTouches } from "./SVGTouches.svelte.ts";
 import SVGLayer from "./SVGLayer.svelte";
+import app from "../../../app/App.svelte.ts";
 
 export class FixedPoint {
   touches: SVGTouches;
@@ -16,7 +15,7 @@ export class FixedPoint {
   selected: boolean = $state(false);
 
   equivalent = (point1: [number, number], point2: [number, number]) =>
-    distance2(point1, point2) < this.viewport.uiEpsilon * 3;
+    distance2(point1, point2) < this.viewport.uiEpsilon;
 
   highlighted: boolean = $derived.by(() => {
     if (this.touches.snapDrag) {
@@ -162,3 +161,4 @@ export class SVGViewportState implements Deallocable {
     });
   }
 }
+

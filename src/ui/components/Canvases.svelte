@@ -1,6 +1,6 @@
 <script lang="ts">
 	import app from "../../app/App.svelte.ts";
-	const viewports = $derived(app.ui?.viewports);
+	const viewports = $derived(app.ui?.viewports || []);
 </script>
 
 <div class="row">

@@ -3,7 +3,7 @@ import type {
   ViewportWheelEvent,
   ViewportEvents,
 } from "../../viewport/events.ts";
-import type { SVGViewport } from "../../viewport/SVGViewport.svelte.ts";
+import type { SVGViewport } from "../../viewport/SVGViewport/SVGViewport.svelte.ts";
 import { wheelEventZoomMatrix } from "../zoom/matrix.ts";
 import { SVGTouches } from "./SVGTouches.svelte.ts";
 

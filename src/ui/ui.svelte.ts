@@ -1,19 +1,15 @@
-import type { UITool } from "./tool.ts";
+import type { UITool } from "./UITool.ts";
 import type { Viewport } from "./viewport/viewport.ts";
-//import { Snap } from "./snap/Snap.svelte.ts";
 import Tools from "./tools/index.ts";
-
 import { SVGViewport } from "./viewport/SVGViewport/SVGViewport.svelte.ts";
 import { WebGLViewport } from "./viewport/WebGLViewport/WebGLViewport.svelte.ts";
 
-// consider somehow binding the Settings object from inside of SVGViewport (and webgl)
-// and making it accessible through this ui instance (for example: app.ui.SVGViewport.settings)
 export class UI {
   viewports: Viewport[] = $state([]);
-  //snap: Snap;
   #tool: UITool | undefined = $state();
   #effects: Function[] = [];
 
+  // this binding allows each viewports' global settings objects to be accessed.
   types = {
     SVGViewport,
     WebGLViewport,
@@ -42,7 +38,6 @@ export class UI {
   });
 
   constructor() {
-    //this.snap = new Snap();
     this.#effects = [this.#makeToolViewportEffect()];
   }
 

@@ -1,9 +1,9 @@
-import type { UITool } from "../tool.ts";
+import type { UITool } from "../UITool.ts";
 //import circle from "./circle/index.ts";
 import line from "./line/index.ts";
 //import rect from "./rect/index.ts";
 //import rotate from "./rotate/index.ts";
-//import scale from "./scale/index.ts";
+import scale from "./scale/index.ts";
 //import scribble from "./scribble/index.ts";
 //import segment from "./segment/index.ts";
 //import select from "./select/index.ts";
@@ -15,7 +15,7 @@ const Tools: { [key: string]: typeof UITool } = {
   line,
   //rect,
   //rotate,
-  //scale,
+  scale,
   //scribble,
   //segment,
   //select,

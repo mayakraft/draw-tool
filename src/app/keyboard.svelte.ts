@@ -10,8 +10,17 @@
 
 class Keyboard {
   keys: { [key: string]: boolean } = $state({});
-  space = $derived(this.keys.Space);
+
   shift = $derived(this.keys.ShiftLeft || this.keys.ShiftRight);
+  // command (Mac)
+  command = $derived(this.keys.MetaLeft || this.keys.MetaRight);
+  // control, ctrl
+  control = $derived(this.keys.ControlLeft || this.keys.ControlRight);
+  // alt, option
+  alt = $derived(this.keys.AltLeft || this.keys.AltRight);
+
+  //tab = $derived(this.keys.Tab);
+  //space = $derived(this.keys.Space);
 }
 
 export default new Keyboard();

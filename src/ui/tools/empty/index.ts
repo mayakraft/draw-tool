@@ -1,4 +1,4 @@
-import type { UITool } from "../../state/tool.ts";
+import type { UITool } from "../../UITool.ts";
 import type { Viewport } from "../../viewport/viewport.ts";
 import { GlobalState, ViewportState } from "./state.svelte.ts";
 import icon from "./icon.svelte";

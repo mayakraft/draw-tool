@@ -1,4 +1,4 @@
-import type { UITool } from "../../tool.ts";
+import type { UITool } from "../../UITool.ts";
 import { SVGViewport } from "../../viewport/SVGViewport/SVGViewport.svelte.ts";
 import { WebGLViewport } from "../../viewport/WebGLViewport/WebGLViewport.svelte.ts";
 import type { Viewport } from "../../viewport/viewport.ts";
