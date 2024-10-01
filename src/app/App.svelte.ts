@@ -1,15 +1,10 @@
 import type { UI } from "../ui/UI.svelte.ts";
 import { Model } from "../model/model.svelte.ts";
-//import { Settings } from "./Settings.svelte.ts";
-//import { LocalStorage } from "./localStorage.svelte.ts";
 
 class Application {
-  // todo: when a new viewport is added we need to trigger a re-draw on all
-  // existing viewports (WebGL specifically), as the aspect ratio will change.
-
+  model: Model;
   // app should be able to run without a UI. UI is added inside UI.svelte component.
   ui: UI | undefined;
-  model: Model;
 
   constructor() {
     this.model = new Model();
@@ -27,10 +22,6 @@ class Application {
     this.ui?.dealloc();
   }
 }
-
-// load a bunch of default settings and create a reactive effect
-// which watches for changes and writes settings to local storage.
-//new LocalStorage(app);
 
 //export default new Application();
 const app = new Application;

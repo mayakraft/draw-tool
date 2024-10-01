@@ -43,6 +43,7 @@
 		ontouchstart?: (e: TouchEvent) => void;
 		ontouchend?: (e: TouchEvent) => void;
 		ontouchcancel?: (e: TouchEvent) => void;
+		redraw?: Function;
 	};
 
 	let {
@@ -71,6 +72,7 @@
 		ontouchstart,
 		ontouchend,
 		ontouchcancel,
+		redraw = $bindable(),
 	}: WebGLCanvasProps = $props();
 
 	let outlineColor = $derived(darkMode ? "white" : "black");
@@ -147,6 +149,8 @@
 		rebuildViewport(gl, canvas);
 		canvasSize = [canvas.clientWidth, canvas.clientHeight];
 	};
+
+	redraw = onresize;
 
 	$effect(() => {
 		if (!gl || !canvas) {

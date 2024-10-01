@@ -42,16 +42,16 @@
 		viewport.view.canvasSize = size ? [size.width, size.height] : undefined;
 	};
 
-	$effect(() => {
-		const size = svg?.getBoundingClientRect();
-		viewport.view.canvasSize = size ? [size.width, size.height] : undefined;
-	});
+	// bind redraw function, used when new viewports are added/removed
+	viewport.redraw = onresize;
 </script>
 
 <svelte:window {onresize} />
 
 {#snippet contents()}
-	<GridLayer {viewport} />
+	{#if settings.showGrid}
+		<GridLayer {viewport} />
+	{/if}
 	<SVGElements elements={app.model.shapes} class="model-layer" />
 	{#if SVGToolLayer}
 		<g

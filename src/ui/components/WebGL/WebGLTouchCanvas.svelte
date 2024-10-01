@@ -36,6 +36,7 @@
 		ontouchstart?: (e: ViewportTouchEvent) => void;
 		ontouchend?: (e: ViewportTouchEvent) => void;
 		ontouchcancel?: (e: ViewportTouchEvent) => void;
+		redraw?: Function;
 	};
 
 	let {
@@ -63,6 +64,7 @@
 		ontouchstart: touchstart,
 		ontouchend: touchend,
 		ontouchcancel: touchcancel,
+		redraw = $bindable(),
 	}: WebGLTouchCanvasProps = $props();
 
 	let projectionMatrix: number[] = $state([...identity4x4]);
@@ -133,4 +135,5 @@
 	{ontouchstart}
 	{ontouchmove}
 	{ontouchend}
-	{ontouchcancel}></WebGLCanvas>
+	{ontouchcancel}
+	bind:redraw></WebGLCanvas>

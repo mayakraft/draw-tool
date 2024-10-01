@@ -32,6 +32,8 @@ export class WebGLViewport implements Viewport, ViewportEvents {
   view: WebGLViewportView;
   style: WebGLViewportStyle;
 
+  redraw?: Function;
+
   onmousemove?: (event: ViewportMouseEvent) => void;
   onmousedown?: (event: ViewportMouseEvent) => void;
   onmouseup?: (event: ViewportMouseEvent) => void;

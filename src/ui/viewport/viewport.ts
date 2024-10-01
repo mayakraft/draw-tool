@@ -16,6 +16,9 @@ export interface Viewport extends ViewportEvents, Deallocable {
   // the Svelte component to be instanced as one of the App's display canvases
   component: Component;
 
+  // force the screen to re-calculate window bounds. used when viewports are added/removed
+  redraw?: Function;
+
   // to be implemented by each component:
   // static settings: any;
 
@@ -34,12 +37,6 @@ export interface Viewport extends ViewportEvents, Deallocable {
 
   // this method will unbind all of the above events (set them to undefined)
   dealloc: () => void;
-
-  // a UI touch event, coming from a pointer device, will have some
-  // built-in error correcting (like snapping, for example), and this behavior
-  // is zoom-level dependent. This is the factor out of 1 which is
-  // scaled to the viewbox to get this ui-epsilon floating point error factor.
-  uiEpsilonFactor: number;
 
   // a UI touch event, coming from a pointer device, will have some
   // built-in error correcting (like snapping, for example), and this behavior

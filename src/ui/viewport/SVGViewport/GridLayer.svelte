@@ -8,7 +8,8 @@
 		<line {...line} />
 	{/each}
 
-	<rect
+	<!--
+  <rect
 		x={viewport.view.aspectFitViewBox[0]}
 		y={viewport.view.aspectFitViewBox[1]}
 		width={viewport.view.aspectFitViewBox[2]}
@@ -16,6 +17,7 @@
 		stroke-width={viewport.grid.strokeWidth * 4}
 		fill="none"
 		stroke="red" />
+  -->
 </g>
 
 <style>

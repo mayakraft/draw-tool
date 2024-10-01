@@ -12,13 +12,9 @@ import app from "../../../app/App.svelte.ts";
 export class Snap {
   view: View;
 
-  // Snapping is zoom-level dependent, this is the factor
-  // (out of 1) which is scaled to the viewbox to get the snap radius.
-  snapRadiusFactor = 0.05;
-
   // This is the radius of the snapping range to the
   // nearest snappable point, it is dependent upon the current view zoom.
-  snapRadius: number = $derived.by(() => this.view.vmax * this.snapRadiusFactor);
+  snapRadius: number = $derived.by(() => this.view.vmax * settings.snapRadiusFactor);
 
   points: [number, number][] = $state([]);
 

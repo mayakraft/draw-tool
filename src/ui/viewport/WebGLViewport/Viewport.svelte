@@ -28,6 +28,7 @@
 	onmouseup={(...args) => viewport.onmouseup?.(...args)}
 	onmouseleave={(...args) => viewport.onmouseleave?.(...args)}
 	onwheel={(...args) => viewport.onwheel?.(...args)}
+	bind:redraw={viewport.redraw}
 	graph={app.model.fold}
 	perspective={viewport.view.perspective}
 	renderStyle={"creasePattern"}

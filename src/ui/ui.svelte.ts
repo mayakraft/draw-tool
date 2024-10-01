@@ -37,8 +37,15 @@ export class UI {
     };
   });
 
+  #triggerViewportRedraw = () => $effect.root(() => {
+    $effect(() => {
+      this.viewports.forEach(viewport => viewport.redraw?.());
+    });
+    return () => { };
+  })
+
   constructor() {
-    this.#effects = [this.#makeToolViewportEffect()];
+    this.#effects = [this.#triggerViewportRedraw(), this.#makeToolViewportEffect()];
   }
 
   // this is not really planned, but if ever the app was to completely de-initialize and

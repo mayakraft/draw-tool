@@ -6,38 +6,17 @@
 	import { UI as UIClass } from "../UI.svelte.ts";
 	import { SVGViewport } from "../viewport/SVGViewport/SVGViewport.svelte.ts";
 	import { WebGLViewport } from "../viewport/WebGLViewport/WebGLViewport.svelte.ts";
-	// the toolbar's scrollbar will cover up the buttons, flexbox doesn't
-	// give space to account for the scrollbar, we have to create a listener
-	// and manually add the padding by setting a css variable.
-	let divToolbar: HTMLElement;
 
 	// attach the UI to the app. from now on, app.ui is a valid property.
 	app.ui = new UIClass();
 
 	// initial set of viewports
 	app.ui?.viewports.push(new SVGViewport(), new WebGLViewport());
-
-	// toolbar scrollbar stuff
-	$effect(() => {
-		// on mount
-		const resizeObserver = new ResizeObserver((_) => {
-			setTimeout(() => {
-				console.log("toolbar size observer");
-				const width = divToolbar.offsetWidth - divToolbar.clientWidth;
-				document.documentElement.style.setProperty(
-					"--toolbar-scrollbar-width",
-					`${width}px`,
-				);
-			}, 5);
-		});
-		resizeObserver.observe(divToolbar);
-		return () => resizeObserver.unobserve(divToolbar);
-	});
 </script>
 
 <main class="vertical">
 	<div class="gui horizontal">
-		<div class="toolbar" role="toolbar" bind:this={divToolbar}>
+		<div class="toolbar" role="toolbar">
 			<Toolbar />
 			<DebugPanel />
 		</div>
@@ -77,7 +56,7 @@
 	/* .gui children */
 	.toolbar {
 		height: 100%;
-		width: calc(2rem * 2 + 0.15rem * 4 + var(--toolbar-scrollbar-width));
+		width: calc(2rem * 2 + 0.15rem * 4);
 		flex: 0 0 auto;
 		overflow-x: hidden;
 		overflow-y: auto;

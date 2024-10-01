@@ -119,4 +119,3 @@ export class Model {
 // 	CameraMatrix.reset();
 // };
 
-

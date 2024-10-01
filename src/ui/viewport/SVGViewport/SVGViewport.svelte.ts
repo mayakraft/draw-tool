@@ -23,6 +23,8 @@ export class SVGViewport implements Viewport, ViewportEvents {
   style: Style;
   view: View;
 
+  redraw?: Function;
+
   onmousemove?: (event: ViewportMouseEvent) => void;
   onmousedown?: (event: ViewportMouseEvent) => void;
   onmouseup?: (event: ViewportMouseEvent) => void;
@@ -40,8 +42,7 @@ export class SVGViewport implements Viewport, ViewportEvents {
   layer?: any = $state();
   props?: any = $state();
 
-  uiEpsilonFactor = 0.0333;
-  uiEpsilon: number = $derived.by(() => this.view.vmax * this.uiEpsilonFactor);
+  uiEpsilon: number = $derived.by(() => this.view.vmax * settings.uiEpsilonFactor);
 
   constructor() {
     this.component = ViewportComponent;
