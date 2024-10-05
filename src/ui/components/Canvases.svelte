@@ -3,23 +3,34 @@
 	const viewports = $derived(app.ui?.viewports || []);
 </script>
 
-<div class="row">
-	{#each viewports as viewport, i}
-		<viewport.component {viewport} />
-		{#if i < viewports.length - 1}
-			<div class="gap"></div>
-		{/if}
+<div class="canvases row gap">
+	{#each viewports as viewport}
+		<div class="canvas">
+			<viewport.component {viewport} />
+		</div>
 	{/each}
 </div>
 
 <style>
+	.canvases {
+		width: 100%;
+		height: 100%;
+	}
+
 	.row {
 		display: flex;
 		flex-direction: row;
-		height: 100%;
 	}
+
 	.gap {
-		width: 3px;
-		background-color: #999;
+		gap: 3px;
+	}
+
+	/*component wrapper is required because svg and canvas elements have*/
+	/*strange competing sizing rules when inside the same flexbox container*/
+	.canvas {
+		width: 100%;
+		height: 100%;
+		flex: 1 1 auto;
 	}
 </style>

@@ -1,16 +1,15 @@
 <script lang="ts">
-	import type { SVGViewport } from "../../viewport/SVGViewport.svelte.ts";
+	import type { SVGViewport } from "../../viewport/SVGViewport/SVGViewport.svelte.ts";
 
 	type PropsType = {
-		viewport: SVGViewport,
-	}
-	let {
-		viewport,
-	}: PropsType = $props();
+		rect: { x: number; y: number; width: number; height: number };
+		viewport: SVGViewport;
+	};
+	let { rect, viewport }: PropsType = $props();
 </script>
 
-{#if state && state.tool && state.tool.rect}
-	<rect {...state.tool.rect} />
+{#if rect}
+	<rect {...rect} />
 {/if}
 
 <style>

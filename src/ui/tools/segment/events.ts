@@ -4,7 +4,7 @@ import type {
   ViewportEvents,
 } from "../../viewport/events.ts";
 import { SVGTouches } from "./SVGTouches.svelte.ts";
-import type { SVGViewport } from "../../viewport/SVGViewport.svelte.ts";
+import type { SVGViewport } from "../../viewport/SVGViewport/SVGViewport.svelte.ts";
 import { wheelEventZoomMatrix } from "../zoom/matrix.ts";
 
 export class SVGViewportEvents implements ViewportEvents {
@@ -19,19 +19,14 @@ export class SVGViewportEvents implements ViewportEvents {
   onmousedown = ({ point, buttons }: ViewportMouseEvent) => {
     this.touches.move = buttons ? undefined : point;
     this.touches.drag = buttons ? point : undefined;
-    this.touches.addPress(point);
+    this.touches.press = point;
   };
 
   onmouseup = ({ point, buttons }: ViewportMouseEvent) => {
     this.touches.move = buttons ? undefined : point;
     this.touches.drag = buttons ? point : undefined;
-    this.touches.addRelease(point);
+    this.touches.release = point;
   };
-
-  // new plan for onwheel
-  // all tools must implement the "zoomTool.onwheel?.(event);" behavior.
-  // there is no longer an app-wide fallthrough that executes that method
-  // if no tool wheel event exists. the tool must specify the behavior explicitly.
 
   onwheel = ({ point, deltaX, deltaY }: ViewportWheelEvent) => {
     wheelEventZoomMatrix(this.viewport, { point, deltaY });

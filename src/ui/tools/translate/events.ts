@@ -3,7 +3,7 @@ import type {
   ViewportWheelEvent,
   ViewportEvents,
 } from "../../viewport/events.ts";
-import type { SVGViewport } from "../../viewport/SVGViewport.svelte.ts";
+import type { SVGViewport } from "../../viewport/SVGViewport/SVGViewport.svelte.ts";
 import { wheelEventZoomMatrix } from "../zoom/matrix.ts";
 import { SVGTouches } from "./SVGTouches.svelte.ts";
 
@@ -19,13 +19,14 @@ export class SVGViewportEvents implements ViewportEvents {
   onmousedown = ({ point, buttons }: ViewportMouseEvent) => {
     this.touches.move = buttons ? undefined : point;
     this.touches.drag = buttons ? point : undefined;
-    this.touches.addPress(point);
+    this.touches.press = point;
+    this.touches.release = undefined;
   };
 
   onmouseup = ({ point, buttons }: ViewportMouseEvent) => {
     this.touches.move = buttons ? undefined : point;
     this.touches.drag = buttons ? point : undefined;
-    this.touches.addRelease(point);
+    this.touches.release = point;
   };
 
   onwheel = ({ point, deltaX, deltaY }: ViewportWheelEvent) => {
