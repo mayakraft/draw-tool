@@ -1,14 +1,14 @@
 <script lang="ts">
-	import { SVGViewport } from "./SVGViewport.svelte.ts";
-	let { viewport }: { viewport: SVGViewport } = $props();
+  import { SVGViewport } from "./SVGViewport.svelte.ts";
+  let { viewport }: { viewport: SVGViewport } = $props();
 </script>
 
 <g class="grid-layer" stroke-width={viewport.grid.strokeWidth}>
-	{#each viewport.grid.lines as line}
-		<line {...line} />
-	{/each}
+  {#each viewport.grid.lines as line}
+    <line {...line} />
+  {/each}
 
-	<!--
+  <!--
   <rect
 		x={viewport.view.aspectFitViewBox[0]}
 		y={viewport.view.aspectFitViewBox[1]}
@@ -21,7 +21,7 @@
 </g>
 
 <style>
-	line {
-		stroke: var(--background-3);
-	}
+  line {
+    stroke: var(--background-3);
+  }
 </style>

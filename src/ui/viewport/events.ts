@@ -1,6 +1,6 @@
 export type ViewportUIEvent = {
   point: [number, number];
-}
+};
 
 export type ViewportMouseEvent = MouseEvent & ViewportUIEvent;
 export type ViewportTouchEvent = TouchEvent & ViewportUIEvent;

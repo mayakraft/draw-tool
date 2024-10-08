@@ -8,7 +8,7 @@ const _0_866 = Math.sqrt(3) / 2;
  * @param {number} start the viewbox corner (origin, x or y)
  * @param {number} size the viewbox size (width or height)
  */
-export const makeIntervals = (start: number, size: number, spacing = 1) => {
+export const makeIntervals = (start: number, size: number, spacing = 1): number[] => {
   while (size / spacing > 64) {
     spacing *= 2;
   }
@@ -37,7 +37,16 @@ export const makeIntervals = (start: number, size: number, spacing = 1) => {
 // of the container div housing the SVG or the SVG itself, and relay this
 // to the viewport to resize it in these equations only.
 
-export const makeSquareGrid = (viewBoxArray: [number, number, number, number]) => {
+type SVGLine = {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+};
+
+export const makeSquareGrid = (
+  viewBoxArray: [number, number, number, number],
+): SVGLine[] => {
   // calculate correct spacing ahead of time
   const size = Math.max(viewBoxArray[2] * 3, viewBoxArray[3] * 4);
   let spacing = 1;
@@ -68,7 +77,9 @@ export const makeSquareGrid = (viewBoxArray: [number, number, number, number]) =
   ].flat();
 };
 
-export const makeTriangleGrid = (viewport: [number, number, number, number]) => {
+export const makeTriangleGrid = (
+  viewport: [number, number, number, number],
+): SVGLine[] => {
   // the result of this method are 3 sets of parallel lines,
   // one horizontal set and two diagonal sets.
   //    a   /     \   b
@@ -146,4 +157,3 @@ export const makeTriangleGrid = (viewport: [number, number, number, number]) => 
   }));
   return horizontals.concat(aDiagonals).concat(bDiagonals);
 };
-

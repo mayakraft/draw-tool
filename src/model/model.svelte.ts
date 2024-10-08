@@ -1,16 +1,28 @@
 import ear from "rabbit-ear";
 import type { FOLD } from "rabbit-ear/types.js";
-//import snap from "./snap.svelte.ts";
 import { subtract2 } from "rabbit-ear/math/vector.js";
 import { intersectLineLine } from "rabbit-ear/math/intersect.js";
 import { excludeS } from "rabbit-ear/math/compare.js";
 
 export type Shape = {
   name: string;
-  params: object;
+  params: {
+    x1?: number;
+    y1?: number;
+    x2?: number;
+    y2?: number;
+    x?: number;
+    y?: number;
+    width?: number;
+    height?: number;
+    cx?: number;
+    cy?: number;
+    r?: number;
+    d?: string;
+  };
 };
 
-const intersectLines = (a, b) => {
+const intersectLines = (a, b): [number, number] | undefined => {
   const lineA = {
     vector: subtract2([a.x2, a.y2], [a.x1, a.y1]),
     origin: [a.x1, a.y1],
@@ -107,15 +119,4 @@ export class Model {
     this.#effects = [this.#makeIntersectionsEffect()];
   }
 }
-
-//export const model = new Model();
-
-// export const Reset = () => {
-// 	RecalculateModelMatrix();
-// 	Selection.reset();
-// 	FrameIndex.set(0);
-// 	FileMetadata.set(getFileMetadata(FOLD));
-// 	Frames.set(frames);
-// 	CameraMatrix.reset();
-// };
 

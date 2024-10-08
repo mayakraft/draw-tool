@@ -8,7 +8,8 @@ export class Style {
   }
 
   circleRadius = $derived.by(
-    () => Math.min(this.view.viewBox[2], this.view.viewBox[3]) * settings.vertexRadiusFactor,
+    () =>
+      Math.min(this.view.viewBox[2], this.view.viewBox[3]) * settings.vertexRadiusFactor,
   );
 
   strokeWidth = $derived.by(() =>
@@ -20,4 +21,3 @@ export class Style {
 
   strokeDashLength = $derived(this.strokeWidth * 8);
 }
-

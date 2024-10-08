@@ -22,4 +22,3 @@ export class Grid {
     this.view = view;
   }
 }
-

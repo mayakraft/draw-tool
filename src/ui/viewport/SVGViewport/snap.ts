@@ -10,7 +10,7 @@ export type SnapResult = {
 
 export type LineType = {
   line: VecLine2;
-  clamp: Function;
+  clamp: (a: number) => number;
   domain: (_: number, __?: number) => boolean;
 };
 
@@ -64,7 +64,7 @@ export const snapToPointOrGrid = (
   point: [number, number],
   snapRadius: number,
   points: [number, number][],
-  gridSnapFunction: Function,
+  gridSnapFunction: (p: [number, number], r: number) => [number, number] | undefined,
 ): SnapResult => {
   // console.log("snapToPoint", point, points, snapRadius);
   if (!point) {
@@ -108,7 +108,7 @@ export const snapToLineOrPointOrGrid = (
   snapRadius: number,
   lines: LineType[],
   points: [number, number][],
-  gridSnapFunction: Function,
+  gridSnapFunction: (p: [number, number], r: number) => [number, number] | undefined,
 ): SnapResult => {
   // for a line:
   // clamp: a => a,
@@ -158,4 +158,3 @@ export const snapToLineOrPointOrGrid = (
     ? snapPoint
     : { coords: rulerPoint, snap: true };
 };
-

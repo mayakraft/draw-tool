@@ -1,28 +1,29 @@
 <script lang="ts">
-	import { shapeToElement, type Shape } from "../../../model/model.svelte.ts";
+  import type { SVGAttributes } from "svelte/elements";
+  import { shapeToElement, type Shape } from "../../../model/model.svelte.ts";
 
-	type PropsType = {
-		elements: Shape[];
-	};
+  type PropsType = {
+    elements: Shape[];
+  };
 
-	const { elements, ...rest }: PropsType = $props();
+  const { elements, ...props }: PropsType & SVGAttributes<SVGGElement> = $props();
 
-	let g: SVGGElement;
+  let g: SVGGElement;
 
-	const svgElements = $derived(
-		elements.map(shapeToElement).filter((a) => a !== undefined),
-	);
+  const svgElements = $derived(
+    elements.map(shapeToElement).filter((a) => a !== undefined),
+  );
 
-	const remove = (el: Element) => {
-		while (el.children.length) {
-			el.removeChild(el.children[0]);
-		}
-	};
+  const remove = (el: Element): void => {
+    while (el.children.length) {
+      el.removeChild(el.children[0]);
+    }
+  };
 
-	$effect(() => {
-		remove(g);
-		svgElements.forEach((el) => g.appendChild(el));
-	});
+  $effect(() => {
+    remove(g);
+    svgElements.forEach((el) => g.appendChild(el));
+  });
 </script>
 
-<g bind:this={g} {...rest} />
+<g bind:this={g} {...props} />

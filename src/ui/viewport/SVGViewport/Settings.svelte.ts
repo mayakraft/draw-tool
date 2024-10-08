@@ -20,19 +20,31 @@ class Settings {
   // built-in error correcting (like snapping, for example), and this behavior
   // is zoom-level dependent. This is the factor out of 1 which is
   // scaled to the viewbox to get this ui-epsilon floating point error factor.
-  uiEpsilonFactor: number = $state(getStorageNumber(storageKeys.svgUIEpsilonFactor, 0.05));
+  uiEpsilonFactor: number = $state(
+    getStorageNumber(storageKeys.svgUIEpsilonFactor, 0.05),
+  );
   // Snapping is zoom-level dependent, this is the factor
   // (out of 1) which is scaled to the viewbox to get the snap radius.
-  snapRadiusFactor: number = $state(getStorageNumber(storageKeys.svgSnapRadiusFactor, 0.05));
+  snapRadiusFactor: number = $state(
+    getStorageNumber(storageKeys.svgSnapRadiusFactor, 0.05),
+  );
   radialSnap: boolean = $derived(keyboard.shift);
-  radialSnapDegrees: number = $state(getStorageNumber(storageKeys.svgRadialSnapDegrees, 22.5));
+  radialSnapDegrees: number = $state(
+    getStorageNumber(storageKeys.svgRadialSnapDegrees, 22.5),
+  );
   radialSnapOffset: number = $state(getStorageNumber(storageKeys.svgRadialSnapOffset, 0));
 
-  strokeWidthFactor: number = $state(getStorageNumber(storageKeys.svgStrokeWidthFactor, 0.001));
-  strokeWidthAbsoluteMin: number = $state(getStorageNumber(storageKeys.svgStrokeWidthAbsoluteMin, 0.001));
-  vertexRadiusFactor: number = $state(getStorageNumber(storageKeys.svgVertexRadiusFactor, 0.00666));
+  strokeWidthFactor: number = $state(
+    getStorageNumber(storageKeys.svgStrokeWidthFactor, 0.001),
+  );
+  strokeWidthAbsoluteMin: number = $state(
+    getStorageNumber(storageKeys.svgStrokeWidthAbsoluteMin, 0.001),
+  );
+  vertexRadiusFactor: number = $state(
+    getStorageNumber(storageKeys.svgVertexRadiusFactor, 0.00666),
+  );
 
-  #bindToLocalStorage() {
+  #bindToLocalStorage(): () => void {
     return $effect.root(() => {
       $effect(() => {
         localStorage.setItem(storageKeys.svgRightHanded, String(this.rightHanded));
@@ -40,28 +52,49 @@ class Settings {
         localStorage.setItem(storageKeys.svgShowGrid, String(this.showGrid));
         localStorage.setItem(storageKeys.svgShowAxes, String(this.showAxes));
 
-        localStorage.setItem(storageKeys.svgUIEpsilonFactor, String(this.uiEpsilonFactor));
-        localStorage.setItem(storageKeys.svgSnapRadiusFactor, String(this.snapRadiusFactor));
+        localStorage.setItem(
+          storageKeys.svgUIEpsilonFactor,
+          String(this.uiEpsilonFactor),
+        );
+        localStorage.setItem(
+          storageKeys.svgSnapRadiusFactor,
+          String(this.snapRadiusFactor),
+        );
         // radialSnap
-        localStorage.setItem(storageKeys.svgRadialSnapDegrees, String(this.radialSnapDegrees));
-        localStorage.setItem(storageKeys.svgRadialSnapOffset, String(this.radialSnapOffset));
+        localStorage.setItem(
+          storageKeys.svgRadialSnapDegrees,
+          String(this.radialSnapDegrees),
+        );
+        localStorage.setItem(
+          storageKeys.svgRadialSnapOffset,
+          String(this.radialSnapOffset),
+        );
 
-        localStorage.setItem(storageKeys.svgStrokeWidthFactor, String(this.strokeWidthFactor));
-        localStorage.setItem(storageKeys.svgStrokeWidthAbsoluteMin, String(this.strokeWidthAbsoluteMin));
-        localStorage.setItem(storageKeys.svgVertexRadiusFactor, String(this.vertexRadiusFactor));
+        localStorage.setItem(
+          storageKeys.svgStrokeWidthFactor,
+          String(this.strokeWidthFactor),
+        );
+        localStorage.setItem(
+          storageKeys.svgStrokeWidthAbsoluteMin,
+          String(this.strokeWidthAbsoluteMin),
+        );
+        localStorage.setItem(
+          storageKeys.svgVertexRadiusFactor,
+          String(this.vertexRadiusFactor),
+        );
       });
-      return () => { };
+      return () => {};
     });
   }
 
-  unbind: Function[] = [];
+  unbind: (() => void)[] = [];
 
   constructor() {
     this.unbind = [this.#bindToLocalStorage()];
   }
 
-  dealloc() {
-    this.unbind.forEach(fn => fn());
+  dealloc(): void {
+    this.unbind.forEach((fn) => fn());
   }
 }
 

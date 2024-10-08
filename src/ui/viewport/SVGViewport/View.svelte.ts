@@ -3,8 +3,8 @@ import {
   invertMatrix2,
   multiplyMatrices2,
   multiplyMatrix2Vector2,
-  makeMatrix2Translate,
-  makeMatrix2UniformScale,
+  //makeMatrix2Translate,
+  //makeMatrix2UniformScale,
 } from "rabbit-ear/math/matrix2.js";
 import { viewBoxOrigin } from "../../../general/matrix.ts";
 import settings from "./Settings.svelte.ts";
@@ -17,7 +17,7 @@ export class View {
   camera = $state([...identity2x3]);
 
   #model = $state([...identity2x3]);
-  get model() {
+  get model(): number[] {
     return this.#model;
   }
   set model(matrix) {
@@ -64,7 +64,9 @@ export class View {
   ]);
 
   aspectFitViewBox = $derived.by(() => {
-    if (!this.canvasSize) { return this.cameraViewBox; }
+    if (!this.canvasSize) {
+      return this.cameraViewBox;
+    }
     const box = [...this.cameraViewBox];
     const canvasAspect = this.canvasSize[0] / this.canvasSize[1];
     const viewBoxAspect = this.viewBox[2] / this.viewBox[3];
@@ -85,19 +87,22 @@ export class View {
   viewBoxPolygon: [number, number][] = $derived([
     [this.aspectFitViewBox[0], this.aspectFitViewBox[1]],
     [this.aspectFitViewBox[0] + this.aspectFitViewBox[2], this.aspectFitViewBox[1]],
-    [this.aspectFitViewBox[0] + this.aspectFitViewBox[2], this.aspectFitViewBox[1] + this.aspectFitViewBox[3]],
+    [
+      this.aspectFitViewBox[0] + this.aspectFitViewBox[2],
+      this.aspectFitViewBox[1] + this.aspectFitViewBox[3],
+    ],
     [this.aspectFitViewBox[0], this.aspectFitViewBox[1] + this.aspectFitViewBox[3]],
   ]);
 
-  resetCamera() {
+  resetCamera(): void {
     this.camera = [...identity2x3];
   }
 
-  resetModel() {
+  resetModel(): void {
     this.model = [...identity2x3];
   }
 
-  reset() {
+  reset(): void {
     this.resetCamera();
     this.resetModel();
   }
